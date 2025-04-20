@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:50857",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "D:\\GitHub\\CalendarWebsite\\CalendarWebsite\\CalendarWebsite.Server\\..\\calendarwebsite.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

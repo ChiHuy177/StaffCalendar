@@ -1,0 +1,45 @@
+﻿
+.fc .fc-button-primary {
+    background-color: #1d4ed8; /* Màu nền (xanh dương) */
+    color: white; /* Màu chữ */
+    border: none; /* Loại bỏ viền */
+    border-radius: 5px; /* Bo góc */
+    padding: 5px 10px; /* Khoảng cách bên trong */
+    font-size: 14px; /* Kích thước chữ */
+}
+
+/* Hiệu ứng hover */
+.fc .fc-button-primary:hover {
+    background-color: #2563eb; /* Màu nền khi hover */
+    color: #ffffff; /* Màu chữ khi hover */
+}
+
+/* Chỉnh màu nút đang được chọn (active) */
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
+    background-color: #1e40af; /* Màu nền khi nút được chọn */
+    color: white; /* Màu chữ */
+}
+/* Chỉnh màu nền cho các ô ngày */
+.fc-daygrid-day {
+    background-color: #f3f4f6; /* Màu nền nhạt hơn */
+    color: #1f2937; /* Màu chữ đậm hơn */
+    border: 1px solid #d1d5db;
+}
+
+/* Chỉnh màu nền khi hover */
+.fc-daygrid-day:hover {
+    background-color: #e5e7eb; /* Màu nền đậm hơn khi hover */
+}
+
+/* Chỉnh màu nền cho ngày hiện tại */
+.fc-day-today {
+    background-color: #2563eb !important; /* Màu xanh đậm */
+    color: white !important; /* Màu chữ trắng */
+}
+
+.grid-cell-center {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}

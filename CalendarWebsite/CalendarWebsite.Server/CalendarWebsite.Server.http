@@ -1,0 +1,50 @@
+@CalendarWebsite.Server_HostAddress = https://localhost:7179
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/DataOnly_APIaCheckIn/GetAllUsersName
+# Accept: application/json
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllUsersName
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/personalprofiles
+
+###
+
+@month=3
+@year=2025
+@userId=duydd1@vntt.com.vn
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetRecordsByMonth?month={{month}}&year={{year}}&userId={{userId}}
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/  {{month}}&year={{year}}&userId={{userId}}
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetUserByUserId?month={{month}}&year={{year}}&userID={{userID}}
+
+###
+
+POST {{CalendarWebsite.Server_HostAddress}}/api/export/HelloWorld
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/export/ExportUserCheckinData?month={{month}}&year={{year}}&userID={{userID}}
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllCheckinInDay?month={{month}}&year={{year}}
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllCheckinInDay?month={{month}}&year={{year}}
+
+###
+
+@day=1
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllCheckinInDay?day={{day}}&month={{month}}&year={{year}}
+
+###

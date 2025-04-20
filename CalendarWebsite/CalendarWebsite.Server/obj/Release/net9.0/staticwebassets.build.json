@@ -1,0 +1,24 @@
+{
+  "Version": 1,
+  "Hash": "SDnyR1L0YuOKUD5P6VRaVBdcWHmz5VpJS8jV3f5s6NM=",
+  "Source": "CalendarWebsite.Server",
+  "BasePath": "_content/CalendarWebsite.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "D:\\GitHub\\CalendarWebsite\\CalendarWebsite\\calendarwebsite.client\\calendarwebsite.client.esproj",
+      "Version": 2,
+      "Source": "calendarwebsite.client",
+      "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

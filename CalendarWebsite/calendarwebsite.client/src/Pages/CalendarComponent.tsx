@@ -1,0 +1,513 @@
+import React, { useEffect, useRef, useState } from 'react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import FullCalendar from '@fullcalendar/react';
+import { EventClickArg, EventInput } from '@fullcalendar/core';
+import Popover from '@mui/material/Popover';
+import { Bounce, toast } from 'react-toastify';
+import { User } from '../interfaces/type';
+import axios from 'axios';
+
+
+export default function CalendarComponent() {
+    const [loading, setLoading] = useState(false);
+    const [events, setEvents] = useState<EventInput[]>([]);
+    const [nameOfUsers, setNameOfUsers] = useState<string[]>([]);
+    const [filter, setFilter] = useState('');
+    const [selectedName, setSelectedName] = useState('');
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
+    const calendarRef = useRef<FullCalendar>(null);
+    const [workDays, setWorkDays] = useState<number>(0);
+
+
+    const getWorkDaysInitial = async (id: string) => {
+        const calendarApi = calendarRef.current?.getApi();
+        if (calendarApi) {
+            const currentViewDate = calendarApi.view.currentStart;
+            const month = currentViewDate.getMonth() + 1;
+            const year = currentViewDate.getFullYear();
+
+            if (id === '') return;
+
+            const valueBeforeDash = id.split('-')[0];
+            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/CountRecordsByMonth`;
+            try {
+                const response = await axios.get(apiUrl, {
+                    params: { month, year, userId: valueBeforeDash },
+                });
+                setWorkDays(response.data);
+            } catch (error) {
+                console.error('Error fetching work days:', error);
+            }
+        } else {
+            console.error('Calendar API is not available');
+        }
+    };
+
+    const getWorkDays = async () => {
+        const calendarApi = calendarRef.current?.getApi();
+        if (calendarApi) {
+            const currentViewDate = calendarApi.view.currentStart;
+            const month = currentViewDate.getMonth() + 1;
+            const year = currentViewDate.getFullYear();
+
+            if (selectedName === '') return;
+
+            const valueBeforeDash = selectedName.split('-')[0];
+            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/CountRecordsByMonth`;
+            try {
+                const response = await axios.get(apiUrl, {
+                    params: { month, year, userId: valueBeforeDash },
+                });
+                setWorkDays(response.data);
+            } catch (error) {
+                console.error('Error fetching work days:', error);
+            }
+        } else {
+            console.error('Calendar API is not available');
+        }
+    };
+
+    const EventPopover = () => {
+        const handlePopoverClose = () => {
+            setAnchorEl(null); // Đóng Popover
+            setSelectedEvent(null); // Xóa thông tin sự kiện được chọn
+        };
+
+        const isOpen = Boolean(anchorEl);
+
+        return (
+            <Popover
+                open={isOpen}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: 'top', // Hiển thị phía trên sự kiện
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom', // Điểm gốc để định vị
+                    horizontal: 'center',
+                }}
+                sx={{
+                    boxShadow: 'none', // Loại bỏ hiệu ứng bóng
+                }}
+            >
+                <div className="p-4 max-w-xs">
+                    {selectedEvent && (
+                        <>
+                            <h2 className="text-lg font-bold text-blue-600 mb-2">
+                                {selectedEvent.title}
+                            </h2>
+                            <h3 className="text-base font-medium text-gray-800 mb-2">
+                                <span className="font-semibold text-gray-900">Nhân viên:</span> {selectedEvent.extendedProps?.staffName}
+                            </h3>
+                            <p className="text-sm text-gray-700">
+                                <span className="font-semibold text-gray-900">Thời gian:</span>{' '}
+                                {new Date(selectedEvent.start as string).toLocaleString('vi-VN')}
+                            </p>
+                            <p
+                                className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === 'Về sớm' || selectedEvent.extendedProps?.description === 'Vào trễ'
+                                    ? 'bg-red-100 text-red-600'
+                                    : 'bg-green-100 text-green-600'
+                                    }`}
+                            >
+                                {selectedEvent.extendedProps?.description}
+                            </p>
+                        </>
+                    )}
+                </div>
+            </Popover>
+        );
+    };
+
+    // check date in
+    function isLate(date: string): boolean {
+        const parsedDate = new Date(date);
+        const hours = parsedDate.getHours();
+        const minutes = parsedDate.getMinutes();
+
+        return (hours > 8 || (hours === 7 && minutes > 30));
+    }
+    function isGoHomeEarly(date: string): boolean {
+        const parsedDate = new Date(date);
+        const hours = parsedDate.getHours();
+        const minutes = parsedDate.getMinutes();
+
+        return hours < 16 || (hours === 16 && minutes < 30);
+    }
+
+    useEffect(() => {
+        async function getAllUserName() {
+            const apiUrl = `${import.meta.env.VITE_API_URL}api/personalprofiles/GetAllUsersName`;
+            try {
+                const response = await axios.get(apiUrl);
+                setNameOfUsers(response.data);
+            } catch (error) {
+                console.error('Error fetching user names:', error);
+            }
+        }
+        getWorkDaysInitial('');
+        getAllUserName();
+    }, []);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedName('');
+        setFilter(e.target.value);
+    };
+
+    const handleNameClick = (name: string) => {
+        setSelectedName(name);
+        setFilter('');
+        getWorkScheduleByMonthInitial(name);
+        getWorkDaysInitial(name);
+    };
+
+    const getWorkScheduleByMonthInitial = async (id: string): Promise<void> => {
+        if (id === '') {
+            toast.error('Vui lòng nhập tên!', {
+                position: 'top-center',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'light',
+                transition: Bounce,
+            });
+            return;
+        }
+        setLoading(true);
+        const calendarApi = calendarRef.current?.getApi();
+        if (calendarApi) {
+            const currentViewDate = calendarApi.view.currentStart;
+            const month = currentViewDate.getMonth() + 1;
+            const year = currentViewDate.getFullYear();
+
+            const valueBeforeDash = id.split('-')[0];
+            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
+            try {
+                const response = await axios.get(apiUrl, {
+                    params: { month, year, userId: valueBeforeDash },
+                });
+                const data = response.data;
+
+                if (data.length === 0) {
+                    toast.error('Không tìm thấy lịch làm việc của nhân viên này!', {
+                        position: 'top-center',
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light',
+                        transition: Bounce,
+                    });
+                    setLoading(false);
+                    setEvents([]);
+                    return;
+                }
+
+                const eventList: EventInput[] = [];
+                data.forEach((item: User) => {
+                    const adjustedStart = new Date(item.inAt);
+                    adjustedStart.setHours(adjustedStart.getHours() + 7);
+
+                    const adjustedEnd = new Date(item.outAt);
+                    adjustedEnd.setHours(adjustedEnd.getHours() + 7);
+
+                    if (isLate(adjustedStart.toString())) {
+                        eventList.push({
+                            id: item.id?.toString(),
+                            title: 'Giờ vào (Vào trễ)',
+                            start: adjustedStart,
+                            extendedProps: {
+                                description: 'Vào trễ',
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-red-400 text-black rounded px-2',
+                        });
+                    } else {
+                        eventList.push({
+                            id: item.id?.toString(),
+                            title: 'Giờ vào',
+                            start: adjustedStart,
+                            extendedProps: {
+                                description: 'Đúng giờ',
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-green-400 text-black rounded px-2',
+                        });
+                    }
+
+                    if (isGoHomeEarly(adjustedEnd.toString())) {
+                        eventList.push({
+                            id: item.id?.toString() + '-out',
+                            title: 'Giờ ra (Về sớm)',
+                            start: adjustedEnd,
+                            extendedProps: {
+                                description: 'Về sớm',
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-yellow-400 text-black rounded px-2',
+                        });
+                    } else {
+                        eventList.push({
+                            id: item.id?.toString() + '-out',
+                            title: 'Giờ ra',
+                            start: adjustedEnd,
+                            extendedProps: {
+                                description: 'Đúng giờ',
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-green-400 text-black rounded px-2',
+                        });
+                    }
+                });
+
+                setTimeout(() => {
+                    setLoading(false);
+                    setEvents(eventList);
+                    getWorkDays();
+                }, 1000);
+            } catch (error) {
+                console.error('Error fetching work schedule:', error);
+                setLoading(false);
+            }
+        }
+    };
+
+    const getWorkScheduleByMonth = async (): Promise<void> => {
+        if (selectedName === '') {
+            return;
+        }
+        setLoading(true);
+        const calendarApi = calendarRef.current?.getApi();
+        if (calendarApi) {
+            const currentViewDate = calendarApi.view.currentStart;
+            const month = currentViewDate.getMonth() + 1;
+            const year = currentViewDate.getFullYear();
+
+            if (selectedName === "") {
+                return;
+            }
+            const valueBeforeDash = selectedName.split('-')[0];
+            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
+            try {
+                const response = await axios.get(apiUrl, {
+                    params: { month, year, userId: valueBeforeDash },
+                });
+                const data = response.data;
+
+                if (data.length === 0) {
+                    toast.error('Không tìm thấy lịch làm việc của nhân viên này!', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    setLoading(false);
+                    setEvents([]);
+                    return;
+                }
+                const eventList: EventInput[] = [];
+
+                data.forEach((item: User) => {
+                    const adjustedStart = new Date(item.inAt);
+                    adjustedStart.setHours(adjustedStart.getHours() + 7);
+
+                    const adjustedEnd = new Date(item.outAt);
+                    adjustedEnd.setHours(adjustedEnd.getHours() + 7);
+                    if (isLate(adjustedStart.toString())) {
+                        eventList.push({
+                            id: item.id?.toString(),
+                            title: 'Giờ vào (Vào trễ)',
+                            start: adjustedStart,
+                            extendedProps: {
+                                description: "Vào trễ",
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-red-400 text-black rounded px-2 text-xs sm:text-sm md:text-base lg:text-lg whitespace-normal break-words',
+                        });
+                    } else {
+                        eventList.push({
+                            id: item.id?.toString(),
+                            title: 'Giờ vào',
+                            start: adjustedStart,
+                            extendedProps: {
+                                description: "Đúng giờ",
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-green-400 text-black rounded px-2 text-xs sm:text-sm md:text-base lg:text-lg whitespace-normal break-words',
+                        });
+                    }
+                    if (isGoHomeEarly(adjustedEnd.toString())) {
+                        eventList.push({
+                            id: item.id?.toString() + '-out',
+                            title: 'Giờ ra  (Về sớm)',
+                            start: adjustedEnd,
+                            extendedProps: {
+                                description: "Về sớm",
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-[rgba(224,198,82,1)] text-black rounded px-2',
+                        });
+                    } else {
+                        eventList.push({
+                            id: item.id?.toString() + '-out',
+                            title: 'Giờ ra',
+                            start: adjustedEnd,
+
+                            extendedProps: {
+                                description: "Đúng giờ",
+                                staffName: item.fullName,
+                            },
+                            className: 'bg-green-400 text-black rounded px-2',
+                        });
+                    }
+                });
+
+                setTimeout(() => {
+                    setLoading(false);
+                    setEvents(eventList);
+                    getWorkDays();
+                }, 1000);
+            } catch (error) {
+                console.error('Error fetching work schedule:', error);
+                setLoading(false);
+            }
+        }
+    };
+
+    const handleEventClick = (info: EventClickArg) => {
+        setAnchorEl(info.el); // Set the clicked element as anchor
+        setSelectedEvent({
+            id: info.event.id,
+            title: info.event.title,
+            start: info.event.start ? info.event.start.toISOString() : undefined,
+            end: info.event.end ? info.event.end.toISOString() : undefined,
+            extendedProps: info.event.extendedProps,
+        });
+
+    };
+
+    return (
+        <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
+            <h1 className="font-bold text-5xl pb-6 text-white">Lịch Checkin</h1>
+
+            <div className="mb-8 flex flex-col items-center">
+                <div className="relative w-96">
+
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">
+                        <i className="fa fa-search" aria-hidden="true"></i>
+                    </span>
+                    <input
+                        autoComplete="off"
+                        id="userIdField"
+                        type="text"
+                        placeholder=" "
+                        value={selectedName || filter}
+                        onChange={handleInputChange}
+                        className="block w-full pl-10 pr-10 pb-2.5 pt-2.5 text-sm text-gray-900 bg-white rounded-full border-2 border-gray-300 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-400 focus:border-blue-400 hover:bg-gray-50 transition duration-300 ease-in-out peer"
+                    />
+                    <label
+                        htmlFor="userIdField"
+                        className="absolute ml-[15px] left-6 top-0.5 text-sm text-gray-500 transform -translate-y-1/2 scale-100 bg-white rounded-lg px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-1/2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 transition-all duration-300 ease-in-out"
+                    >
+                        Nhập tên
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setFilter('');
+                            setSelectedName('');
+                            setWorkDays(0);
+                        }}
+                        className="cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    >
+                        ✕
+                    </button>
+                    {filter && (
+                        <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto mt-1">
+                            {nameOfUsers
+                                ?.filter((name: string) => name.toLowerCase().includes(filter.toLowerCase()))
+                                .map((filteredName: string, index: number) => (
+                                    <div
+                                        key={index}
+                                        className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-md hover:shadow-lg hover:bg-gradient-to-r hover:from-blue-100 hover:to-blue-200 cursor-pointer transition duration-200 ease-in-out"
+                                        onClick={() => handleNameClick(filteredName)}
+                                    >
+                                        <p className="text-gray-800 font-medium">{filteredName}</p>
+                                    </div>
+                                ))}
+                        </div>
+                    )}
+                </div>
+
+
+            </div>
+
+            <div className="relative">
+                {loading && (
+                    <div className="absolute inset-0 bg-opacity-100 backdrop-blur-sm flex items-center justify-center z-50">
+                        <div className="flex flex-col items-center">
+                            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="mt-4 text-gray-700 font-medium">Đang tải dữ liệu...</p>
+                        </div>
+                    </div>
+                )}
+                <>
+                    <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
+                        <div className="mb-4">
+                            <p className="text-lg font-medium text-gray-700 mt-5">
+                                Số ngày làm việc của nhân viên <span className='font-bold text-gray-800'>{selectedName.split('-')[1]}</span>  : <span className="font-bold text-blue-600">{workDays}</span>
+                            </p>
+                        </div>
+                        <FullCalendar
+                            ref={calendarRef}
+                            plugins={[dayGridPlugin]}
+                            initialView="dayGridMonth"
+                            headerToolbar={{
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'dayGridMonth',
+                            }}
+                            locale="vi"
+                            events={events}
+                            eventClick={handleEventClick}
+                            editable={true}
+                            selectable={true}
+                            aspectRatio={1.2}
+                            contentHeight="auto"
+                            height="auto"
+                            datesSet={() => {
+                                getWorkDays();
+                                getWorkScheduleByMonth();
+                            }}
+                            dayMaxEventRows={true}
+                            eventContent={(arg) => (
+                                <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
+                                    <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'} </p>
+                                    <p className="text-gray-600">{arg.event.extendedProps?.description}</p>
+                                </div>
+                            )}
+
+                            viewClassNames='w-full'
+                        />
+                    </div>
+                    <EventPopover />
+                </>
+
+            </div>
+        </div>
+    );
+}
+
+
