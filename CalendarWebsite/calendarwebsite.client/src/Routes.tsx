@@ -3,6 +3,7 @@ import CalendarComponent from "./Pages/CalendarComponent";
 import ExportCustomToolbar from "./Pages/CheckinTable";
 import DashboardLayout from "./Pages/DashboardLayout";
 import CheckInByDayTable from "./Pages/CheckInByDayTable";
+import CheckInTableByDepartment from "./Pages/CheckInTableByDepartment";
 
 
 
@@ -17,6 +18,7 @@ const router = createBrowserRouter(
                 { index: true, element: <CalendarComponent /> },
                 { path: 'table', element: <ExportCustomToolbar /> },
                 {path: 'checkinbyday', element: <CheckInByDayTable />},
+                {path: 'checkintablebydepartment', element: <CheckInTableByDepartment />},
             ],
         },
     ]

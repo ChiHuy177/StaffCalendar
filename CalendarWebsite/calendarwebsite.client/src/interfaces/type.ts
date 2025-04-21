@@ -1,20 +1,20 @@
 
 
 export type User = {
-    id: number; 
+    id: number;
     userWorkflowId: number;
-    userId: string; 
-    method: number; 
-    check: number; 
+    userId: string;
+    method: number;
+    check: number;
     earlyIn: number;
     lateIn: number;
     earlyOut: number;
     lateOut: number;
-    inAt: Date; 
-    outAt: Date; 
-    wt: number; 
-    at: Date; 
-    fullName: string; 
+    inAt: Date;
+    outAt: Date;
+    wt: number;
+    at: Date;
+    fullName: string;
     data: string;
 }
 export type CheckinEvent = {
@@ -26,6 +26,31 @@ export type CheckinEvent = {
 export type foundUser = {
     userId: string,
     fullName: string
+}
+export type Department = {
+    id: number;
+    title?: string;
+    code?: string;
+    description?: string;
+    parentId?: number;
+    chartCode?: string;
+    managerId?: number;
+    deptLevel?: number;
+    email?: string;
+    telephone?: string;
+    fax?: string;
+    address?: string;
+    siteName?: string;
+    order?: number;
+    createdBy?: string;
+    createdTime?: Date;
+    lastModified?: Date;
+    modifiedBy?: string;
+    isDeleted?: boolean;
+    titleEN?: string;
+    isHSSE?: boolean;
+    hsseOrder?: number;
+    hod?: string;
 }
 export function formatTime(dateString: string): string {
     const date = new Date(dateString);

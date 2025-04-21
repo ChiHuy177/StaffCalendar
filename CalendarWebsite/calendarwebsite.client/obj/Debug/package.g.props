@@ -9,6 +9,7 @@
     <PackageJsonScriptsBuild Condition="$(PackageJsonScriptsBuild) == ''">tsc -b &amp;&amp; vite build</PackageJsonScriptsBuild>
     <PackageJsonScriptsLint Condition="$(PackageJsonScriptsLint) == ''">eslint .</PackageJsonScriptsLint>
     <PackageJsonScriptsPreview Condition="$(PackageJsonScriptsPreview) == ''">vite preview</PackageJsonScriptsPreview>
+    <PackageJsonDependenciesDateIoDayjs Condition="$(PackageJsonDependenciesDateIoDayjs) == ''">^3.2.0</PackageJsonDependenciesDateIoDayjs>
     <PackageJsonDependenciesEmotionReact Condition="$(PackageJsonDependenciesEmotionReact) == ''">^11.14.0</PackageJsonDependenciesEmotionReact>
     <PackageJsonDependenciesEmotionStyled Condition="$(PackageJsonDependenciesEmotionStyled) == ''">^11.14.0</PackageJsonDependenciesEmotionStyled>
     <PackageJsonDependenciesFullcalendarCore Condition="$(PackageJsonDependenciesFullcalendarCore) == ''">^6.1.17</PackageJsonDependenciesFullcalendarCore>
@@ -22,9 +23,12 @@
     <PackageJsonDependenciesMuiMaterial Condition="$(PackageJsonDependenciesMuiMaterial) == ''">^7.0.2</PackageJsonDependenciesMuiMaterial>
     <PackageJsonDependenciesMuiXDataGrid Condition="$(PackageJsonDependenciesMuiXDataGrid) == ''">^7.28.3</PackageJsonDependenciesMuiXDataGrid>
     <PackageJsonDependenciesMuiXDataGridGenerator Condition="$(PackageJsonDependenciesMuiXDataGridGenerator) == ''">^7.28.3</PackageJsonDependenciesMuiXDataGridGenerator>
+    <PackageJsonDependenciesMuiXDatePickers Condition="$(PackageJsonDependenciesMuiXDatePickers) == ''">^7.29.0</PackageJsonDependenciesMuiXDatePickers>
+    <PackageJsonDependenciesMuiXDatePickersPro Condition="$(PackageJsonDependenciesMuiXDatePickersPro) == ''">^7.29.0</PackageJsonDependenciesMuiXDatePickersPro>
     <PackageJsonDependenciesTailwindcssVite Condition="$(PackageJsonDependenciesTailwindcssVite) == ''">^4.1.3</PackageJsonDependenciesTailwindcssVite>
     <PackageJsonDependenciesToolpadCore Condition="$(PackageJsonDependenciesToolpadCore) == ''">^0.13.0</PackageJsonDependenciesToolpadCore>
     <PackageJsonDependenciesAxios Condition="$(PackageJsonDependenciesAxios) == ''">^1.8.4</PackageJsonDependenciesAxios>
+    <PackageJsonDependenciesDayjs Condition="$(PackageJsonDependenciesDayjs) == ''">^1.11.13</PackageJsonDependenciesDayjs>
     <PackageJsonDependenciesFullcalendar Condition="$(PackageJsonDependenciesFullcalendar) == ''">^6.1.17</PackageJsonDependenciesFullcalendar>
     <PackageJsonDependenciesPreact Condition="$(PackageJsonDependenciesPreact) == ''">^10.26.5</PackageJsonDependenciesPreact>
     <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.0.0</PackageJsonDependenciesReact>
@@ -46,5 +50,6 @@
     <PackageJsonDevdependenciesTypescript Condition="$(PackageJsonDevdependenciesTypescript) == ''">~5.7.2</PackageJsonDevdependenciesTypescript>
     <PackageJsonDevdependenciesTypescriptEslint Condition="$(PackageJsonDevdependenciesTypescriptEslint) == ''">^8.24.1</PackageJsonDevdependenciesTypescriptEslint>
     <PackageJsonDevdependenciesVite Condition="$(PackageJsonDevdependenciesVite) == ''">^6.2.0</PackageJsonDevdependenciesVite>
+    <PackageJsonDevdependenciesVitePluginStaticCopy Condition="$(PackageJsonDevdependenciesVitePluginStaticCopy) == ''">^2.3.1</PackageJsonDevdependenciesVitePluginStaticCopy>
   </PropertyGroup>
 </Project>

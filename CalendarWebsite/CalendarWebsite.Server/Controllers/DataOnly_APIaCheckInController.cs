@@ -61,8 +61,23 @@ namespace CalendarWebsite.Server.Controllers
         [HttpGet("GetAllCheckinInDay")]
         public async Task<ActionResult<DataOnly_APIaCheckIn>> GetAllCheckinInDay(int day, int month, int year)
         {
-            var result = await _context.Users.Where(e => e.InAt.HasValue && e.InAt.Value.Day == day && e.InAt.HasValue && e.InAt.Value.Month == month && e.InAt.Value.Year == year)
+            var result = await _context.Users.Where(e => e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year)
                 .ToListAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("GetCheckInByDepartmentId")]
+        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year)
+        {
+            var users = await _context.PersonalProfiles.Where(w => w.DepartmentId == id).ToListAsync();
+            List<DataOnly_APIaCheckIn> result = new List<DataOnly_APIaCheckIn>();
+            foreach (var user in users) {
+                var foundUser = await _context.Users.Where(e => e.UserId == user.Email && e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year).FirstOrDefaultAsync();
+                if (foundUser != null)
+                {
+                    result.Add(foundUser);
+                }
+            }
             return Ok(result);
         }
 

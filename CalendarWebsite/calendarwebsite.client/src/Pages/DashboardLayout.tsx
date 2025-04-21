@@ -19,6 +19,7 @@ export default function DashboardLayout() {
         { text: "Staff checkin calendar", icon: <CalendarMonthTwoToneIcon className="text-amber-50" />, path: "/" },
         { text: "Staff checkin table", icon: <BackupTableIcon className="text-amber-50" />, path: "/table" },
         { text: "Staff checkin table by day", icon: <CalendarViewMonthRoundedIcon className="text-amber-50" />, path: "/checkinbyday" },
+        { text: "Staff checkin table by department", icon: <CalendarViewMonthRoundedIcon className="text-amber-50" />, path: "/checkintablebydepartment" },
     ];
 
     return (

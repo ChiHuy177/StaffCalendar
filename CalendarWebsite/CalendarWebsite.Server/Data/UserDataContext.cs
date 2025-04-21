@@ -8,5 +8,7 @@ namespace CalendarWebsite.Server.Data
         public DbSet<DataOnly_APIaCheckIn> Users { get; set; }
 
         public DbSet<PersonalProfile> PersonalProfiles { get; set; }
+
+        public DbSet<Department> Department { get; set; }
     }
 }

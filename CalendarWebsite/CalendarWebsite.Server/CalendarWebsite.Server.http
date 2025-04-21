@@ -48,3 +48,20 @@ GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllChecki
 GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllCheckinInDay?day={{day}}&month={{month}}&year={{year}}
 
 ###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/export/ExportUserCheckinDataByDay?day={{day}}&month={{month}}&year={{year}}
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/departments
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/departments
+
+###
+
+@id=5
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetCheckInByDepartmentId?id={{id}}&day={{day}}&month={{month}}&year={{year}}
+
+###

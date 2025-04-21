@@ -8093,11 +8093,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\GitHub\\CalendarWebsite\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.csproj",
+      "projectUniqueName": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.csproj",
       "projectName": "CalendarWebsite.Server",
-      "projectPath": "D:\\GitHub\\CalendarWebsite\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.csproj",
+      "projectPath": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.csproj",
       "packagesPath": "C:\\Users\\Wunhh\\.nuget\\packages\\",
-      "outputPath": "D:\\GitHub\\CalendarWebsite\\CalendarWebsite\\CalendarWebsite.Server\\obj\\",
+      "outputPath": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

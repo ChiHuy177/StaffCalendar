@@ -47,7 +47,7 @@ export default function ExportCustomToolbar() {
         userId: !isMobile,
         totalTime: !isMobile,
         // Các cột khác không định nghĩa sẽ mặc định hiển thị
-      };
+    };
     const StyledGridOverlay = styled('div')(({ theme }) => ({
         display: 'flex',
         flexDirection: 'column',
@@ -189,16 +189,6 @@ export default function ExportCustomToolbar() {
         }
     }
 
-    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setSelectedName('');
-    //     setFilter(e.target.value);
-    // };
-
-    // const handleNameClick = (name: string) => {
-    //     setSelectedName(name);
-    //     setFilter('');
-    // };
-
     const handleMonthChange = (e: SelectChangeEvent) => {
         setSelectedMonth(e.target.value);
     };
@@ -284,10 +274,6 @@ export default function ExportCustomToolbar() {
                         ></TextField>)
                     }
                 />
-                <div className="relative w-110">
-
-
-                </div>
             </div>
 
             <div className="mb-6 flex justify-center space-x-4">
