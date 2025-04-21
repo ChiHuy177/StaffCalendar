@@ -5,6 +5,12 @@ import axios from "axios";
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
+import dayjs, { Dayjs } from "dayjs";
+import { LocalizationProvider, PickersShortcutsItem } from "@mui/x-date-pickers";
+import { DateRange } from "@mui/x-date-pickers-pro/models";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 
 export default function CheckInTableByDepartment() {
@@ -14,21 +20,44 @@ export default function CheckInTableByDepartment() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const columnGroupingModel: GridColumnGroupingModel = [
-        {
-            groupId: "Thông tin nhân viên",
-            children: [{ field: 'id' }, { field: 'userId' }],
-            headerAlign: 'center',
-        }, {
-            groupId: "Thời gian làm việc",
-            children: [{ field: 'workingDate' }, { field: 'inAt' }, { field: 'outAt' }, { field: 'totalTime' }],
-            headerAlign: 'center',
-        }
-    ]
 
+     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
+            {
+                label: 'This Week',
+                getValue: () => {
+                    const today = dayjs();
+                    return [today.startOf('week'), today.endOf('week')];
+                },
+            },
+            {
+                label: 'Last Week',
+                getValue: () => {
+                    const today = dayjs();
+                    const prevWeek = today.subtract(7, 'day');
+                    return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+                },
+            },
+            {
+                label: 'Last 7 Days',
+                getValue: () => {
+                    const today = dayjs();
+                    return [today.subtract(7, 'day'), today];
+                },
+            },
+            {
+                label: 'Current Month',
+                getValue: () => {
+                    const today = dayjs();
+                    return [today.startOf('month'), today.endOf('month')];
+                },
+            },
+            { label: 'Reset', getValue: () => [null, null] },
+        ];
+    
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'userId', headerName: 'Email', flex: 2, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'userFullname', headerName: 'Full name', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'userId', headerName: 'Email', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'workingDate', headerName: 'Day of working', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'inAt', headerName: 'Check-in Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'outAt', headerName: 'Check-out Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
@@ -161,6 +190,7 @@ export default function CheckInTableByDepartment() {
 
                 return {
                     id: index + 1,
+                    userFullname: item.fullName,
                     userId: item.userId,
                     workingDate: formatDate(item.at),
                     inAt: formatTime(item.inAt.toString()),
@@ -191,7 +221,7 @@ export default function CheckInTableByDepartment() {
                     sx={{
                         width: '50%',
                         backgroundColor: 'white',
-                        borderRadius: '20px',
+                        borderRadius: '4px',
                         '& .MuiDataGrid-cell': {
                             display: 'flex',
                             alignItems: 'center',
@@ -213,6 +243,52 @@ export default function CheckInTableByDepartment() {
                     }
                 />
             </div>
+            <div className="mb-8 flex flex-col items-center">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    {/* <DatePicker
+                        label="Basic date picker"
+                        onChange={(newValue) => {
+                            if (newValue) {
+                                setDateValue(newValue);
+                            }
+                        }}
+                        value={dateValue}
+                        sx={{
+                            backgroundColor: 'white',
+                            borderRadius: '4px',
+                            '& .MuiInputLabel-root': {
+                                color: '#083B75',
+                                fontSize: '16px',
+                                backgroundColor: 'white',
+                                padding: '0 5px',
+                                borderRadius: '4px',
+                            },
+                        }} /> */}
+                    <DemoContainer components={['DateRangePicker']}>
+                        <DateRangePicker
+                            sx={{
+                                backgroundColor: 'white',
+                                borderRadius: '4px',
+                                '& .MuiInputLabel-root': {
+                                    color: '#083B75',
+                                    fontSize: '16px',
+                                    backgroundColor: 'white',
+                                    padding: '0 5px',
+                                    borderRadius: '4px',
+                                },
+                            }}
+                            slotProps={{
+                                shortcuts: {
+                                    items: shortcutsItems,
+                                }
+                            }}
+                            // onChange={handleDateRangeChange}
+                        />
+                    </DemoContainer>
+
+                </LocalizationProvider>
+
+            </div>
             <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
                 {loading ? (<Box sx={{ width: '100%', height: '100%' }}>
                     <Skeleton />
@@ -227,7 +303,7 @@ export default function CheckInTableByDepartment() {
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay
                         }}
-                        columnGroupingModel={columnGroupingModel}
+
                         columnVisibilityModel={columnVisibilityModel}
                         sx={{
                             '& .MuiDataGrid-columnHeader': {

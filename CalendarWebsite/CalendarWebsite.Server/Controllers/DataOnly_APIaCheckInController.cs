@@ -66,6 +66,20 @@ namespace CalendarWebsite.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetAllCheckinInDayRange")]
+        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo)
+        {
+            DateTime startDate = new DateTime(year, month, day);
+            DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
+
+            // Lọc dữ liệu các record có giá trị At nằm trong khoảng từ startDate đến endDate
+            var result = await _context.Users
+                .Where(e => e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate)
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
         [HttpGet("GetCheckInByDepartmentId")]
         public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year)
         {

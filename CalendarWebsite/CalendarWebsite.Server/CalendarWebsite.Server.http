@@ -65,3 +65,10 @@ GET {{CalendarWebsite.Server_HostAddress}}/api/departments
 GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetCheckInByDepartmentId?id={{id}}&day={{day}}&month={{month}}&year={{year}}
 
 ###
+
+@dayTo=0
+@monthTo=0
+@yearTo=0
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllCheckinInDayRange?day={{day}}&month={{month}}&year={{year}}&dayTo={{dayTo}}&monthTo={{monthTo}}&yearTo={{yearTo}}
+
+###

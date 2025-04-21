@@ -1,8 +1,7 @@
 
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import axios from 'axios';
@@ -11,11 +10,53 @@ import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, G
 import { formatTime, User } from '../interfaces/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+
+import { DateRange } from '@mui/x-date-pickers-pro/models';
+import { PickersShortcutsItem } from '@mui/x-date-pickers';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
-    const [dateValue, setDateValue] = useState<Dayjs>(dayjs());
+    // const [dateValue, setDateValue] = useState<Dayjs>(dayjs());
     const [rows, setRows] = useState<User[]>([]);
+    // const [value, setValue] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
+
+    const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
+        {
+            label: 'This Week',
+            getValue: () => {
+                const today = dayjs();
+                return [today.startOf('week'), today.endOf('week')];
+            },
+        },
+        {
+            label: 'Last Week',
+            getValue: () => {
+                const today = dayjs();
+                const prevWeek = today.subtract(7, 'day');
+                return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+            },
+        },
+        {
+            label: 'Last 7 Days',
+            getValue: () => {
+                const today = dayjs();
+                return [today.subtract(7, 'day'), today];
+            },
+        },
+        {
+            label: 'Current Month',
+            getValue: () => {
+                const today = dayjs();
+                return [today.startOf('month'), today.endOf('month')];
+            },
+        },
+        { label: 'Reset', getValue: () => [null, null] },
+    ];
+
+    
+
+    
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
@@ -26,19 +67,32 @@ export default function CheckInByDayTable() {
         { field: 'outAt', headerName: 'Check-out Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'totalTime', headerName: 'Total Working Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
+    async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
+        // setValue(newValue);
 
-    useEffect(() => {
-        async function handleTest() {
-            // alert(dateValue.format('YYYY-MM-DD'));
-            const date = dateValue.date();
-            const month = dateValue.month() + 1;
-            const year = dateValue.year();
-            const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetAllCheckinInDay`;
+        // Nếu đã chọn đủ ngày bắt đầu và kết thúc, lấy thông tin chi tiết cho ngày
+        if (newValue[0] && newValue[1]) {
+            const startDate = newValue[0];
+            const endDate = newValue[1];
+
+            const startDay = startDate.date();
+            const startMonth = startDate.month() + 1; // getMonth() trả về giá trị từ 0 đến 11
+            const startYear = startDate.year();
+
+            const endDay = endDate.date();
+            const endMonth = endDate.month() + 1;
+            const endYear = endDate.year();
+
+            console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
+            const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetAllCheckinInDayRange`;
             await axios.get(apiURL, {
                 params: {
-                    day: date,
-                    month: month,
-                    year: year
+                    day: startDay,
+                    month: startMonth,
+                    year: startYear,
+                    dayTo: endDay,
+                    monthTo: endMonth,
+                    yearTo: endYear
                 }
             }).then((response) => {
                 const data = response.data;
@@ -75,12 +129,10 @@ export default function CheckInByDayTable() {
                 }, 2000)
             }).catch((error) => {
                 console.error('Error fetching data:', error);
-
             })
-
         }
-        handleTest();
-    }, [dateValue])
+    };
+  
 
     const StyledGridOverlay = styled('div')(({ theme }) => ({
         display: 'flex',
@@ -158,7 +210,7 @@ export default function CheckInByDayTable() {
             <h1 className="font-bold text-5xl pb-6 text-white">Staff Checkin Table By Day</h1>
             <div className="mb-8 flex flex-col items-center">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
+                    {/* <DatePicker
                         label="Basic date picker"
                         onChange={(newValue) => {
                             if (newValue) {
@@ -176,19 +228,29 @@ export default function CheckInByDayTable() {
                                 padding: '0 5px',
                                 borderRadius: '4px',
                             },
-                        }} />
-                    <DateRangePicker
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            '& .MuiInputLabel-root': {
-                                color: '#083B75',
-                                fontSize: '16px',
+                        }} /> */}
+                    <DemoContainer components={['DateRangePicker']}>
+                        <DateRangePicker
+                            sx={{
                                 backgroundColor: 'white',
-                                padding: '0 5px',
                                 borderRadius: '4px',
-                            },
-                        }} />
+                                '& .MuiInputLabel-root': {
+                                    color: '#083B75',
+                                    fontSize: '16px',
+                                    backgroundColor: 'white',
+                                    padding: '0 5px',
+                                    borderRadius: '4px',
+                                },
+                            }}
+                            slotProps={{
+                                shortcuts: {
+                                    items: shortcutsItems,
+                                }
+                            }}
+                            onChange={handleDateRangeChange}
+                        />
+                    </DemoContainer>
+
                 </LocalizationProvider>
 
             </div>
