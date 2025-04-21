@@ -31,7 +31,9 @@ namespace CalendarWebsite.Server
                         "https://localhost:50858",
                         "https://prismatic-cactus-d90033.netlify.app",
                         "https://calendar-frontend-54y9.onrender.com",
-                        "https://calendarwebsite-2.onrender.com").AllowAnyHeader().AllowAnyMethod();
+                        "https://calendarwebsite-2.onrender.com",
+                        "https://staffcalendar.vercel.app"
+                        ).AllowAnyHeader().AllowAnyMethod();
 
                     });
             });
