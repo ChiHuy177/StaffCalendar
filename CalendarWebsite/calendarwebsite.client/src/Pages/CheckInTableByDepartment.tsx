@@ -2,7 +2,7 @@ import { Autocomplete, Box, Button, Skeleton, styled, TextField, useMediaQuery, 
 import { useEffect, useState } from "react";
 import { Department, formatTime, User } from "../interfaces/type";
 import axios from "axios";
-import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
 import dayjs, { Dayjs } from "dayjs";

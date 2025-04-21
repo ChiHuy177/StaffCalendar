@@ -78,12 +78,11 @@
               "Title": "CalendarWebsite.Server.http",
               "DocumentMoniker": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.http",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\CalendarWebsite.Server.http",
-              "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.http*",
-              "RelativeToolTip": "CalendarWebsite.Server\\CalendarWebsite.Server.http*",
+              "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\CalendarWebsite.Server.http",
+              "RelativeToolTip": "CalendarWebsite.Server\\CalendarWebsite.Server.http",
               "ViewState": "AgIAADcAAAAAAAAAAAA2wEcAAAC7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-04-21T04:08:24.625Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-21T04:08:24.625Z"
             },
             {
               "$type": "Document",
