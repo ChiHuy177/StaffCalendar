@@ -130,6 +130,7 @@ export default function CheckInTableByDepartment() {
     }, [])
 
     async function handleDepartmentChange(value: number | undefined) {
+        setLoading(true);
         const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetCheckInByDepartmentId`;
         await axios.get(apiURL, {
             params: {
@@ -167,7 +168,11 @@ export default function CheckInTableByDepartment() {
                     totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
                 };
             });
-            setRows(formattedData);
+            setTimeout(() => {
+                setLoading(false);
+                setRows(formattedData);
+            })
+            
         }).catch((error) => {
             console.error('Error fetching data:', error);
         })
