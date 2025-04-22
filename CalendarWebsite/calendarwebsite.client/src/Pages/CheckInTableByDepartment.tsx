@@ -6,58 +6,62 @@ import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, G
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
 import dayjs, { Dayjs } from "dayjs";
-import { LocalizationProvider, PickersShortcutsItem } from "@mui/x-date-pickers";
+import { PickersShortcutsItem } from "@mui/x-date-pickers";
 import { DateRange } from "@mui/x-date-pickers-pro/models";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
+import { Bounce, toast } from "react-toastify";
 
 
 export default function CheckInTableByDepartment() {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [rows, setRows] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
+    const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
+    const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
 
-     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
-            {
-                label: 'This Week',
-                getValue: () => {
-                    const today = dayjs();
-                    return [today.startOf('week'), today.endOf('week')];
-                },
+    const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
+        {
+            label: 'This Week',
+            getValue: () => {
+                const today = dayjs();
+                return [today.startOf('week'), today.endOf('week')];
             },
-            {
-                label: 'Last Week',
-                getValue: () => {
-                    const today = dayjs();
-                    const prevWeek = today.subtract(7, 'day');
-                    return [prevWeek.startOf('week'), prevWeek.endOf('week')];
-                },
+        },
+        {
+            label: 'Last Week',
+            getValue: () => {
+                const today = dayjs();
+                const prevWeek = today.subtract(7, 'day');
+                return [prevWeek.startOf('week'), prevWeek.endOf('week')];
             },
-            {
-                label: 'Last 7 Days',
-                getValue: () => {
-                    const today = dayjs();
-                    return [today.subtract(7, 'day'), today];
-                },
+        },
+        {
+            label: 'Last 7 Days',
+            getValue: () => {
+                const today = dayjs();
+                return [today.subtract(7, 'day'), today];
             },
-            {
-                label: 'Current Month',
-                getValue: () => {
-                    const today = dayjs();
-                    return [today.startOf('month'), today.endOf('month')];
-                },
+        },
+        {
+            label: 'Current Month',
+            getValue: () => {
+                const today = dayjs();
+                return [today.startOf('month'), today.endOf('month')];
             },
-            { label: 'Reset', getValue: () => [null, null] },
-        ];
-    
+        },
+        { label: 'Reset', getValue: () => [null, null] },
+    ];
+
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'userFullname', headerName: 'Full name', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'userId', headerName: 'Email', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'userFullName', headerName: 'Full name', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'workingDate', headerName: 'Day of working', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'inAt', headerName: 'Check-in Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'outAt', headerName: 'Check-out Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
@@ -157,55 +161,93 @@ export default function CheckInTableByDepartment() {
         }
         handleTest();
     }, [])
-
-    async function handleDepartmentChange(value: number | undefined) {
+    async function handleFind() {
         setLoading(true);
-        const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetCheckInByDepartmentId`;
-        await axios.get(apiURL, {
-            params: {
-                id: value,
-                day: 1,
-                month: 4,
-                year: 2025
-            }
-        }).then((response) => {
-            console.log(response.data);
-            const data = response.data;
-            const formattedData = data.map((item: User, index: number) => {
-                const inAt = item.inAt ? new Date(item.inAt) : null;
-                const outAt = item.outAt ? new Date(item.outAt) : null;
+        const newValue = dateValue;
+        if (newValue[0] === null || newValue[1] === null || departmentId === undefined) {
+            toast.error('Please choose the valid information!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+                });
+            setRows([]);
+            setLoading(false);
+            return;
+        }
+        // Nếu đã chọn đủ ngày bắt đầu và kết thúc, lấy thông tin chi tiết cho ngày
+        if (newValue[0] && newValue[1]) {
+            const startDate = newValue[0];
+            const endDate = newValue[1];
 
-                const oneHour = 1 * 3600000; // 1 hour in milliseconds
-                const oneMinute = 1 * 60000; // 1 minute in milliseconds
+            const startDay = startDate.date();
+            const startMonth = startDate.month() + 1; // getMonth() trả về giá trị từ 0 đến 11
+            const startYear = startDate.year();
 
-                let totalTime = 0;
-                if (inAt && outAt) {
-                    totalTime = (outAt.getTime() - inAt.getTime() - oneHour) / oneMinute;
+            const endDay = endDate.date();
+            const endMonth = endDate.month() + 1;
+            const endYear = endDate.year();
+
+            console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
+            const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetCheckInByDepartmentId`;
+            await axios.get(apiURL, {
+                params: {
+                    id: departmentId,
+                    day: startDay,
+                    month: startMonth,
+                    year: startYear,
+                    dayTo: endDay,
+                    monthTo: endMonth,
+                    yearTo: endYear
                 }
+            }).then((response) => {
+                const data = response.data;
+                const formattedData = data.map((item: User, index: number) => {
+                    const inAt = item.inAt ? new Date(item.inAt) : null;
+                    const outAt = item.outAt ? new Date(item.outAt) : null;
 
-                const hours = Math.floor(totalTime / 60);
-                const minutes = Math.floor(totalTime % 60);
+                    const oneHour = 1 * 3600000; // 1 hour in milliseconds
+                    const oneMinute = 1 * 60000; // 1 minute in milliseconds
 
-                const formattedMinutes = minutes.toString().padStart(2, "0");
+                    let totalTime = 0;
+                    if (inAt && outAt) {
+                        totalTime = (outAt.getTime() - inAt.getTime() - oneHour) / oneMinute;
+                    }
 
-                return {
-                    id: index + 1,
-                    userFullname: item.fullName,
-                    userId: item.userId,
-                    workingDate: formatDate(item.at),
-                    inAt: formatTime(item.inAt.toString()),
-                    outAt: formatTime(item.outAt.toString()),
-                    totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
-                };
-            });
-            setTimeout(() => {
-                setLoading(false);
+                    const hours = Math.floor(totalTime / 60);
+                    const minutes = Math.floor(totalTime % 60);
+
+                    const formattedMinutes = minutes.toString().padStart(2, "0");
+
+                    return {
+                        id: index + 1,
+                        userId: item.userId,
+                        userFullName: item.fullName,
+                        workingDate: formatDate(item.at),
+                        inAt: formatTime(item.inAt.toString()),
+                        outAt: formatTime(item.outAt.toString()),
+                        totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
+                    };
+                });
                 setRows(formattedData);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            }).catch((error) => {
+                console.error('Error fetching data:', error);
             })
-            
-        }).catch((error) => {
-            console.error('Error fetching data:', error);
-        })
+        }
+    };
+    async function handleDepartmentChange(value: number | undefined) {
+        setDepartmentId(value);
+    }
+    async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
+        setDateValue(newValue);
     }
 
     return (
@@ -244,50 +286,38 @@ export default function CheckInTableByDepartment() {
                 />
             </div>
             <div className="mb-8 flex flex-col items-center">
+
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    {/* <DatePicker
-                        label="Basic date picker"
-                        onChange={(newValue) => {
-                            if (newValue) {
-                                setDateValue(newValue);
-                            }
-                        }}
-                        value={dateValue}
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            '& .MuiInputLabel-root': {
-                                color: '#083B75',
-                                fontSize: '16px',
-                                backgroundColor: 'white',
-                                padding: '0 5px',
-                                borderRadius: '4px',
-                            },
-                        }} /> */}
                     <DemoContainer components={['DateRangePicker']}>
                         <DateRangePicker
+                            defaultValue={[dayjs(), dayjs()]}
+                            label="Departure - Return"
                             sx={{
                                 backgroundColor: 'white',
                                 borderRadius: '4px',
+                                border: 'none',
                                 '& .MuiInputLabel-root': {
                                     color: '#083B75',
                                     fontSize: '16px',
                                     backgroundColor: 'white',
                                     padding: '0 5px',
                                     borderRadius: '4px',
-                                },
+                                }
                             }}
                             slotProps={{
                                 shortcuts: {
                                     items: shortcutsItems,
                                 }
                             }}
-                            // onChange={handleDateRangeChange}
+                            onChange={handleDateRangeChange}
                         />
                     </DemoContainer>
 
                 </LocalizationProvider>
 
+            </div>
+            <div className="mb-8 flex flex-col items-center">
+                <Button className="w-1/5" variant="contained" onClick={handleFind}>Find</Button>
             </div>
             <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
                 {loading ? (<Box sx={{ width: '100%', height: '100%' }}>

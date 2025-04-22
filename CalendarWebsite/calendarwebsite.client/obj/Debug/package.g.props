@@ -19,6 +19,9 @@
     <PackageJsonDependenciesFullcalendarReact Condition="$(PackageJsonDependenciesFullcalendarReact) == ''">^6.1.17</PackageJsonDependenciesFullcalendarReact>
     <PackageJsonDependenciesFullcalendarTimegrid Condition="$(PackageJsonDependenciesFullcalendarTimegrid) == ''">^6.1.17</PackageJsonDependenciesFullcalendarTimegrid>
     <PackageJsonDependenciesHeadlessuiReact Condition="$(PackageJsonDependenciesHeadlessuiReact) == ''">^2.2.1</PackageJsonDependenciesHeadlessuiReact>
+    <PackageJsonDependenciesHerouiDatePicker Condition="$(PackageJsonDependenciesHerouiDatePicker) == ''">^2.3.17</PackageJsonDependenciesHerouiDatePicker>
+    <PackageJsonDependenciesHerouiSystem Condition="$(PackageJsonDependenciesHerouiSystem) == ''">^2.4.13</PackageJsonDependenciesHerouiSystem>
+    <PackageJsonDependenciesHerouiTheme Condition="$(PackageJsonDependenciesHerouiTheme) == ''">^2.4.13</PackageJsonDependenciesHerouiTheme>
     <PackageJsonDependenciesMuiIconsMaterial Condition="$(PackageJsonDependenciesMuiIconsMaterial) == ''">^7.0.2</PackageJsonDependenciesMuiIconsMaterial>
     <PackageJsonDependenciesMuiMaterial Condition="$(PackageJsonDependenciesMuiMaterial) == ''">^7.0.2</PackageJsonDependenciesMuiMaterial>
     <PackageJsonDependenciesMuiXDataGrid Condition="$(PackageJsonDependenciesMuiXDataGrid) == ''">^7.28.3</PackageJsonDependenciesMuiXDataGrid>
@@ -29,10 +32,11 @@
     <PackageJsonDependenciesToolpadCore Condition="$(PackageJsonDependenciesToolpadCore) == ''">^0.13.0</PackageJsonDependenciesToolpadCore>
     <PackageJsonDependenciesAxios Condition="$(PackageJsonDependenciesAxios) == ''">^1.8.4</PackageJsonDependenciesAxios>
     <PackageJsonDependenciesDayjs Condition="$(PackageJsonDependenciesDayjs) == ''">^1.11.13</PackageJsonDependenciesDayjs>
+    <PackageJsonDependenciesFramerMotion Condition="$(PackageJsonDependenciesFramerMotion) == ''">^12.7.4</PackageJsonDependenciesFramerMotion>
     <PackageJsonDependenciesFullcalendar Condition="$(PackageJsonDependenciesFullcalendar) == ''">^6.1.17</PackageJsonDependenciesFullcalendar>
     <PackageJsonDependenciesPreact Condition="$(PackageJsonDependenciesPreact) == ''">^10.26.5</PackageJsonDependenciesPreact>
-    <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.0.0</PackageJsonDependenciesReact>
-    <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^19.0.0</PackageJsonDependenciesReactDom>
+    <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.1.0</PackageJsonDependenciesReact>
+    <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^19.1.0</PackageJsonDependenciesReactDom>
     <PackageJsonDependenciesReactLoadingSkeleton Condition="$(PackageJsonDependenciesReactLoadingSkeleton) == ''">^3.5.0</PackageJsonDependenciesReactLoadingSkeleton>
     <PackageJsonDependenciesReactRouterDom Condition="$(PackageJsonDependenciesReactRouterDom) == ''">^7.5.0</PackageJsonDependenciesReactRouterDom>
     <PackageJsonDependenciesReactTinyPopover Condition="$(PackageJsonDependenciesReactTinyPopover) == ''">^8.1.6</PackageJsonDependenciesReactTinyPopover>

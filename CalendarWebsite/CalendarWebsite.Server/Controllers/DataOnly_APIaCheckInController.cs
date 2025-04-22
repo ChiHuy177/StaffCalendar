@@ -81,15 +81,21 @@ namespace CalendarWebsite.Server.Controllers
         }
 
         [HttpGet("GetCheckInByDepartmentId")]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year)
+        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo)
         {
+            DateTime startDate = new DateTime(year, month, day);
+            DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
+
             var users = await _context.PersonalProfiles.Where(w => w.DepartmentId == id).ToListAsync();
             List<DataOnly_APIaCheckIn> result = new List<DataOnly_APIaCheckIn>();
             foreach (var user in users) {
-                var foundUser = await _context.Users.Where(e => e.UserId == user.Email && e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year).FirstOrDefaultAsync();
+                var foundUser = await _context.Users.Where(e => e.UserId == user.Email && e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate).ToListAsync();
                 if (foundUser != null)
                 {
-                    result.Add(foundUser);
+                    foreach (var each in foundUser)
+                    {
+                        result.Add(each);
+                    }
                 }
             }
             return Ok(result);
