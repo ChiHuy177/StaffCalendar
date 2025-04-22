@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Department, formatTime, User } from "../interfaces/type";
 import axios from "axios";
 import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+// import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
 import dayjs, { Dayjs } from "dayjs";
 import { PickersShortcutsItem } from "@mui/x-date-pickers";
@@ -134,18 +134,18 @@ export default function CheckInTableByDepartment() {
                     slotProps={{ tooltip: { title: 'Change density' } }}
                 />
                 <Box sx={{ flexGrow: 1 }} />
-                <Button
-                    // onClick={handleExportExcel}
+                {/* <Button
+                    onClick={handleExportExcel}
                     className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
                 >
                     <DownloadRoundedIcon /> Export to Excel
-                </Button>
+                </Button> */}
             </GridToolbarContainer>
         );
     }
     useEffect(() => {
         async function handleTest() {
-            // alert(dateValue.format('YYYY-MM-DD'));
+
 
             const apiURL = `${import.meta.env.VITE_API_URL}api/departments`;
             await axios.get(apiURL).then((response) => {
@@ -175,7 +175,7 @@ export default function CheckInTableByDepartment() {
                 progress: undefined,
                 theme: "light",
                 transition: Bounce,
-                });
+            });
             setRows([]);
             setLoading(false);
             return;
@@ -251,9 +251,10 @@ export default function CheckInTableByDepartment() {
     }
 
     return (
-        <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-            <h1 className="font-bold text-5xl pb-6 text-white">Staff Checkin Table By Department</h1>
-            <div className="mb-8 flex flex-col items-center">
+        <div className="p-8 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg shadow-lg">
+            <h1 className="font-bold text-4xl pb-8 text-white tracking-wide">Staff Checkin Table By Department</h1>
+
+            <div className="mb-8 flex flex-col items-center space-y-4">
                 <Autocomplete
                     disablePortal
                     options={departments.map((department: Department) => ({
@@ -263,68 +264,106 @@ export default function CheckInTableByDepartment() {
                     sx={{
                         width: '50%',
                         backgroundColor: 'white',
-                        borderRadius: '4px',
-                        '& .MuiDataGrid-cell': {
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center', // Căn giữa nội dung trong ô
+                        borderRadius: '8px',
+                        '& .MuiInputBase-root': {
+                            borderRadius: '8px',
+                            border: '2px solid #083B75',
                         },
                         '& .MuiInputLabel-root': {
-                            color: '#083B75', // Màu chữ của label
-                            backgroundColor: 'white', // Màu nền của label
+                            color: '#083B75',
+                            backgroundColor: 'white',
                             padding: '0 5px',
-                            borderRadius: '5px', // Bo tròn góc của label
+                            borderRadius: '4px',
                         },
                     }}
-                    // value={selectedName}
                     onChange={(_event, value) => handleDepartmentChange(value?.key)}
                     renderInput={(params) => (
-                        <TextField {...params}
-                            label="Nhập phòng ban"
-                        ></TextField>)
-                    }
+                        <TextField {...params} label="Nhập phòng ban" />
+                    )}
                 />
             </div>
-            <div className="mb-8 flex flex-col items-center">
-
+            <div className="mb-8 flex flex-col items-center space-y-4">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DateRangePicker']}>
                         <DateRangePicker
                             defaultValue={[dayjs(), dayjs()]}
-                            label="Departure - Return"
                             sx={{
                                 backgroundColor: 'white',
-                                borderRadius: '4px',
-                                border: 'none',
+                                borderRadius: '12px',  // Bo góc mềm mại
+                                border: '2px solid #083B75',  // Thêm viền để nổi bật
+                                padding: '0.5rem',  // Thêm padding cho phần nhập
+                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',  // Thêm hiệu ứng đổ bóng nhẹ
                                 '& .MuiInputLabel-root': {
                                     color: '#083B75',
                                     fontSize: '16px',
                                     backgroundColor: 'white',
                                     padding: '0 5px',
                                     borderRadius: '4px',
+                                    transform: 'translate(14px, -8px) scale(0.9)', // Làm label nổi bật khi chưa nhập
+                                    transition: 'transform 0.2s ease, font-size 0.2s ease',
+                                },
+                                '& .MuiInputBase-root': {
+                                    borderRadius: '12px',  // Bo góc cho input
+                                    '&:hover': {
+                                        borderColor: '#06528A',  // Thay đổi màu khi hover
+                                    },
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#083B75', // Màu viền cho input
+                                    }
+                                },
+                                '& .MuiPickersDay-root': {
+                                    fontSize: '14px',  // Thay đổi font size của ngày
+                                    '&:hover': {
+                                        backgroundColor: '#D1E4F6',  // Thêm màu khi hover vào ngày
+                                    },
+                                },
+                                '& .MuiPickersDay-daySelected': {
+                                    backgroundColor: '#083B75',  // Màu nền của ngày đã chọn
+                                    color: 'white',  // Chữ màu trắng khi chọn
+                                },
+                                '& .MuiButtonBase-root': {
+                                    borderRadius: '8px',  // Bo góc các nút
                                 }
                             }}
                             slotProps={{
-                                shortcuts: {
-                                    items: shortcutsItems,
-                                }
+                                shortcuts: { items: shortcutsItems },
                             }}
                             onChange={handleDateRangeChange}
                         />
                     </DemoContainer>
-
                 </LocalizationProvider>
+            </div>
+
+
+            <div className="mb-8 flex flex-col items-center space-y-4">
+                <Button
+                    className="w-1/4 text-lg py-3"
+                    variant="contained"
+                    sx={{
+                        backgroundColor: '#00CAFF',  // Màu nền xanh đậm cho nút
+                        '&:hover': {
+                            backgroundColor: '#083B75',  // Màu nền khi hover (màu xanh đậm hơn)
+                        },
+                        color: 'white',  // Màu chữ trắng để nổi bật
+                        borderRadius: '8px',  // Bo góc nút để mềm mại hơn
+                        fontWeight: 'bold',  // Làm chữ đậm để dễ nhìn
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',  // Thêm hiệu ứng đổ bóng cho nút
+                    }}
+                    onClick={handleFind}
+                >
+                    Find
+                </Button>
 
             </div>
-            <div className="mb-8 flex flex-col items-center">
-                <Button className="w-1/5" variant="contained" onClick={handleFind}>Find</Button>
-            </div>
-            <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
-                {loading ? (<Box sx={{ width: '100%', height: '100%' }}>
-                    <Skeleton />
-                    <Skeleton animation="wave" />
-                    <Skeleton animation={false} />
-                </Box>) :
+
+            <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-lg">
+                {loading ? (
+                    <Box sx={{ width: '100%', height: '100%' }}>
+                        <Skeleton variant="rectangular" height={40} />
+                        <Skeleton animation="wave" />
+                        <Skeleton animation={false} />
+                    </Box>
+                ) : (
                     <DataGrid
                         disableVirtualization={true}
                         rows={rows}
@@ -333,27 +372,27 @@ export default function CheckInTableByDepartment() {
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay
                         }}
-
                         columnVisibilityModel={columnVisibilityModel}
                         sx={{
                             '& .MuiDataGrid-columnHeader': {
                                 backgroundColor: '#f5f5f5',
-
+                                color: '#083B75',
+                                fontWeight: 'bold',
                             },
                             '& .MuiDataGrid-row:nth-of-type(odd)': {
-                                backgroundColor: '#EEEEEE', // Màu nền cho hàng lẻ
+                                backgroundColor: '#f9f9f9',
                             },
                             '& .MuiDataGrid-row:nth-of-type(even)': {
-                                backgroundColor: '#ffffff', // Màu nền cho hàng chẵn
+                                backgroundColor: '#ffffff',
                             },
                             '& .MuiDataGrid-row:hover': {
-                                backgroundColor: '#D1E4F6', // Màu nền khi hover
-                            }
+                                backgroundColor: '#D1E4F6',
+                            },
                         }}
-                    />}
-
+                    />
+                )}
             </div>
-
         </div>
     )
+
 }

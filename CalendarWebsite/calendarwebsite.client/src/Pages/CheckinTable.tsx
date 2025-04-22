@@ -199,7 +199,17 @@ export default function ExportCustomToolbar() {
 
     const handleExportExcel = async () => {
         if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
-            alert('Vui lòng chọn tên, tháng và năm trước khi xuất file!');
+            toast.error('Vui lòng chọn tên, tháng và năm trước khi xuất file!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+                });
             return;
         }
         try {
@@ -364,10 +374,10 @@ export default function ExportCustomToolbar() {
             </div>
 
 
-            <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
-                {loading ? (<Box sx={{ width: '100%', height: '100%' }}>
+            <div className="w-full h-screen overflow-x-auto p-5 bg-white rounded-lg shadow-md">
+                {loading ? (<Box sx={{ width: '100%', height: '100vh' }}>
                     <Skeleton />
-                    <Skeleton animation="wave" />
+                    <Skeleton animation="wave" className='h-screen' />
                     <Skeleton animation={false} />
                 </Box>) :
                     <DataGrid

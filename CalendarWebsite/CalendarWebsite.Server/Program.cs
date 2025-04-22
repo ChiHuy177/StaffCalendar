@@ -54,6 +54,7 @@ namespace CalendarWebsite.Server
 
             app.UseHttpsRedirection();
 
+
             app.UseAuthorization();
 
 

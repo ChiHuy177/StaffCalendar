@@ -1,0 +1,23 @@
+# Build
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# ASP.NET secrets
+secrets.json
+
+# Logs
+*.log
+
+# Config files
+appsettings.json
+appsettings.*.json

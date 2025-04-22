@@ -1,17 +1,17 @@
 
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import axios from 'axios';
-import { Box, Button, Skeleton, styled } from '@mui/material';
+import { Box, Button, Skeleton, styled, useMediaQuery, useTheme } from '@mui/material';
 import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { formatTime, User } from '../interfaces/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-
+import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
 import { DateRange } from '@mui/x-date-pickers-pro/models';
 import { PickersShortcutsItem } from '@mui/x-date-pickers';
 
@@ -19,7 +19,8 @@ export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
     // const [dateValue, setDateValue] = useState<Dayjs>(dayjs());
     const [rows, setRows] = useState<User[]>([]);
-    // const [value, setValue] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
         {
@@ -54,9 +55,13 @@ export default function CheckInByDayTable() {
         { label: 'Reset', getValue: () => [null, null] },
     ];
 
-    
 
-    
+    const columnVisibilityModel = {
+        userId: !isMobile,
+        totalTime: !isMobile,
+        // Các cột khác không định nghĩa sẽ mặc định hiển thị
+    };
+
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
@@ -132,7 +137,7 @@ export default function CheckInByDayTable() {
             })
         }
     };
-  
+
 
     const StyledGridOverlay = styled('div')(({ theme }) => ({
         display: 'flex',
@@ -210,37 +215,46 @@ export default function CheckInByDayTable() {
             <h1 className="font-bold text-5xl pb-6 text-white">Staff Checkin Table By Day</h1>
             <div className="mb-8 flex flex-col items-center">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    {/* <DatePicker
-                        label="Basic date picker"
-                        onChange={(newValue) => {
-                            if (newValue) {
-                                setDateValue(newValue);
-                            }
-                        }}
-                        value={dateValue}
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: '4px',
-                            '& .MuiInputLabel-root': {
-                                color: '#083B75',
-                                fontSize: '16px',
-                                backgroundColor: 'white',
-                                padding: '0 5px',
-                                borderRadius: '4px',
-                            },
-                        }} /> */}
                     <DemoContainer components={['DateRangePicker']}>
                         <DateRangePicker
+                            defaultValue={[dayjs(), dayjs()]}
                             sx={{
                                 backgroundColor: 'white',
-                                borderRadius: '4px',
+                                borderRadius: '12px',  // Bo góc mềm mại
+                                border: '2px solid #083B75',  // Thêm viền để nổi bật
+                                padding: '0.5rem',  // Thêm padding cho phần nhập
+                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',  // Thêm hiệu ứng đổ bóng nhẹ
                                 '& .MuiInputLabel-root': {
                                     color: '#083B75',
                                     fontSize: '16px',
                                     backgroundColor: 'white',
                                     padding: '0 5px',
                                     borderRadius: '4px',
+                                    transform: 'translate(14px, -8px) scale(0.9)', // Làm label nổi bật khi chưa nhập
+                                    transition: 'transform 0.2s ease, font-size 0.2s ease',
                                 },
+                                '& .MuiInputBase-root': {
+                                    borderRadius: '12px',  // Bo góc cho input
+                                    '&:hover': {
+                                        borderColor: '#06528A',  // Thay đổi màu khi hover
+                                    },
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#083B75', // Màu viền cho input
+                                    }
+                                },
+                                '& .MuiPickersDay-root': {
+                                    fontSize: '14px',  // Thay đổi font size của ngày
+                                    '&:hover': {
+                                        backgroundColor: '#D1E4F6',  // Thêm màu khi hover vào ngày
+                                    },
+                                },
+                                '& .MuiPickersDay-daySelected': {
+                                    backgroundColor: '#083B75',  // Màu nền của ngày đã chọn
+                                    color: 'white',  // Chữ màu trắng khi chọn
+                                },
+                                '& .MuiButtonBase-root': {
+                                    borderRadius: '8px',  // Bo góc các nút
+                                }
                             }}
                             slotProps={{
                                 shortcuts: {
@@ -269,7 +283,7 @@ export default function CheckInByDayTable() {
                             noRowsOverlay: CustomNoRowsOverlay
                         }}
                         // columnGroupingModel={columnGroupingModel}
-                        // columnVisibilityModel={columnVisibilityModel}
+                        columnVisibilityModel={columnVisibilityModel}
                         sx={{
                             '& .MuiDataGrid-columnHeader': {
                                 backgroundColor: '#f5f5f5',

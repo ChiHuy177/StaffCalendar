@@ -29,10 +29,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\my-calendar\\calendarwebsite\\calendarwebsite.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\my-calendar\\calendarwebsite\\calendarwebsite.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -94,24 +90,12 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\appsettings.json",
-              "RelativeDocumentMoniker": "CalendarWebsite.Server\\appsettings.json",
-              "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\appsettings.json",
-              "RelativeToolTip": "CalendarWebsite.Server\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-04-14T07:12:54.435Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "DataOnly_APIaCheckInController.cs",
               "DocumentMoniker": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\DataOnly_APIaCheckInController.cs",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Controllers\\DataOnly_APIaCheckInController.cs",
-              "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\DataOnly_APIaCheckInController.cs*",
-              "RelativeToolTip": "CalendarWebsite.Server\\Controllers\\DataOnly_APIaCheckInController.cs*",
+              "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\DataOnly_APIaCheckInController.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Controllers\\DataOnly_APIaCheckInController.cs",
               "ViewState": "AgIAAFIAAAAAAAAAAAAswGIAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-11T02:18:12.785Z",
