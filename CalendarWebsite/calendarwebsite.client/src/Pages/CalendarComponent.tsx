@@ -6,7 +6,7 @@ import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
 import { User } from '../interfaces/type';
 import axios from 'axios';
-
+import { useTranslation } from 'react-i18next';
 
 export default function CalendarComponent() {
     const [loading, setLoading] = useState(false);
@@ -18,6 +18,11 @@ export default function CalendarComponent() {
     const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
     const calendarRef = useRef<FullCalendar>(null);
     const [workDays, setWorkDays] = useState<number>(0);
+    const { t } = useTranslation();
+    const lang = localStorage.getItem('language') === 'vi' ? 'vi' : 'en';
+
+
+
 
 
     const getWorkDaysInitial = async (id: string) => {
@@ -221,10 +226,10 @@ export default function CalendarComponent() {
                     if (isLate(adjustedStart.toString())) {
                         eventList.push({
                             id: item.id?.toString(),
-                            title: 'Giờ vào (Vào trễ)',
+                            title: t('Check in late'),
                             start: adjustedStart,
                             extendedProps: {
-                                description: 'Vào trễ',
+                                description: t('Check in late'),
                                 staffName: item.fullName,
                             },
                             className: 'bg-red-400 text-black rounded px-2',
@@ -232,10 +237,10 @@ export default function CalendarComponent() {
                     } else {
                         eventList.push({
                             id: item.id?.toString(),
-                            title: 'Giờ vào',
+                            title: t('Checkin time'),
                             start: adjustedStart,
                             extendedProps: {
-                                description: 'Đúng giờ',
+                                description: t('OnTime'),
                                 staffName: item.fullName,
                             },
                             className: 'bg-green-400 text-black rounded px-2',
@@ -245,10 +250,10 @@ export default function CalendarComponent() {
                     if (isGoHomeEarly(adjustedEnd.toString())) {
                         eventList.push({
                             id: item.id?.toString() + '-out',
-                            title: 'Giờ ra (Về sớm)',
+                            title: t('Out time'),
                             start: adjustedEnd,
                             extendedProps: {
-                                description: 'Về sớm',
+                                description: t('OutEarly'),
                                 staffName: item.fullName,
                             },
                             className: 'bg-yellow-400 text-black rounded px-2',
@@ -256,10 +261,10 @@ export default function CalendarComponent() {
                     } else {
                         eventList.push({
                             id: item.id?.toString() + '-out',
-                            title: 'Giờ ra',
+                            title: t('Out time'),
                             start: adjustedEnd,
                             extendedProps: {
-                                description: 'Đúng giờ',
+                                description: t('OnTime'),
                                 staffName: item.fullName,
                             },
                             className: 'bg-green-400 text-black rounded px-2',
@@ -400,7 +405,7 @@ export default function CalendarComponent() {
 
     return (
         <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-            <h1 className="font-bold text-5xl pb-6 text-white">Lịch Checkin</h1>
+            <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCalendar')}</h1>
 
             <div className="mb-8 flex flex-col items-center">
                 <div className="relative w-96">
@@ -421,7 +426,7 @@ export default function CalendarComponent() {
                         htmlFor="userIdField"
                         className="absolute ml-[15px] left-6 top-0.5 text-sm text-gray-500 transform -translate-y-1/2 scale-100 bg-white rounded-lg px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-1/2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-600 transition-all duration-300 ease-in-out"
                     >
-                        Nhập tên
+                        {t('selectName')}
                     </label>
                     <button
                         type="button"
@@ -467,7 +472,7 @@ export default function CalendarComponent() {
                     <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
                         <div className="mb-4">
                             <p className="text-lg font-medium text-gray-700 mt-5">
-                                Số ngày làm việc của nhân viên <span className='font-bold text-gray-800'>{selectedName.split('-')[1]}</span>  : <span className="font-bold text-blue-600">{workDays}</span>
+                                {t('workingDays')} <span className='font-bold text-gray-800'>{selectedName.split('-')[1]}</span>  : <span className="font-bold text-blue-600">{workDays}</span>
                             </p>
                         </div>
                         <FullCalendar
@@ -479,7 +484,7 @@ export default function CalendarComponent() {
                                 center: 'title',
                                 right: 'dayGridMonth',
                             }}
-                            locale="vi"
+                            locale={lang}
                             events={events}
                             eventClick={handleEventClick}
                             editable={true}

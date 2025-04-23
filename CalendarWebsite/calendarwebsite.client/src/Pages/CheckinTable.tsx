@@ -8,7 +8,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { Autocomplete, Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Skeleton, styled, TextField, useTheme } from '@mui/material';
 import { Bounce, toast } from 'react-toastify';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
+import { useTranslation } from 'react-i18next';
 
 
 export default function ExportCustomToolbar() {
@@ -20,15 +20,16 @@ export default function ExportCustomToolbar() {
     const [loading, setLoading] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { t } = useTranslation();
 
 
     const columnGroupingModel: GridColumnGroupingModel = [
         {
-            groupId: "Thông tin nhân viên",
+            groupId: t('table.personalInfo'),
             children: [{ field: 'id' }, { field: 'userId' }],
             headerAlign: 'center',
         }, {
-            groupId: "Thời gian làm việc",
+            groupId: t('table.workingTime'),
             children: [{ field: 'workingDate' }, { field: 'inAt' }, { field: 'outAt' }, { field: 'totalTime' }],
             headerAlign: 'center',
         }
@@ -37,10 +38,10 @@ export default function ExportCustomToolbar() {
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'userId', headerName: 'Email', flex: 2, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'workingDate', headerName: 'Day of working', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'inAt', headerName: 'Check-in Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'outAt', headerName: 'Check-out Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'totalTime', headerName: 'Total Working Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'workingDate', headerName: t('table.day'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'inAt', headerName: t('table.inTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'outAt', headerName: t('table.outTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'totalTime', headerName: t('table.totalTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
 
     const columnVisibilityModel = {
@@ -113,7 +114,7 @@ export default function ExportCustomToolbar() {
                     onClick={handleExportExcel}
                     className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
                 >
-                    <DownloadRoundedIcon /> Export to Excel
+                    <DownloadRoundedIcon /> {t('ExportExcel')}
                 </Button>
             </GridToolbarContainer>
         );
@@ -209,7 +210,7 @@ export default function ExportCustomToolbar() {
                 progress: undefined,
                 theme: "light",
                 transition: Bounce,
-                });
+            });
             return;
         }
         try {
@@ -255,7 +256,7 @@ export default function ExportCustomToolbar() {
 
     return (
         <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-            <h1 className="font-bold text-5xl pb-6 text-white">Staff Checkin Table</h1>
+            <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCheckinTable')}</h1>
             <div className="mb-8 flex flex-col items-center">
                 <Autocomplete
                     disablePortal
@@ -280,7 +281,7 @@ export default function ExportCustomToolbar() {
                     onChange={(_event, value) => setSelectedName(value || '')}
                     renderInput={(params) => (
                         <TextField {...params}
-                            label="Nhập tên"
+                            label={t('selectName')}
                         ></TextField>)
                     }
                 />
@@ -299,7 +300,7 @@ export default function ExportCustomToolbar() {
                                 padding: '0 5px',
                                 borderRadius: '4px',
                             }}>
-                            Chọn tháng
+                            {t('selectMonth')}
                         </InputLabel>
                         <Select
                             labelId="month-select-label"
@@ -309,7 +310,7 @@ export default function ExportCustomToolbar() {
                         >
                             {Array.from({ length: 12 }, (_, i) => (
                                 <MenuItem key={i + 1} value={i + 1}>
-                                    Tháng {i + 1}
+                                     {i + 1}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -327,7 +328,7 @@ export default function ExportCustomToolbar() {
                                 padding: '0 5px',
                                 borderRadius: '4px',
                             }}>
-                            Chọn năm
+                            {t('selectYear')}
                         </InputLabel>
                         <Select
                             labelId="year-select-label"
@@ -337,7 +338,7 @@ export default function ExportCustomToolbar() {
                         >
                             {Array.from({ length: 10 }, (_, i) => (
                                 <MenuItem key={i} value={2025 - i}>
-                                    Năm {2025 - i}
+                                    {2025 - i}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -368,7 +369,7 @@ export default function ExportCustomToolbar() {
                     <span
                         className="font-medium ml-2 hidden sm:inline"
                     >
-                        Tìm kiếm
+                        {t('Find')}
                     </span>
                 </Button>
             </div>

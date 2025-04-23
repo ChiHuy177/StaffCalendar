@@ -1,0 +1,44 @@
+{
+    "calendarTitle": "Welcome",
+    "staffCheckinTable": "Staff checkin table",
+    "staffCalendar": "Staff Calendar",
+    "staffCheckinTableByDay": "Staff Checkin Table By Day",
+    "staffCheckinTableByDept": "Staff Checkin Table By Department",
+    
+    "nav": {
+        "home": "Staff checkin calendar",
+        "staffTable": "Staff checkin table",
+        "byDay": "Staff checkin table by day",
+        "byDept": "Staff checkin table by department"
+    },
+    "workingDays": "Total working days",
+    "selectName": "Select staff name",
+    "selectMonth": "Select month",
+    "selectDept": "Select department",
+    "selectYear": "Select year",
+    "In time": "Checkin time",
+    "Out time": "Checkout time",
+    "InLate": "Check in late",
+    "OutEarly": "Check out early",
+    "OnTime": "On time",
+    "staff": "Staff",
+    "time": "Time",
+    "Find": "Search",
+    "ExportExcel": "Export to Excel",
+    "table": {
+        "day": "Day of working",
+        "inTime": "Checkin time",
+        "outTime": "Checkout time",
+        "totalTime": "Total working time",
+        "personalInfo": "Personal information",
+        "workingTime": "Time of working",
+        "fullName": "Full name"
+    },
+    "dayRange": {
+        "last7days": "Last 7 days",
+        "thisWeek": "This week",
+        "thisMonth": "This month",
+        "reset": "Reset",
+        "lastWeek": "Last week"
+    }
+}

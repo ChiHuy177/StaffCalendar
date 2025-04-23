@@ -60,9 +60,10 @@
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Models\\Department.cs",
               "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\Department.cs",
               "RelativeToolTip": "CalendarWebsite.Server\\Models\\Department.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAYAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAIBQwAYAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-21T04:27:40.625Z"
+              "WhenOpened": "2025-04-21T04:27:40.625Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -72,7 +73,7 @@
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Controllers\\ExportController.cs",
               "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\ExportController.cs",
               "RelativeToolTip": "CalendarWebsite.Server\\Controllers\\ExportController.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAYwCEAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-21T04:07:28.948Z",
               "EditorCaption": ""
@@ -87,7 +88,8 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Models\\PersonalProfile.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-15T01:51:48.53Z"
+              "WhenOpened": "2025-04-15T01:51:48.53Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -112,7 +114,8 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Program.cs",
               "ViewState": "AgIAABwAAAAAAAAAAAAQwBkAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-11T02:03:03.929Z"
+              "WhenOpened": "2025-04-11T02:03:03.929Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -124,7 +127,8 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Data\\UserDataContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-11T02:01:52.618Z"
+              "WhenOpened": "2025-04-11T02:01:52.618Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -134,9 +138,10 @@
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Models\\DataOnly_APIaCheckIn.cs",
               "ToolTip": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\DataOnly_APIaCheckIn.cs",
               "RelativeToolTip": "CalendarWebsite.Server\\Models\\DataOnly_APIaCheckIn.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAMAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAABYwAMAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-11T01:57:04.241Z"
+              "WhenOpened": "2025-04-11T01:57:04.241Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -4,14 +4,14 @@ import { ToastContainer, Bounce } from 'react-toastify';
 // import DashboardLayout from './Pages/DashboardLayout';
 import { Routes } from './Routes';
 
+import './i18n';
 
 
 function App() {
 
     return (
         <div>
-            <Routes/>
-
+            <Routes />
             <ToastContainer
                 position="top-center"
                 autoClose={5000}

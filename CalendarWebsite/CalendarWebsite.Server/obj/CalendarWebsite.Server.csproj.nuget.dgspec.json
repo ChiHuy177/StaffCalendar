@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[0.104.2, )"
             },
+            "DotNetCore.NPOI": {
+              "target": "Package",
+              "version": "[1.2.3, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.0, )"

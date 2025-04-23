@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, IconButton, AppBar, Toolbar, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import CalendarMonthTwoToneIcon from "@mui/icons-material/CalendarMonthTwoTone";
-import BackupTableIcon from "@mui/icons-material/BackupTable";
-import CalendarViewMonthRoundedIcon from '@mui/icons-material/CalendarViewMonthRounded';
+
 import { Link, Outlet } from "react-router-dom";
+import LanguageSwitcherButton from "../components/LanguageSwitcher";
+import { useTranslation } from 'react-i18next';
+import { navigationConfig, NavItemConfig } from "../interfaces/navItem";
 
 const drawerWidth = 240;
 
 export default function DashboardLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+    const { t } = useTranslation();
+    const navigationItems = useMemo(
+        () => navigationConfig.map((item: NavItemConfig) => ({
+          ...item,
+          text: t(item.key),
+        })),
+        [t]
+      );
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
-
-    const navigationItems = [
-        { text: "Staff checkin calendar", icon: <CalendarMonthTwoToneIcon className="text-amber-50" />, path: "/" },
-        { text: "Staff checkin table", icon: <BackupTableIcon className="text-amber-50" />, path: "/table" },
-        { text: "Staff checkin table by day", icon: <CalendarViewMonthRoundedIcon className="text-amber-50" />, path: "/checkinbyday" },
-        { text: "Staff checkin table by department", icon: <CalendarViewMonthRoundedIcon className="text-amber-50" />, path: "/checkintablebydepartment" },
-    ];
-
     return (
         <div className="flex">
             {/* AppBar */}
@@ -41,9 +41,10 @@ export default function DashboardLayout() {
 
                     </div>
 
-                    
+
                     {/* Icon and Avatar */}
                     <div className="flex items-center space-x-4">
+                        <LanguageSwitcherButton/>
 
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                     </div>
@@ -70,6 +71,7 @@ export default function DashboardLayout() {
                 {/* <Toolbar /> */}
 
                 <div className="flex justify-center items-center py-4 border-b border-gray-700">
+
                     <img src="/logovntt.png" alt="Logo" className="max-w-full max-h-16" />
                 </div>
 

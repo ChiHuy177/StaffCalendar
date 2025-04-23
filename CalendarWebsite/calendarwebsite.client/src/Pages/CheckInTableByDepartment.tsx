@@ -13,7 +13,7 @@ import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
 import { Bounce, toast } from "react-toastify";
-
+import { useTranslation } from 'react-i18next';
 
 export default function CheckInTableByDepartment() {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -23,18 +23,18 @@ export default function CheckInTableByDepartment() {
     const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+    const { t } = useTranslation();
 
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
         {
-            label: 'This Week',
+            label: t('dayRange.thisWeek'),
             getValue: () => {
                 const today = dayjs();
                 return [today.startOf('week'), today.endOf('week')];
             },
         },
         {
-            label: 'Last Week',
+            label: t('dayRange.lastWeek'),
             getValue: () => {
                 const today = dayjs();
                 const prevWeek = today.subtract(7, 'day');
@@ -42,30 +42,31 @@ export default function CheckInTableByDepartment() {
             },
         },
         {
-            label: 'Last 7 Days',
+            label: t('dayRange.last7days'),
             getValue: () => {
                 const today = dayjs();
                 return [today.subtract(7, 'day'), today];
             },
         },
         {
-            label: 'Current Month',
+            label: t('dayRange.thisMonth'),
             getValue: () => {
                 const today = dayjs();
                 return [today.startOf('month'), today.endOf('month')];
             },
         },
-        { label: 'Reset', getValue: () => [null, null] },
+        { label: t('dayRange.reset'), getValue: () => [null, null] },
     ];
+
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'userId', headerName: 'Email', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'userFullName', headerName: 'Full name', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'workingDate', headerName: 'Day of working', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'inAt', headerName: 'Check-in Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'outAt', headerName: 'Check-out Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'totalTime', headerName: 'Total Working Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'userFullName', headerName: t('table.fullName'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'workingDate', headerName: t('table.day'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'inAt', headerName: t('table.inTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'outAt', headerName: t('table.outTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'totalTime', headerName: t('table.workingTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
 
     const columnVisibilityModel = {
@@ -134,12 +135,6 @@ export default function CheckInTableByDepartment() {
                     slotProps={{ tooltip: { title: 'Change density' } }}
                 />
                 <Box sx={{ flexGrow: 1 }} />
-                {/* <Button
-                    onClick={handleExportExcel}
-                    className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-                >
-                    <DownloadRoundedIcon /> Export to Excel
-                </Button> */}
             </GridToolbarContainer>
         );
     }
@@ -252,7 +247,7 @@ export default function CheckInTableByDepartment() {
 
     return (
         <div className="p-8 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg shadow-lg">
-            <h1 className="font-bold text-4xl pb-8 text-white tracking-wide">Staff Checkin Table By Department</h1>
+            <h1 className="font-bold text-4xl pb-8 text-white tracking-wide">{t('staffCheckinTableByDept')}</h1>
 
             <div className="mb-8 flex flex-col items-center space-y-4">
                 <Autocomplete
@@ -278,7 +273,7 @@ export default function CheckInTableByDepartment() {
                     }}
                     onChange={(_event, value) => handleDepartmentChange(value?.key)}
                     renderInput={(params) => (
-                        <TextField {...params} label="Nhập phòng ban" />
+                        <TextField {...params} label= {t('selectDept')} />
                     )}
                 />
             </div>
@@ -351,7 +346,7 @@ export default function CheckInTableByDepartment() {
                     }}
                     onClick={handleFind}
                 >
-                    Find
+                    {t('Find')}
                 </Button>
 
             </div>

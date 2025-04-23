@@ -14,6 +14,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
 import { DateRange } from '@mui/x-date-pickers-pro/models';
 import { PickersShortcutsItem } from '@mui/x-date-pickers';
+import { useTranslation } from 'react-i18next';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
@@ -21,17 +22,19 @@ export default function CheckInByDayTable() {
     const [rows, setRows] = useState<User[]>([]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { t } = useTranslation();
+
 
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
         {
-            label: 'This Week',
+            label: t('dayRange.thisWeek'),
             getValue: () => {
                 const today = dayjs();
                 return [today.startOf('week'), today.endOf('week')];
             },
         },
         {
-            label: 'Last Week',
+            label: t('dayRange.lastWeek'),
             getValue: () => {
                 const today = dayjs();
                 const prevWeek = today.subtract(7, 'day');
@@ -39,20 +42,20 @@ export default function CheckInByDayTable() {
             },
         },
         {
-            label: 'Last 7 Days',
+            label: t('dayRange.last7days'),
             getValue: () => {
                 const today = dayjs();
                 return [today.subtract(7, 'day'), today];
             },
         },
         {
-            label: 'Current Month',
+            label: t('dayRange.thisMonth'),
             getValue: () => {
                 const today = dayjs();
                 return [today.startOf('month'), today.endOf('month')];
             },
         },
-        { label: 'Reset', getValue: () => [null, null] },
+        { label: t('dayRange.reset'), getValue: () => [null, null] },
     ];
 
 
@@ -66,11 +69,11 @@ export default function CheckInByDayTable() {
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'userId', headerName: 'Email', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'userFullName', headerName: 'Full name', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'workingDate', headerName: 'Day of working', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'inAt', headerName: 'Check-in Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'outAt', headerName: 'Check-out Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
-        { field: 'totalTime', headerName: 'Total Working Time', flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'userFullName', headerName: t('table.fullName'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'workingDate', headerName: t('table.day'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'inAt', headerName: t('table.inTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'outAt', headerName: t('table.outTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
+        { field: 'totalTime', headerName: t('table.workingTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
     async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
         // setValue(newValue);
@@ -205,14 +208,14 @@ export default function CheckInByDayTable() {
                     // onClick={handleExportExcel}
                     className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
                 >
-                    <DownloadRoundedIcon /> Export to Excel
+                    <DownloadRoundedIcon /> {t('ExportExcel')}
                 </Button>
             </GridToolbarContainer>
         );
     }
     return (
         <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-            <h1 className="font-bold text-5xl pb-6 text-white">Staff Checkin Table By Day</h1>
+            <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCheckinTableByDay')}</h1>
             <div className="mb-8 flex flex-col items-center">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DateRangePicker']}>
