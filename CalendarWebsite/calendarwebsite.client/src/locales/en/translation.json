@@ -40,5 +40,15 @@
         "thisMonth": "This month",
         "reset": "Reset",
         "lastWeek": "Last week"
+    },
+    "today": "Today",
+    "month": "Month",
+    "dataGrid" :{
+        "columns": "Columns",
+        "filter": "Filter",
+        "density": "Density",
+        "pageSize": "Page size",
+        "noRows": "No rows"
     }
+    
 }

@@ -105,10 +105,10 @@ export default function CalendarComponent() {
                                 {selectedEvent.title}
                             </h2>
                             <h3 className="text-base font-medium text-gray-800 mb-2">
-                                <span className="font-semibold text-gray-900">Nhân viên:</span> {selectedEvent.extendedProps?.staffName}
+                                <span className="font-semibold text-gray-900">{t('staff')}:</span> {selectedEvent.extendedProps?.staffName}
                             </h3>
                             <p className="text-sm text-gray-700">
-                                <span className="font-semibold text-gray-900">Thời gian:</span>{' '}
+                                <span className="font-semibold text-gray-900">{t('time')}:</span>{' '}
                                 {new Date(selectedEvent.start as string).toLocaleString('vi-VN')}
                             </p>
                             <p
@@ -226,10 +226,10 @@ export default function CalendarComponent() {
                     if (isLate(adjustedStart.toString())) {
                         eventList.push({
                             id: item.id?.toString(),
-                            title: t('Check in late'),
+                            title: t('InLate'),
                             start: adjustedStart,
                             extendedProps: {
-                                description: t('Check in late'),
+                                description: t('InLate'),
                                 staffName: item.fullName,
                             },
                             className: 'bg-red-400 text-black rounded px-2',
@@ -237,7 +237,7 @@ export default function CalendarComponent() {
                     } else {
                         eventList.push({
                             id: item.id?.toString(),
-                            title: t('Checkin time'),
+                            title: t('In time'),
                             start: adjustedStart,
                             extendedProps: {
                                 description: t('OnTime'),
@@ -250,7 +250,7 @@ export default function CalendarComponent() {
                     if (isGoHomeEarly(adjustedEnd.toString())) {
                         eventList.push({
                             id: item.id?.toString() + '-out',
-                            title: t('Out time'),
+                            title: t('OutEarly'),
                             start: adjustedEnd,
                             extendedProps: {
                                 description: t('OutEarly'),
@@ -333,45 +333,45 @@ export default function CalendarComponent() {
                     if (isLate(adjustedStart.toString())) {
                         eventList.push({
                             id: item.id?.toString(),
-                            title: 'Giờ vào (Vào trễ)',
+                            title: t('InLate'),
                             start: adjustedStart,
                             extendedProps: {
-                                description: "Vào trễ",
+                                description: t('InLate'),
                                 staffName: item.fullName,
                             },
-                            className: 'bg-red-400 text-black rounded px-2 text-xs sm:text-sm md:text-base lg:text-lg whitespace-normal break-words',
+                            className: 'bg-red-400 text-black rounded px-2',
                         });
                     } else {
                         eventList.push({
                             id: item.id?.toString(),
-                            title: 'Giờ vào',
+                            title: t('In time'),
                             start: adjustedStart,
                             extendedProps: {
-                                description: "Đúng giờ",
+                                description: t('OnTime'),
                                 staffName: item.fullName,
                             },
-                            className: 'bg-green-400 text-black rounded px-2 text-xs sm:text-sm md:text-base lg:text-lg whitespace-normal break-words',
+                            className: 'bg-green-400 text-black rounded px-2',
                         });
                     }
+
                     if (isGoHomeEarly(adjustedEnd.toString())) {
                         eventList.push({
                             id: item.id?.toString() + '-out',
-                            title: 'Giờ ra  (Về sớm)',
+                            title: t('OutEarly'),
                             start: adjustedEnd,
                             extendedProps: {
-                                description: "Về sớm",
+                                description: t('OutEarly'),
                                 staffName: item.fullName,
                             },
-                            className: 'bg-[rgba(224,198,82,1)] text-black rounded px-2',
+                            className: 'bg-yellow-400 text-black rounded px-2',
                         });
                     } else {
                         eventList.push({
                             id: item.id?.toString() + '-out',
-                            title: 'Giờ ra',
+                            title: t('Out time'),
                             start: adjustedEnd,
-
                             extendedProps: {
-                                description: "Đúng giờ",
+                                description: t('OnTime'),
                                 staffName: item.fullName,
                             },
                             className: 'bg-green-400 text-black rounded px-2',
@@ -483,6 +483,10 @@ export default function CalendarComponent() {
                                 left: 'prev,next today',
                                 center: 'title',
                                 right: 'dayGridMonth',
+                            }}
+                            buttonText={{
+                                today: t('today'),
+                                month: t('month'),
                             }}
                             locale={lang}
                             events={events}

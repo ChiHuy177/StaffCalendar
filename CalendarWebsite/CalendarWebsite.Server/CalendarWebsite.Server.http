@@ -72,3 +72,11 @@ GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetCheckInBy
 GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetAllCheckinInDayRange?day={{day}}&month={{month}}&year={{year}}&dayTo={{dayTo}}&monthTo={{monthTo}}&yearTo={{yearTo}}
 
 ###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/export/TestExportNPOI
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/export/ExportUserCheckinDataNPOI?month={{month}}&year={{year}}&userID={{userID}}
+
+###

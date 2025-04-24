@@ -9,6 +9,11 @@ import { Autocomplete, Box, Button, FormControl, InputLabel, MenuItem, Select, S
 import { Bounce, toast } from 'react-toastify';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
+import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
+
+
+
 
 
 export default function ExportCustomToolbar() {
@@ -97,7 +102,7 @@ export default function ExportCustomToolbar() {
                         d="M0 10C0 4.477 4.477 0 10 0h380c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 20 0 15.523 0 10ZM0 59c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10C4.477 69 0 64.523 0 59ZM0 106c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 153c0-5.523 4.477-10 10-10h195.5c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 200c0-5.523 4.477-10 10-10h203c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10ZM0 247c0-5.523 4.477-10 10-10h231c5.523 0 10 4.477 10 10s-4.477 10-10 10H10c-5.523 0-10-4.477-10-10Z"
                     />
                 </svg>
-                <Box sx={{ mt: 2 }}>No rows</Box>
+                <Box sx={{ mt: 2 }}>{t('dataGrid.noRows')}</Box>
             </StyledGridOverlay>
         );
     }
@@ -108,6 +113,7 @@ export default function ExportCustomToolbar() {
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector
                     slotProps={{ tooltip: { title: 'Change density' } }}
+
                 />
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
@@ -119,6 +125,14 @@ export default function ExportCustomToolbar() {
             </GridToolbarContainer>
         );
     }
+
+    // const localeText = {
+    //     // Toolbar
+    //     toolbarColumns: t('dataGrid.columns', 'columns'),
+    //     toolbarFilters: t('dataGrid.filter', 'Bộ lọc'),
+    //     toolbarDensity: t('dataGrid.density', 'Mật độ'),
+
+    // }
 
 
     async function fetchDataByUserId(userId: string, month: number, year: number): Promise<void> {
@@ -310,7 +324,7 @@ export default function ExportCustomToolbar() {
                         >
                             {Array.from({ length: 12 }, (_, i) => (
                                 <MenuItem key={i + 1} value={i + 1}>
-                                     {i + 1}
+                                    {i + 1}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -385,6 +399,8 @@ export default function ExportCustomToolbar() {
                         disableVirtualization={true}
                         rows={rows}
                         columns={columns}
+                        // localeText={localeText}
+                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
                         slots={{
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay

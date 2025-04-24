@@ -14,6 +14,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
 import { Bounce, toast } from "react-toastify";
 import { useTranslation } from 'react-i18next';
+import i18n from "../i18n";
+import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
+
 
 export default function CheckInTableByDepartment() {
     const [departments, setDepartments] = useState<Department[]>([]);
@@ -363,6 +366,7 @@ export default function CheckInTableByDepartment() {
                         disableVirtualization={true}
                         rows={rows}
                         columns={columns}
+                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined }
                         slots={{
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay

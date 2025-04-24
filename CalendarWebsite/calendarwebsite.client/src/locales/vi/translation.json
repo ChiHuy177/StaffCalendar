@@ -16,10 +16,10 @@
     "selectMonth": "Chọn tháng",
     "selectDept": "Chọn phòng ban",
     "selectYear": "Chọn năm",
-    "In time": "Checkin time",
-    "Out time": "Checkout time",
-    "InLate": "Check in late",
-    "OutEarly": "Check out early",
+    "In time": "Vào đúng giờ",
+    "Out time": "Về đúng giờ",
+    "InLate": "Vào trễ",
+    "OutEarly": "Về sớm",
     "OnTime": "Đúng giờ",
     "Find": "Tìm kiếm",
     "ExportExcel": "Xuất Excel",
@@ -38,5 +38,15 @@
         "thisMonth": "Tháng hiện tại",
         "reset": "Đặt lại",
         "lastWeek": "Tuần trước"
+    }
+    ,
+    "today": "Hôm nay",
+    "month": "Tháng",
+    "dataGrid" :{
+        "columns": "Cột",
+        "filter": "Bộ lọc",
+        "density": "Mật độ",
+        "pageSize": "Kích thước trang",
+        "noRows": "Không có dữ liệu"
     }
 }

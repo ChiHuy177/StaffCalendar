@@ -15,6 +15,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvid
 import { DateRange } from '@mui/x-date-pickers-pro/models';
 import { PickersShortcutsItem } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
+import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
+import i18n from '../i18n';
+
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
@@ -286,6 +289,7 @@ export default function CheckInByDayTable() {
                             noRowsOverlay: CustomNoRowsOverlay
                         }}
                         // columnGroupingModel={columnGroupingModel}
+                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined }
                         columnVisibilityModel={columnVisibilityModel}
                         sx={{
                             '& .MuiDataGrid-columnHeader': {
