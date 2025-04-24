@@ -38,15 +38,17 @@
         "thisMonth": "Tháng hiện tại",
         "reset": "Đặt lại",
         "lastWeek": "Tuần trước"
-    }
-    ,
+    },
     "today": "Hôm nay",
     "month": "Tháng",
-    "dataGrid" :{
+    "dataGrid": {
         "columns": "Cột",
         "filter": "Bộ lọc",
         "density": "Mật độ",
         "pageSize": "Kích thước trang",
         "noRows": "Không có dữ liệu"
+    },
+    "error": {
+        "inValidInput": "Vui lòng nhập đầy đủ tên, tháng và năm tìm kiếm!"
     }
 }

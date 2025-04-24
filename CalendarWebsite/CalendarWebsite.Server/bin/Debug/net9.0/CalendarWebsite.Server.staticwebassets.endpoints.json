@@ -1,5 +1,88 @@
 {
   "Version": 1,
   "ManifestType": "Build",
-  "Endpoints": []
+  "Endpoints": [
+    {
+      "Route": "imgs/becamex.j7ce7nqduk.png",
+      "AssetFile": "imgs/becamex.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8351"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 24 Apr 2025 06:27:36 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "j7ce7nqduk"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA="
+        },
+        {
+          "Name": "label",
+          "Value": "imgs/becamex.png"
+        }
+      ]
+    },
+    {
+      "Route": "imgs/becamex.png",
+      "AssetFile": "imgs/becamex.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8351"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 24 Apr 2025 06:27:36 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA="
+        }
+      ]
+    }
+  ]
 }

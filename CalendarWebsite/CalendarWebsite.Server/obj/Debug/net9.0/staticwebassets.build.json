@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "b0PTQUfCySvu4SVyCzHr9Ty7mvu5XOnu0tUd512HIJE=",
+  "Hash": "5Y1vpaVQSOrR/xCfkPtXYLYAzWYkAhyNZF2pxydPeg4=",
   "Source": "CalendarWebsite.Server",
   "BasePath": "_content/CalendarWebsite.Server",
   "Mode": "Default",
@@ -18,7 +18,120 @@
       "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
     }
   ],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "CalendarWebsite.Server\\wwwroot",
+      "Source": "CalendarWebsite.Server",
+      "ContentRoot": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\",
+      "BasePath": "_content/CalendarWebsite.Server",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
+      "SourceId": "CalendarWebsite.Server",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\",
+      "BasePath": "_content/CalendarWebsite.Server",
+      "RelativePath": "imgs/becamex#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "j7ce7nqduk",
+      "Integrity": "sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\imgs\\becamex.png"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "imgs/becamex.j7ce7nqduk.png",
+      "AssetFile": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8351"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 24 Apr 2025 06:27:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "j7ce7nqduk"
+        },
+        {
+          "Name": "label",
+          "Value": "imgs/becamex.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA="
+        }
+      ]
+    },
+    {
+      "Route": "imgs/becamex.png",
+      "AssetFile": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8351"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 24 Apr 2025 06:27:36 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sce+1KR6x5uIGWEdCmgVP2gBkDGKLLKOpB0JaVSI4xA="
+        }
+      ]
+    }
+  ]
 }

@@ -49,6 +49,9 @@
         "density": "Density",
         "pageSize": "Page size",
         "noRows": "No rows"
+    },
+    "error": {
+        "inValidInput" : "Please check all information before search!"
     }
     
 }

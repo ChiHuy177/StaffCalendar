@@ -583,3 +583,4 @@ D:\GitHub\My-Calendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\Sy
 D:\GitHub\My-Calendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\runtimes\win\lib\netcoreapp2.0\Microsoft.Win32.SystemEvents.dll
 D:\GitHub\My-Calendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\runtimes\unix\lib\netcoreapp2.0\System.Drawing.Common.dll
 D:\GitHub\My-Calendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\runtimes\win\lib\netcoreapp2.0\System.Drawing.Common.dll
+D:\GitHub\My-Calendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\CalendarWebsite.Server.staticwebassets.runtime.json

@@ -180,9 +180,31 @@ namespace CalendarWebsite.Server.Controllers
                 .OrderBy(w => w.InAt)
                 .ToListAsync();
 
+            
+
+            
+
             // Tạo workbook và sheet
             var workbook = new XSSFWorkbook();
             var sheet = workbook.CreateSheet("Checkin Data");
+
+            //lấy file ảnh
+            // string imagePath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot","imgs","becamex.png");
+            // byte[] bytes = System.IO.File.ReadAllBytes(imagePath);
+
+            // int pictureIdx = workbook.AddPicture(bytes, PictureType.PNG);
+
+            // var drawing = sheet.CreateDrawingPatriarch();
+
+            // var anchor = new XSSFClientAnchor {
+            //     Col1 = 0,
+            //     Row1 = 0,
+            //     Col2 = 5,
+            //     Row2 = 1
+            // };
+
+            // var picture = drawing.CreatePicture(anchor, pictureIdx);
+            // picture.Resize();
 
             // Đặt độ rộng cột
             for (int i = 0; i < 6; i++)

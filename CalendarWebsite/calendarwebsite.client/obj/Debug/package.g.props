@@ -24,7 +24,7 @@
     <PackageJsonDependenciesHerouiTheme Condition="$(PackageJsonDependenciesHerouiTheme) == ''">^2.4.13</PackageJsonDependenciesHerouiTheme>
     <PackageJsonDependenciesMuiIconsMaterial Condition="$(PackageJsonDependenciesMuiIconsMaterial) == ''">^7.0.2</PackageJsonDependenciesMuiIconsMaterial>
     <PackageJsonDependenciesMuiMaterial Condition="$(PackageJsonDependenciesMuiMaterial) == ''">^7.0.2</PackageJsonDependenciesMuiMaterial>
-    <PackageJsonDependenciesMuiXDataGrid Condition="$(PackageJsonDependenciesMuiXDataGrid) == ''">^7.28.3</PackageJsonDependenciesMuiXDataGrid>
+    <PackageJsonDependenciesMuiXDataGrid Condition="$(PackageJsonDependenciesMuiXDataGrid) == ''">^7.29.1</PackageJsonDependenciesMuiXDataGrid>
     <PackageJsonDependenciesMuiXDataGridGenerator Condition="$(PackageJsonDependenciesMuiXDataGridGenerator) == ''">^7.28.3</PackageJsonDependenciesMuiXDataGridGenerator>
     <PackageJsonDependenciesMuiXDatePickers Condition="$(PackageJsonDependenciesMuiXDatePickers) == ''">^7.29.0</PackageJsonDependenciesMuiXDatePickers>
     <PackageJsonDependenciesMuiXDatePickersPro Condition="$(PackageJsonDependenciesMuiXDatePickersPro) == ''">^7.29.0</PackageJsonDependenciesMuiXDatePickersPro>
