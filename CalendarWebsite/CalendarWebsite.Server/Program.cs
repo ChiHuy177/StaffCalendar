@@ -1,5 +1,10 @@
 
 using CalendarWebsite.Server.Data;
+using CalendarWebsite.Server.interfaces;
+using CalendarWebsite.Server.interfaces.repositoryInterfaces;
+using CalendarWebsite.Server.interfaces.serviceInterfaces;
+using CalendarWebsite.Server.repositories;
+using CalendarWebsite.Server.services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -16,10 +21,20 @@ namespace CalendarWebsite.Server
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-
+            // add datacontext
             builder.Services.AddDbContext<UserDataContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            //register repository
+            builder.Services.AddScoped<ICheckInRepository, CheckInRepository>();
+            builder.Services.AddScoped<IDeparmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IPersonalProfileRepository, PersonalProfileRepository>();
 
+            //register service
+            builder.Services.AddScoped<ICheckInDataService, APICheckInService>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+            builder.Services.AddScoped<IPersonalProfileService, PersonalProfileService>();
+            builder.Services.AddScoped<IExportService, ExportService>();
+            //add CORS
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(

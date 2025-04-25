@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.Models;
+using CalendarWebsite.Server.interfaces;
+using CalendarWebsite.Server.interfaces.serviceInterfaces;
 
 namespace CalendarWebsite.Server.Controllers
 {
@@ -14,168 +16,70 @@ namespace CalendarWebsite.Server.Controllers
     [ApiController]
     public class DataOnly_APIaCheckInController : ControllerBase
     {
-        private readonly UserDataContext _context;
+        // private readonly UserDataContext _context;
+        private readonly ICheckInDataService _checkInDataService;
 
-        public DataOnly_APIaCheckInController(UserDataContext context)
+        public DataOnly_APIaCheckInController(ICheckInDataService checkInDataService)
         {
-            _context = context;
+            // _context = context;
+            _checkInDataService = checkInDataService;
+
         }
 
         // GET: api/DataOnly_APIaCheckIn
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUsers()
         {
-            return await _context.Users.Where(w => w.UserId == "duydd1@vntt.com.vn").ToListAsync();
+            var result = await _checkInDataService.Get();
+            return result == null ? NotFound() : Ok(result);
         }
 
         [HttpGet("GetUserByUserId")]
-        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserId(int month,int year ,string userID)
+        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserId(int month, int year, string userID)
         {
-            return await _context.Users.Where(w => w.UserId == userID && w.InAt.HasValue && w.InAt.Value.Month == month && w.InAt.Value.Year == year)
-            .OrderBy(w => w.InAt).ToListAsync();
+            var result = await _checkInDataService.GetUserByUserId(month, year, userID);
+            return result == null ? NotFound() : Ok(result);
         }
 
         [HttpGet("GetAllUsersName")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllUsersName()
         {
-            var uniqueName = await _context.Users
-                .Where(e => e.UserId != "NULL")
-                .Select(e => e.UserId + " - " + e.FullName)
-                .Distinct()
-                .ToListAsync();
+            var result = await _checkInDataService.GetAllUsersName();
+            return result == null ? NotFound() : Ok(result);
 
-            return Ok(uniqueName);
-
-        }
-        [HttpGet("CountRecordsByMonth")]
-        public async Task<ActionResult<int>> CountRecordsByMonth(int month, int year, string userId)
-        {
-            var count = await _context.Users
-                .Where(e => e.UserId == userId && e.InAt.HasValue && e.InAt.Value.Month == month && e.InAt.Value.Year == year)
-                .Where(e => EF.Functions.DateDiffHour(e.InAt, e.OutAt) > 6)
-                .CountAsync();
-
-            return Ok(count);
-        }
-
-        [HttpGet("GetAllCheckinInDay")]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetAllCheckinInDay(int day, int month, int year)
-        {
-            var result = await _context.Users.Where(e => e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year)
-                .ToListAsync();
-            return Ok(result);
         }
 
         [HttpGet("GetAllCheckinInDayRange")]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo)
+        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo)
         {
-            DateTime startDate = new DateTime(year, month, day);
-            DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
 
-            // Lọc dữ liệu các record có giá trị At nằm trong khoảng từ startDate đến endDate
-            var result = await _context.Users
-                .Where(e => e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate)
-                .ToListAsync();
-
-            return Ok(result);
+            var result = await _checkInDataService.GetAllCheckinInDayRange(day, month, year, dayTo, monthTo, yearTo);
+            return result == null ? NotFound() : Ok(result);
         }
+
+        [HttpGet("CountRecordsByMonth")]
+        public async Task<ActionResult<int>> CountRecordsByMonth(int month, int year, string userId)
+        {
+            return await _checkInDataService.CountRecordsByMonth(month, year, userId);
+        }
+
+
+        // [HttpGet("GetAllCheckinInDay")]
+        // public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetAllCheckinInDay(int day, int month, int year)
+        // {
+        //     var result = await _context.Users.Where(e => e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year)
+        //         .ToListAsync();
+        //     return Ok(result);
+        // }
+
+
 
         [HttpGet("GetCheckInByDepartmentId")]
         public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo)
         {
-            DateTime startDate = new DateTime(year, month, day);
-            DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
-
-            var users = await _context.PersonalProfiles.Where(w => w.DepartmentId == id).ToListAsync();
-            List<DataOnly_APIaCheckIn> result = new List<DataOnly_APIaCheckIn>();
-            foreach (var user in users) {
-                var foundUser = await _context.Users.Where(e => e.UserId == user.Email && e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate).ToListAsync();
-                if (foundUser != null)
-                {
-                    foreach (var each in foundUser)
-                    {
-                        result.Add(each);
-                    }
-                }
-            }
-            return Ok(result);
+            var result = await _checkInDataService.GetByDepartment(id, day, month, year, dayTo, monthTo, yearTo);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // GET: api/DataOnly_APIaCheckIn/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetDataOnly_APIaCheckIn(long id)
-        {
-            var dataOnly_APIaCheckIn = await _context.Users.FindAsync(id);
-
-            if (dataOnly_APIaCheckIn == null)
-            {
-                return NotFound();
-            }
-
-            return dataOnly_APIaCheckIn;
-        }
-
-        // PUT: api/DataOnly_APIaCheckIn/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDataOnly_APIaCheckIn(long id, DataOnly_APIaCheckIn dataOnly_APIaCheckIn)
-        {
-            if (id != dataOnly_APIaCheckIn.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(dataOnly_APIaCheckIn).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DataOnly_APIaCheckInExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/DataOnly_APIaCheckIn
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> PostDataOnly_APIaCheckIn(DataOnly_APIaCheckIn dataOnly_APIaCheckIn)
-        {
-            _context.Users.Add(dataOnly_APIaCheckIn);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDataOnly_APIaCheckIn", new { id = dataOnly_APIaCheckIn.Id }, dataOnly_APIaCheckIn);
-        }
-
-        // DELETE: api/DataOnly_APIaCheckIn/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDataOnly_APIaCheckIn(long id)
-        {
-            var dataOnly_APIaCheckIn = await _context.Users.FindAsync(id);
-            if (dataOnly_APIaCheckIn == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(dataOnly_APIaCheckIn);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool DataOnly_APIaCheckInExists(long id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
     }
 }

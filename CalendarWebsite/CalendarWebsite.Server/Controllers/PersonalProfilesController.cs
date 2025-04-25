@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.Models;
+using CalendarWebsite.Server.interfaces.serviceInterfaces;
 
 namespace CalendarWebsite.Server.Controllers
 {
@@ -14,107 +15,20 @@ namespace CalendarWebsite.Server.Controllers
     [ApiController]
     public class PersonalProfilesController : ControllerBase
     {
-        private readonly UserDataContext _context;
 
-        public PersonalProfilesController(UserDataContext context)
+        private readonly IPersonalProfileService _personalProfileService;
+
+        public PersonalProfilesController(IPersonalProfileService personalProfileService)
         {
-            _context = context;
+            _personalProfileService = personalProfileService;
         }
 
-        // GET: api/PersonalProfiles
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonalProfile>>> GetPersonalProfiles()
-        {
-            return await _context.PersonalProfiles.ToListAsync();
-        }
+
         [HttpGet("GetAllUsersName")]
         public async Task<ActionResult<IEnumerable<string>>> GetAllUsersName()
         {
-            var uniqueName = await _context.PersonalProfiles
-                .Select(e => e.Email + " - " + e.FullName)
-                .Distinct()
-                .ToListAsync();
-
-            return Ok(uniqueName);
-
-        }
-   
-        
-        // GET: api/PersonalProfiles/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PersonalProfile>> GetPersonalProfile(long? id)
-        {
-            var personalProfile = await _context.PersonalProfiles.FindAsync(id);
-
-            if (personalProfile == null)
-            {
-                return NotFound();
-            }
-
-            return personalProfile;
-        }
-
-        // PUT: api/PersonalProfiles/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPersonalProfile(long? id, PersonalProfile personalProfile)
-        {
-            if (id != personalProfile.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(personalProfile).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PersonalProfileExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/PersonalProfiles
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<PersonalProfile>> PostPersonalProfile(PersonalProfile personalProfile)
-        {
-            _context.PersonalProfiles.Add(personalProfile);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPersonalProfile", new { id = personalProfile.Id }, personalProfile);
-        }
-
-        // DELETE: api/PersonalProfiles/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePersonalProfile(long? id)
-        {
-            var personalProfile = await _context.PersonalProfiles.FindAsync(id);
-            if (personalProfile == null)
-            {
-                return NotFound();
-            }
-
-            _context.PersonalProfiles.Remove(personalProfile);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool PersonalProfileExists(long? id)
-        {
-            return _context.PersonalProfiles.Any(e => e.Id == id);
+            var result = await _personalProfileService.GetAllName();
+            return result == null ? NotFound() : Ok(result);
         }
     }
 }

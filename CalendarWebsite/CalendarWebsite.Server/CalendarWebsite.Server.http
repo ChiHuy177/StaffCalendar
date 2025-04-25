@@ -80,3 +80,19 @@ GET {{CalendarWebsite.Server_HostAddress}}/api/export/TestExportNPOI
 GET {{CalendarWebsite.Server_HostAddress}}/api/export/ExportUserCheckinDataNPOI?month={{month}}&year={{year}}&userID={{userID}}
 
 ###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/departments/33
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/departments/{{id}}
+
+###
+
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetCheckInByDepartmentId?id={{id}}&day={{day}}&month={{month}}&year={{year}}&dayTo={{dayTo}}&monthTo={{monthTo}}&yearTo={{yearTo}}
+
+###
