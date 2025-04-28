@@ -1,8 +1,7 @@
 ﻿using CalendarWebsite.Server.interfaces;
 using CalendarWebsite.Server.interfaces.repositoryInterfaces;
 using CalendarWebsite.Server.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace CalendarWebsite.Server.services
 {

@@ -14,11 +14,11 @@ export default function DashboardLayout() {
     const { t } = useTranslation();
     const navigationItems = useMemo(
         () => navigationConfig.map((item: NavItemConfig) => ({
-          ...item,
-          text: t(item.key),
+            ...item,
+            text: t(item.key),
         })),
         [t]
-      );
+    );
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
@@ -37,14 +37,15 @@ export default function DashboardLayout() {
                             onClick={toggleSidebar}>
                             <MenuIcon />
                         </IconButton>
-                        <img src="/logovntt.png" alt="Logo" className="max-w-full max-h-12 ml-5 p-[5px]" />
+                        <img src="/logovntt.png" alt="Logo" className="max-w-full max-h-12 ml-5 p-[5px]" onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")} />
 
                     </div>
 
 
                     {/* Icon and Avatar */}
                     <div className="flex items-center space-x-4">
-                        <LanguageSwitcherButton/>
+                        <LanguageSwitcherButton />
 
                         <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                     </div>

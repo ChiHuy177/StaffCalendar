@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.Models;
 using CalendarWebsite.Server.interfaces;
-using CalendarWebsite.Server.interfaces.serviceInterfaces;
+
 
 namespace CalendarWebsite.Server.Controllers
 {
@@ -62,15 +56,6 @@ namespace CalendarWebsite.Server.Controllers
         {
             return await _checkInDataService.CountRecordsByMonth(month, year, userId);
         }
-
-
-        // [HttpGet("GetAllCheckinInDay")]
-        // public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetAllCheckinInDay(int day, int month, int year)
-        // {
-        //     var result = await _context.Users.Where(e => e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year)
-        //         .ToListAsync();
-        //     return Ok(result);
-        // }
 
 
 
