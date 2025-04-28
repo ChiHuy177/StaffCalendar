@@ -36,70 +36,22 @@ namespace CalendarWebsite.Server.Controllers
                 return NotFound("No check-in data found for the specified user and period.");
             }
 
-            var excelData = await _exportService.ExportUserCheckInDataToExcelAsync(userID, month, year, checkinData);
+            var excelData = await _exportService.ExportCheckInDataByMonthToExcelAsync(userID, month, year, checkinData);
             return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"checkin-data-{userID}-{month}-{year}.xlsx");
         }
 
-        [HttpGet("ExportUserCheckinDataByDay")]
-        public async Task<IActionResult> ExportUserCheckinDataByDay(int day, int month, int year)
-        {
-            var checkinData = await _context.Users.Where(e => e.At.HasValue && e.At.Value.Day == day && e.At.HasValue && e.At.Value.Month == month && e.At.Value.Year == year)
-                .ToListAsync();
-
-            // Create Excel file
-            using var wb = new XLWorkbook();
-            var sheet = wb.AddWorksheet("Checkin Data By Day");
-
-            // Set column width
-            sheet.Columns().Width = 20;
-            sheet.Columns().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            sheet.Columns().AdjustToContents();
-
-            // Add Header
-            sheet.Range("A1:F1").Merge(); // Merge cells for the logo
-            sheet.Cell("A1").Value = "VNTT";
-            sheet.Cell("A1").Style.Font.Bold = true;
-            sheet.Cell("A1").Style.Font.FontSize = 16;
-
-
-            sheet.Range("A2:F2").Merge(); // Merge cells for the title
-            sheet.Cell("A2").Value = "BÁO CÁO CHECK IN AND CHECK OUT";
-            sheet.Cell("A2").Style.Font.Bold = true;
-            sheet.Cell("A2").Style.Font.FontSize = 14;
-
-            sheet.Range("A4:F4").Merge(); // Merge cells for the date range
-            sheet.Cell("A4").Value = "Thời gian: Ngày " + day + " tháng " + month + " năm " + year;
-
-
-            // headers
-            sheet.Cell(6, 1).Value = "No";
-            sheet.Cell(6, 2).Value = "Full Name";
-            sheet.Cell(6, 3).Value = "Check-in Time";
-            sheet.Cell(6, 4).Value = "Check-out Time";
-            sheet.Cell(6, 5).Value = "Total working time";
-
-            // Add data rows
-            for (int i = 0; i < checkinData.Count; i++)
-            {
-                DateTime checkinTime = DateTime.Parse(checkinData[i].InAt.ToString() ?? "N/A").AddHours(7);
-                string checkinTimeformatted = checkinTime.ToShortTimeString();
-
-                DateTime checkoutTime = DateTime.Parse(checkinData[i].OutAt.ToString() ?? "N/A").AddHours(7);
-                string checkoutTimeformatted = checkoutTime.ToShortTimeString();
-
-                TimeSpan timeDifference = checkoutTime - checkinTime - 1 * TimeSpan.FromHours(1); // Subtract 1 hour for lunch break
-
-                sheet.Cell(i + 7, 1).Value = i + 1; // Add serial number
-                sheet.Cell(i + 7, 2).Value = checkinData[i].FullName;
-                sheet.Cell(i + 7, 3).Value = checkinTimeformatted;
-                sheet.Cell(i + 7, 4).Value = checkoutTimeformatted;
-                sheet.Cell(i + 7, 5).Value = timeDifference.ToString(@"hh\:mm");
+        [HttpGet("ExportDataByDateRange")]
+        public async Task<IActionResult> ExportDataByDateRange(int day, int month, int year, int dayTo, int monthTo, int yearTo){
+            var checkinData = await _checkinDataService.GetAllCheckinInDayRange(day, month, year, dayTo, monthTo, yearTo);
+            if (checkinData == null || checkinData.Count() == 0) {
+                return NotFound("No check-in data found for the specified period.");
             }
-
-            return SendExcel(wb, $"checkin-data-{day}-{month}-{year}.xlsx");
+            
+            var excelData = await _exportService.ExportUserCheckInDataByDateRange(month, year, monthTo, yearTo, checkinData);
+            return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"checkin-data-{month}-{year}-to-{monthTo}-{yearTo}.xlsx");
         }
 
-
+      
         [HttpGet("ExportUserCheckinDataNPOI")]
         public async Task<IActionResult> ExportUserCheckinDataNPOI(int month, int year, string userID)
         {
@@ -224,14 +176,6 @@ namespace CalendarWebsite.Server.Controllers
             return SendExcelNPOI(workbook, $"checkin-data-{userID}-{month}-{year}.xlsx");
         }
 
-        private IActionResult SendExcel(XLWorkbook wb, string filename)
-        {
-            var stream = new MemoryStream();
-            wb.SaveAs(stream);
-            stream.Position = 0;
-
-            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
-        }
 
         private IActionResult SendExcelNPOI(XSSFWorkbook wb, string filename)
         {

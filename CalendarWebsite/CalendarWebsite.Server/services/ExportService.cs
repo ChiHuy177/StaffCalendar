@@ -6,64 +6,7 @@ namespace CalendarWebsite.Server.services
 {
     public class ExportService : IExportService
     {
-        public Task<byte[]> ExportCheckInDataByDayToExcelAsync(int day, int month, int year, IEnumerable<DataOnly_APIaCheckIn> checkinData)
-        {
-            using var wb = new XLWorkbook();
-            var sheet = wb.AddWorksheet("Checkin Data By Day");
-
-            // Set column width and alignment
-            sheet.Columns(1, 5).Width = 20;
-            sheet.Columns(1, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            sheet.Columns(1, 5).AdjustToContents();
-
-            // Add header
-            sheet.Range("A1:E1").Merge();
-            sheet.Cell("A1").Value = "VNTT";
-            sheet.Cell("A1").Style.Font.Bold = true;
-            sheet.Cell("A1").Style.Font.FontSize = 16;
-
-            sheet.Range("A2:E2").Merge();
-            sheet.Cell("A2").Value = "BÁO CÁO CHECK IN AND CHECK OUT";
-            sheet.Cell("A2").Style.Font.Bold = true;
-            sheet.Cell("A2").Style.Font.FontSize = 14;
-
-            sheet.Range("A4:E4").Merge();
-            sheet.Cell("A4").Value = $"Thời gian: Ngày {day} tháng {month} năm {year}";
-
-            // Table headers
-            sheet.Cell(6, 1).Value = "No";
-            sheet.Cell(6, 2).Value = "Full Name";
-            sheet.Cell(6, 3).Value = "Check-in Time";
-            sheet.Cell(6, 4).Value = "Check-out Time";
-            sheet.Cell(6, 5).Value = "Total working time";
-            sheet.Range("A6:E6").Style.Font.Bold = true;
-
-            // Add data rows
-            var checkinList = checkinData.ToList();
-            for (int i = 0; i < checkinList.Count; i++)
-            {
-                var data = checkinList[i];
-                DateTime? checkinTime = data.InAt?.AddHours(7);
-                DateTime? checkoutTime = data.OutAt?.AddHours(7);
-                string checkinTimeFormatted = checkinTime.HasValue ? checkinTime.Value.ToString("HH:mm") : "N/A";
-                string checkoutTimeFormatted = checkoutTime.HasValue ? checkoutTime.Value.ToString("HH:mm") : "N/A";
-                string totalTime = checkinTime.HasValue && checkoutTime.HasValue
-                    ? (checkoutTime.Value - checkinTime.Value - TimeSpan.FromHours(1)).ToString(@"hh\:mm")
-                    : "N/A";
-
-                sheet.Cell(i + 7, 1).Value = i + 1;
-                sheet.Cell(i + 7, 2).Value = data.FullName ?? "N/A";
-                sheet.Cell(i + 7, 3).Value = checkinTimeFormatted;
-                sheet.Cell(i + 7, 4).Value = checkoutTimeFormatted;
-                sheet.Cell(i + 7, 5).Value = totalTime;
-            }
-
-            using var stream = new MemoryStream();
-            wb.SaveAs(stream);
-            return Task.FromResult(stream.ToArray());
-        }
-
-        public Task<byte[]> ExportUserCheckInDataToExcelAsync(string userId, int month, int year, IEnumerable<DataOnly_APIaCheckIn> checkinData)
+        public async Task<byte[]> ExportCheckInDataByMonthToExcelAsync(string userId, int month, int year, IEnumerable<DataOnly_APIaCheckIn> checkinData)
         {
             using var wb = new XLWorkbook();
             var sheet = wb.AddWorksheet("Checkin Data");
@@ -121,7 +64,64 @@ namespace CalendarWebsite.Server.services
 
             using var stream = new MemoryStream();
             wb.SaveAs(stream);
-            return Task.FromResult(stream.ToArray());
+            return await Task.FromResult(stream.ToArray());
+        }
+
+        public async Task<byte[]> ExportUserCheckInDataByDateRange(int month, int year, int monthTo, int yearTo, IEnumerable<DataOnly_APIaCheckIn> checkinData)
+        {           
+            using var wb = new XLWorkbook();
+            var sheet = wb.AddWorksheet("Checkin Data By Day");
+
+            // Set column width and alignment
+            sheet.Columns(1, 5).Width = 20;
+            sheet.Columns(1, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            sheet.Columns(1, 5).AdjustToContents();
+
+            // Add header
+            sheet.Range("A1:E1").Merge();
+            sheet.Cell("A1").Value = "VNTT";
+            sheet.Cell("A1").Style.Font.Bold = true;
+            sheet.Cell("A1").Style.Font.FontSize = 16;
+
+            sheet.Range("A2:E2").Merge();
+            sheet.Cell("A2").Value = "BÁO CÁO CHECK IN AND CHECK OUT";
+            sheet.Cell("A2").Style.Font.Bold = true;
+            sheet.Cell("A2").Style.Font.FontSize = 14;
+
+            sheet.Range("A4:E4").Merge();
+            sheet.Cell("A4").Value = $"Thời gian: từ {month}/{year} đến {monthTo}/{yearTo}";
+
+            // Table headers
+            sheet.Cell(6, 1).Value = "No";
+            sheet.Cell(6, 2).Value = "Full Name";
+            sheet.Cell(6, 3).Value = "Check-in Time";
+            sheet.Cell(6, 4).Value = "Check-out Time";
+            sheet.Cell(6, 5).Value = "Total working time";
+            sheet.Range("A6:E6").Style.Font.Bold = true;
+
+            // Add data rows
+            var checkinList = checkinData.ToList();
+            for (int i = 0; i < checkinList.Count; i++)
+            {
+                var data = checkinList[i];
+                DateTime? checkinTime = data.InAt?.AddHours(7);
+                DateTime? checkoutTime = data.OutAt?.AddHours(7);
+                string checkinTimeFormatted = checkinTime.HasValue ? checkinTime.Value.ToString("HH:mm") : "N/A";
+                string checkoutTimeFormatted = checkoutTime.HasValue ? checkoutTime.Value.ToString("HH:mm") : "N/A";
+                string totalTime = checkinTime.HasValue && checkoutTime.HasValue
+                    ? (checkoutTime.Value - checkinTime.Value - TimeSpan.FromHours(1)).ToString(@"hh\:mm")
+                    : "N/A";
+
+                sheet.Cell(i + 7, 1).Value = i + 1;
+                sheet.Cell(i + 7, 2).Value = data.FullName ?? "N/A";
+                sheet.Cell(i + 7, 3).Value = checkinTimeFormatted;
+                sheet.Cell(i + 7, 4).Value = checkoutTimeFormatted;
+                sheet.Cell(i + 7, 5).Value = totalTime;
+            }
+            sheet.Columns(1, 5).AdjustToContents();
+            using var stream = new MemoryStream();
+            wb.SaveAs(stream);
+            return await Task.FromResult(stream.ToArray());
         }
 
         public Task<byte[]> ExportUserCheckInDataToNPOIAsync(string userId, int month, int year, IEnumerable<DataOnly_APIaCheckIn> checkinData)

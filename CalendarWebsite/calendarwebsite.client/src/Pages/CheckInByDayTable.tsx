@@ -21,12 +21,59 @@ import i18n from '../i18n';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
-    // const [dateValue, setDateValue] = useState<Dayjs>(dayjs());
+    const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const [rows, setRows] = useState<User[]>([]);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
 
+    async function handleExportExcelOfAllStaffByDateRange() {
+        const dateRangeSelected = dateValue;
+        const startDate = dateRangeSelected[0];
+        const endDate = dateRangeSelected[1];
+        if (startDate == null || endDate == null) {
+            alert("Not found date")
+            return;
+        }
+
+        const startDay = startDate.date();
+        const startMonth = startDate.month() + 1; // getMonth() trả về giá trị từ 0 đến 11
+        const startYear = startDate.year();
+
+        const endDay = endDate.date();
+        const endMonth = endDate.month() + 1;
+        const endYear = endDate.year();
+
+        
+
+
+        const apiURL = `${import.meta.env.VITE_API_URL}api/Export/ExportDataByDateRange`;
+        try {
+            const response = await axios.get(apiURL, {
+                params: {
+                    day: startDay,
+                    month: startMonth,
+                    year: startYear,
+                    dayTo: endDay,
+                    monthTo: endMonth,
+                    yearTo: endYear
+                },
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `checkin-data-${new Date().toISOString()}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode?.removeChild(link);
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+            alert("Không thể tải xuống báo cáo. Vui lòng thử lại sau.");
+            return;
+        }
+
+    }
 
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
         {
@@ -79,7 +126,7 @@ export default function CheckInByDayTable() {
         { field: 'totalTime', headerName: t('table.workingTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
     async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
-        // setValue(newValue);
+        setDateValue(newValue);
 
         // Nếu đã chọn đủ ngày bắt đầu và kết thúc, lấy thông tin chi tiết cho ngày
         if (newValue[0] && newValue[1]) {
@@ -208,7 +255,7 @@ export default function CheckInByDayTable() {
                 />
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
-                    // onClick={handleExportExcel}
+                    onClick={handleExportExcelOfAllStaffByDateRange}
                     className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
                 >
                     <DownloadRoundedIcon /> {t('ExportExcel')}
@@ -289,7 +336,7 @@ export default function CheckInByDayTable() {
                             noRowsOverlay: CustomNoRowsOverlay
                         }}
                         // columnGroupingModel={columnGroupingModel}
-                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined }
+                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
                         columnVisibilityModel={columnVisibilityModel}
                         sx={{
                             '& .MuiDataGrid-columnHeader': {
