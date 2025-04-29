@@ -13,14 +13,17 @@ namespace CalendarWebsite.Server.services
             _departmentRepository = deparmentRepository;
         }
 
-        public Task<IEnumerable<Department>> GetAllDepartment()
+        public async Task<IEnumerable<Department>> GetAllDepartment()
         {
-            return _departmentRepository.GetAllDepartment();
+            return await _departmentRepository.FindList(
+                predicate: d => d.Id < 41,
+                disableTracking: true
+            );
         }
 
         public async Task<Department> GetDepartmentById(long id)
         {
-            return await _departmentRepository.GetDepartmentById(id);
+            return await _departmentRepository.GetByIdAsync(id);
         }
     }
 }

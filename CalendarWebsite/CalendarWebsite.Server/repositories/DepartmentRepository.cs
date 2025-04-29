@@ -1,27 +1,26 @@
 ﻿using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.interfaces;
 using CalendarWebsite.Server.Models;
+using CalendarWebsite.Server.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalendarWebsite.Server.repositories
 {
-    public class DepartmentRepository : IDeparmentRepository
+    public class DepartmentRepository : GenericRepository<Department>, IDeparmentRepository
     {
-        private readonly UserDataContext _context;
+        // private readonly UserDataContext _context;
 
-        public DepartmentRepository(UserDataContext dataContext)
+        public DepartmentRepository(UserDataContext dataContext) : base(dataContext)
         {
-            _context = dataContext;
+            // _context = dataContext;
         }
 
-        public async Task<IEnumerable<Department>> GetAllDepartment()
+        //override nhỏ hơn 41 vì id lớn hơn 41 tên của các department bị lỗi (lỗi database)
+        public async override Task<IEnumerable<Department>> GetAllAsync()
         {
             return await _context.Department.Where(w => w.Id < 41).ToListAsync();
         }
 
-        public async Task<Department> GetDepartmentById(long id)
-        {
-            return await _context.Department.FindAsync(id);
-        }
+
     }
 }

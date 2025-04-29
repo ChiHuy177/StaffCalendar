@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Avatar, IconButton, AppBar, Toolbar, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-
 import { Link, Outlet } from "react-router-dom";
 import LanguageSwitcherButton from "../components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
@@ -37,7 +36,7 @@ export default function DashboardLayout() {
                             onClick={toggleSidebar}>
                             <MenuIcon />
                         </IconButton>
-                        <img src="/logovntt.png" alt="Logo" className="max-w-full max-h-12 ml-5 p-[5px]" onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                        <img src={t('logo')} alt="Logo" className="max-w-full max-h-12 ml-5 p-[5px]" onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
                             onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")} />
 
                     </div>
@@ -73,7 +72,7 @@ export default function DashboardLayout() {
 
                 <div className="flex justify-center items-center py-4 border-b border-gray-700">
 
-                    <img src="/logovntt.png" alt="Logo" className="max-w-full max-h-16" />
+                    <img src={t('logo')} alt="Logo" className="max-w-full max-h-16" />
                 </div>
 
 

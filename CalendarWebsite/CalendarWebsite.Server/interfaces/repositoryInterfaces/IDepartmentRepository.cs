@@ -1,11 +1,10 @@
+using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
 using CalendarWebsite.Server.Models;
 
 namespace CalendarWebsite.Server.interfaces
 {
-    public interface IDeparmentRepository
+    public interface IDeparmentRepository : IGenericRepository<Department>
     {
-        public Task<IEnumerable<Department>> GetAllDepartment();
 
-        public Task<Department> GetDepartmentById(long id);
     }
 }

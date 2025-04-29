@@ -14,13 +14,20 @@ namespace CalendarWebsite.Server.services
         }
 
         public async Task<IEnumerable<string>> GetAllName()
-        {
-            return await _personalRepository.GetAllName();
+        {   
+            var result = await _personalRepository.FindListSelect(
+                predicate: each => each.Email != null && each.FullName != null,
+                selector: each => each.Email + " - " + each.FullName,
+                distinct: true,
+                disableTracking: true
+            );
+            return result;
+            
         }
 
-        public async Task<IEnumerable<PersonalProfile>> GetById(long id)
-        {
-            return await _personalRepository.GetByDepartmentId(id);
+        public async Task<PersonalProfile> GetById(long id)
+        {   
+            return await _personalRepository.GetByIdAsync(id);
         }
     }
 }

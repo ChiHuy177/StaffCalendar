@@ -50,5 +50,6 @@
     },
     "error": {
         "inValidInput": "Vui lòng nhập đầy đủ tên, tháng và năm tìm kiếm!"
-    }
+    },
+    "logo": "/logovntt.png"
 }

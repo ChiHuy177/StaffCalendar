@@ -33,6 +33,7 @@ namespace CalendarWebsite.Server.Controllers
         {
             var result = await _checkInDataService.GetUserByUserId(month, year, userID);
             return result == null ? NotFound() : Ok(result);
+            
         }
 
         [HttpGet("GetAllUsersName")]

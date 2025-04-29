@@ -1,22 +1,12 @@
-﻿using CalendarWebsite.Server.Models;
+﻿using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
+using CalendarWebsite.Server.Models;
 
 
 namespace CalendarWebsite.Server.interfaces
 {
-    public interface ICheckInRepository
+    public interface ICheckInRepository : IGenericRepository<DataOnly_APIaCheckIn>
     {
-        public Task<IEnumerable<DataOnly_APIaCheckIn>> Get();
-
-        public Task<IEnumerable<string>> GetAllUsersName();
-
-        public Task<IEnumerable<DataOnly_APIaCheckIn>> GetUserByUserId(int month, int year, string userID);
-
-        public Task<IEnumerable<DataOnly_APIaCheckIn>> GetAllCheckinInDayRange(DateTime startTime, DateTime endTime);
         public Task<int> CountRecordsByMonth(int month, int year, string userId);
-
-        public Task<DataOnly_APIaCheckIn> GetCheckInByDepartmentId(int id);
         
-        public Task<IEnumerable<DataOnly_APIaCheckIn>> GetByEmailAndDateRange(string email, DateTime startDate, DateTime endDate);
-
     }
 }

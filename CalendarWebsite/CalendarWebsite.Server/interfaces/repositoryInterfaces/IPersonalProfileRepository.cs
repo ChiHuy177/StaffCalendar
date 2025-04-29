@@ -1,12 +1,10 @@
-﻿using CalendarWebsite.Server.Models;
+﻿using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
+using CalendarWebsite.Server.Models;
 
 namespace CalendarWebsite.Server.interfaces.repositoryInterfaces
 {
-    public interface IPersonalProfileRepository
+    public interface IPersonalProfileRepository : IGenericRepository<PersonalProfile>
     {
-        public Task<IEnumerable<PersonalProfile>> GetByDepartmentId(long id);
-
-        public Task<IEnumerable<string>> GetAllName();
         
     }
 }

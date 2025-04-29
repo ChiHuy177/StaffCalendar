@@ -127,7 +127,7 @@ export default function CheckInByDayTable() {
     ];
     async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
         setDateValue(newValue);
-
+        setLoading(true);
         // Nếu đã chọn đủ ngày bắt đầu và kết thúc, lấy thông tin chi tiết cho ngày
         if (newValue[0] && newValue[1]) {
             const startDate = newValue[0];
@@ -187,7 +187,9 @@ export default function CheckInByDayTable() {
                 }, 2000)
             }).catch((error) => {
                 console.error('Error fetching data:', error);
-            })
+            }).finally(() => {
+                setLoading(false);
+            });
         }
     };
 

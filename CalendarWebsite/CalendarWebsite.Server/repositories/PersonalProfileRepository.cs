@@ -1,31 +1,19 @@
 ﻿using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.interfaces.repositoryInterfaces;
 using CalendarWebsite.Server.Models;
+using CalendarWebsite.Server.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalendarWebsite.Server.repositories
 {
-    public class PersonalProfileRepository : IPersonalProfileRepository
+    public class PersonalProfileRepository : GenericRepository<PersonalProfile>,IPersonalProfileRepository
     {
-        private readonly UserDataContext _context;
+        // private readonly UserDataContext _context;
 
-        public PersonalProfileRepository(UserDataContext context)
+        public PersonalProfileRepository(UserDataContext context) : base(context)
         {
-            _context = context;
+            // _context = context;
         }
 
-        public async Task<IEnumerable<string>> GetAllName()
-        {
-            var result = await _context.PersonalProfiles
-                .Select(e => e.Email + " - " + e.FullName)
-                .Distinct()
-                .ToListAsync();
-            return result;
-        }
-
-        public async Task<IEnumerable<PersonalProfile>> GetByDepartmentId(long id)
-        {
-            return await _context.PersonalProfiles.Where(w => w.DepartmentId == id).ToListAsync();
-        }
     }
 }
