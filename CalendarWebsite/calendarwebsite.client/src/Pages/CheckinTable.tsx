@@ -11,6 +11,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
+import { getAllUserName } from '../apis/CheckinDataApi';
 
 
 
@@ -253,181 +254,183 @@ export default function ExportCustomToolbar() {
     };
 
     useEffect(() => {
-        async function getAllUserName() {
-            try {
-                const apiUrl = `${import.meta.env.VITE_API_URL}api/personalprofiles/GetAllUsersName`;
-                const response = await axios.get(apiUrl);
-                setNameOfUsers(response.data);
-            } catch (error) {
-                console.error('Error fetching user names:', error);
-                alert('Failed to fetch user names. Please try again.');
-            }
+        async function fetchAllUserName() {
+            // try {
+            //     const apiUrl = `${import.meta.env.VITE_API_URL}api/personalprofiles/GetAllUsersName`;
+            //     const response = await axios.get(apiUrl);
+            //     setNameOfUsers(response.data);
+            // } catch (error) {
+            //     console.error('Error fetching user names:', error);
+            //     alert('Failed to fetch user names. Please try again.');
+            // }
+            const data = await getAllUserName();
+            setNameOfUsers(data);
         }
-        getAllUserName();
+        fetchAllUserName();
     }, []);
 
 
 
     return (
-         <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-                <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCheckinTable')}</h1>
-                <div className="mb-8 flex flex-col items-center">
-                    <Autocomplete
-                        disablePortal
-                        options={nameOfUsers}
-                        sx={{
-                            width: '50%',
-                            backgroundColor: 'white',
-                            borderRadius: '20px',
-                            '& .MuiDataGrid-cell': {
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center', // Căn giữa nội dung trong ô
-                            },
-                            '& .MuiInputLabel-root': {
-                                color: '#083B75', // Màu chữ của label
-                                backgroundColor: 'white', // Màu nền của label
-                                padding: '0 5px',
-                                borderRadius: '5px', // Bo tròn góc của label
-                            },
-                        }}
-                        value={selectedName}
-                        onChange={(_event, value) => setSelectedName(value || '')}
-                        renderInput={(params) => (
-                            <TextField {...params}
-                                label={t('selectName')}
-                            ></TextField>)
-                        }
-                    />
-                </div>
-
-                <div className="mb-6 flex justify-center space-x-4">
-                    <Box sx={{
-                        minWidth: 120,
+        <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
+            <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCheckinTable')}</h1>
+            <div className="mb-8 flex flex-col items-center">
+                <Autocomplete
+                    disablePortal
+                    options={nameOfUsers}
+                    sx={{
+                        width: '50%',
                         backgroundColor: 'white',
-                        borderRadius: '4px',
-                    }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="month-select-label"
-                                sx={{
-                                    backgroundColor: 'white',
-                                    padding: '0 5px',
-                                    borderRadius: '4px',
-                                }}>
-                                {t('selectMonth')}
-                            </InputLabel>
-                            <Select
-                                labelId="month-select-label"
-                                id="month-select"
-                                value={selectedMonth}
-                                onChange={handleMonthChange}
-                            >
-                                {Array.from({ length: 12 }, (_, i) => (
-                                    <MenuItem key={i + 1} value={i + 1}>
-                                        {i + 1}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
-                    <Box sx={{
-                        minWidth: 120,
-                        backgroundColor: 'white',
-                        borderRadius: '4px',
-                    }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="year-select-label"
-                                sx={{
-                                    backgroundColor: 'white',
-                                    padding: '0 5px',
-                                    borderRadius: '4px',
-                                }}>
-                                {t('selectYear')}
-                            </InputLabel>
-                            <Select
-                                labelId="year-select-label"
-                                id="year-select"
-                                value={selectedYear}
-                                onChange={handleYearChange}
-                            >
-                                {Array.from({ length: 10 }, (_, i) => (
-                                    <MenuItem key={i} value={2025 - i}>
-                                        {2025 - i}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
-                    <Button
-                        variant="contained"
-                        onClick={handleSearch}
-                        sx={{
-                            backgroundColor: '#00B6E6', // Custom background color
-                            color: 'white', // Text color
-                            padding: '10px 20px', // Padding
-                            borderRadius: '8px', // Rounded corners
-                            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Shadow
-                            '&:hover': {
-                                backgroundColor: '#052A5E', // Hover background color
-                            },
+                        borderRadius: '20px',
+                        '& .MuiDataGrid-cell': {
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <SearchRoundedIcon
-                            sx={{
-                                fontSize: '1.5rem', // Icon size
-                            }}
-                        />
-                        <span
-                            className="font-medium ml-2 hidden sm:inline"
-                        >
-                            {t('Find')}
-                        </span>
-                    </Button>
-                </div>
-
-
-                <div className="w-full h-screen overflow-x-auto p-5 bg-white rounded-lg shadow-md">
-                    {loading ? (<Box sx={{ width: '100%', height: '100vh' }}>
-                        <Skeleton />
-                        <Skeleton animation="wave" className='h-screen' />
-                        <Skeleton animation={false} />
-                    </Box>) :
-                        <DataGrid
-                            disableVirtualization={true}
-                            rows={rows}
-                            columns={columns}
-                            // localeText={localeText}
-                            localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
-                            slots={{
-                                toolbar: MyCustomToolbar,
-                                noRowsOverlay: CustomNoRowsOverlay
-                            }}
-                            columnGroupingModel={columnGroupingModel}
-                            columnVisibilityModel={columnVisibilityModel}
-                            sx={{
-                                '& .MuiDataGrid-columnHeader': {
-                                    backgroundColor: '#f5f5f5',
-
-                                },
-                                '& .MuiDataGrid-row:nth-of-type(odd)': {
-                                    backgroundColor: '#EEEEEE', // Màu nền cho hàng lẻ
-                                },
-                                '& .MuiDataGrid-row:nth-of-type(even)': {
-                                    backgroundColor: '#ffffff', // Màu nền cho hàng chẵn
-                                },
-                                '& .MuiDataGrid-row:hover': {
-                                    backgroundColor: '#D1E4F6', // Màu nền khi hover
-                                }
-                            }}
-                        />
+                            justifyContent: 'center', // Căn giữa nội dung trong ô
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#083B75', // Màu chữ của label
+                            backgroundColor: 'white', // Màu nền của label
+                            padding: '0 5px',
+                            borderRadius: '5px', // Bo tròn góc của label
+                        },
+                    }}
+                    value={selectedName}
+                    onChange={(_event, value) => setSelectedName(value || '')}
+                    renderInput={(params) => (
+                        <TextField {...params}
+                            label={t('selectName')}
+                        ></TextField>)
                     }
-
-                </div>
+                />
             </div>
-        
+
+            <div className="mb-6 flex justify-center space-x-4">
+                <Box sx={{
+                    minWidth: 120,
+                    backgroundColor: 'white',
+                    borderRadius: '4px',
+                }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="month-select-label"
+                            sx={{
+                                backgroundColor: 'white',
+                                padding: '0 5px',
+                                borderRadius: '4px',
+                            }}>
+                            {t('selectMonth')}
+                        </InputLabel>
+                        <Select
+                            labelId="month-select-label"
+                            id="month-select"
+                            value={selectedMonth}
+                            onChange={handleMonthChange}
+                        >
+                            {Array.from({ length: 12 }, (_, i) => (
+                                <MenuItem key={i + 1} value={i + 1}>
+                                    {i + 1}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
+                <Box sx={{
+                    minWidth: 120,
+                    backgroundColor: 'white',
+                    borderRadius: '4px',
+                }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="year-select-label"
+                            sx={{
+                                backgroundColor: 'white',
+                                padding: '0 5px',
+                                borderRadius: '4px',
+                            }}>
+                            {t('selectYear')}
+                        </InputLabel>
+                        <Select
+                            labelId="year-select-label"
+                            id="year-select"
+                            value={selectedYear}
+                            onChange={handleYearChange}
+                        >
+                            {Array.from({ length: 10 }, (_, i) => (
+                                <MenuItem key={i} value={2025 - i}>
+                                    {2025 - i}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
+                <Button
+                    variant="contained"
+                    onClick={handleSearch}
+                    sx={{
+                        backgroundColor: '#00B6E6', // Custom background color
+                        color: 'white', // Text color
+                        padding: '10px 20px', // Padding
+                        borderRadius: '8px', // Rounded corners
+                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Shadow
+                        '&:hover': {
+                            backgroundColor: '#052A5E', // Hover background color
+                        },
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <SearchRoundedIcon
+                        sx={{
+                            fontSize: '1.5rem', // Icon size
+                        }}
+                    />
+                    <span
+                        className="font-medium ml-2 hidden sm:inline"
+                    >
+                        {t('Find')}
+                    </span>
+                </Button>
+            </div>
+
+
+            <div className="w-full h-screen overflow-x-auto p-5 bg-white rounded-lg shadow-md">
+                {loading ? (<Box sx={{ width: '100%', height: '100vh' }}>
+                    <Skeleton />
+                    <Skeleton animation="wave" className='h-screen' />
+                    <Skeleton animation={false} />
+                </Box>) :
+                    <DataGrid
+                        disableVirtualization={true}
+                        rows={rows}
+                        columns={columns}
+                        // localeText={localeText}
+                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
+                        slots={{
+                            toolbar: MyCustomToolbar,
+                            noRowsOverlay: CustomNoRowsOverlay
+                        }}
+                        columnGroupingModel={columnGroupingModel}
+                        columnVisibilityModel={columnVisibilityModel}
+                        sx={{
+                            '& .MuiDataGrid-columnHeader': {
+                                backgroundColor: '#f5f5f5',
+
+                            },
+                            '& .MuiDataGrid-row:nth-of-type(odd)': {
+                                backgroundColor: '#EEEEEE', // Màu nền cho hàng lẻ
+                            },
+                            '& .MuiDataGrid-row:nth-of-type(even)': {
+                                backgroundColor: '#ffffff', // Màu nền cho hàng chẵn
+                            },
+                            '& .MuiDataGrid-row:hover': {
+                                backgroundColor: '#D1E4F6', // Màu nền khi hover
+                            }
+                        }}
+                    />
+                }
+
+            </div>
+        </div>
+
 
     );
 }

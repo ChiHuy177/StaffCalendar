@@ -4,7 +4,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import axios from 'axios';
 import { Box, Button, Skeleton, styled, useMediaQuery, useTheme } from '@mui/material';
 import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { formatTime, User } from '../interfaces/type';
@@ -17,6 +16,8 @@ import { PickersShortcutsItem } from '@mui/x-date-pickers';
 import { useTranslation } from 'react-i18next';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import i18n from '../i18n';
+import { getExportDataByDayRange } from '../apis/ExportDataApi';
+import { getCheckinDataByDayRange } from '../apis/CheckinDataApi';
 
 
 export default function CheckInByDayTable() {
@@ -43,24 +44,9 @@ export default function CheckInByDayTable() {
         const endDay = endDate.date();
         const endMonth = endDate.month() + 1;
         const endYear = endDate.year();
-
-        
-
-
-        const apiURL = `${import.meta.env.VITE_API_URL}api/Export/ExportDataByDateRange`;
         try {
-            const response = await axios.get(apiURL, {
-                params: {
-                    day: startDay,
-                    month: startMonth,
-                    year: startYear,
-                    dayTo: endDay,
-                    monthTo: endMonth,
-                    yearTo: endYear
-                },
-                responseType: 'blob',
-            });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const response = await getExportDataByDayRange(startDay, startMonth, startYear, endDay, endMonth, endYear);
+            const url = window.URL.createObjectURL(new Blob([response]));
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `checkin-data-${new Date().toISOString()}.xlsx`);
@@ -142,18 +128,9 @@ export default function CheckInByDayTable() {
             const endYear = endDate.year();
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
-            const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetAllCheckinInDayRange`;
-            await axios.get(apiURL, {
-                params: {
-                    day: startDay,
-                    month: startMonth,
-                    year: startYear,
-                    dayTo: endDay,
-                    monthTo: endMonth,
-                    yearTo: endYear
-                }
-            }).then((response) => {
-                const data = response.data;
+            // const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetAllCheckinInDayRange`;
+            try {
+                const data = await getCheckinDataByDayRange(startDay, startMonth, startYear, endDay, endMonth, endYear);
                 const formattedData = data.map((item: User, index: number) => {
                     const inAt = item.inAt ? new Date(item.inAt) : null;
                     const outAt = item.outAt ? new Date(item.outAt) : null;
@@ -185,13 +162,15 @@ export default function CheckInByDayTable() {
                 setTimeout(() => {
                     setLoading(false);
                 }, 2000)
-            }).catch((error) => {
+            }
+            catch (error) {
                 console.error('Error fetching data:', error);
-            }).finally(() => {
+            } finally {
                 setLoading(false);
-            });
-        }
-    };
+            }
+
+        };
+    }
 
 
     const StyledGridOverlay = styled('div')(({ theme }) => ({

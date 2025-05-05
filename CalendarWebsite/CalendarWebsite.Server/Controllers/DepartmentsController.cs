@@ -22,7 +22,7 @@ namespace CalendarWebsite.Server.Controllers
         {
             var result = await _departmentService.GetAllDepartment();
             return result == null ? NotFound() : Ok(result);
-            // return await _context.Department.Where(w => w.Id < 41).ToListAsync();
+            
         }
 
         // GET: api/Departments/5

@@ -16,6 +16,7 @@ import { Bounce, toast } from "react-toastify";
 import { useTranslation } from 'react-i18next';
 import i18n from "../i18n";
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
+import { getAllDepartmentName } from "../apis/CheckinDataApi";
 
 
 export default function CheckInTableByDepartment() {
@@ -142,22 +143,21 @@ export default function CheckInTableByDepartment() {
         );
     }
     useEffect(() => {
-        async function handleTest() {
-
-
-            const apiURL = `${import.meta.env.VITE_API_URL}api/departments`;
-            await axios.get(apiURL).then((response) => {
-                const data = response.data;
-                // const formattedData = data.map((item: Department) => {
-                //     return item.title                   
-                // })
-                setDepartments(data);
-            }).catch((error) => {
-                console.error('Error fetching data:', error);
-            })
-
+        async function fetchDepartment() {
+            // const apiURL = `${import.meta.env.VITE_API_URL}api/departments`;
+            // await axios.get(apiURL).then((response) => {
+            //     const data = response.data;
+            //     // const formattedData = data.map((item: Department) => {
+            //     //     return item.title                   
+            //     // })
+            //     setDepartments(data);
+            // }).catch((error) => {
+            //     console.error('Error fetching data:', error);
+            // })
+            const data = await getAllDepartmentName();
+            setDepartments(data);
         }
-        handleTest();
+        fetchDepartment();
     }, [])
     async function handleFind() {
         setLoading(true);
@@ -276,7 +276,7 @@ export default function CheckInTableByDepartment() {
                     }}
                     onChange={(_event, value) => handleDepartmentChange(value?.key)}
                     renderInput={(params) => (
-                        <TextField {...params} label= {t('selectDept')} />
+                        <TextField {...params} label={t('selectDept')} />
                     )}
                 />
             </div>
@@ -366,7 +366,7 @@ export default function CheckInTableByDepartment() {
                         disableVirtualization={true}
                         rows={rows}
                         columns={columns}
-                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined }
+                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
                         slots={{
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay

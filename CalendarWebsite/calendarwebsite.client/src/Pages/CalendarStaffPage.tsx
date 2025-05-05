@@ -5,8 +5,8 @@ import { EventClickArg, EventInput } from '@fullcalendar/core';
 import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
 import { User } from '../interfaces/type';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
 
 export default function CalendarComponent() {
     const [loading, setLoading] = useState(false);
@@ -35,15 +35,8 @@ export default function CalendarComponent() {
             if (id === '') return;
 
             const valueBeforeDash = id.split('-')[0];
-            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/CountRecordsByMonth`;
-            try {
-                const response = await axios.get(apiUrl, {
-                    params: { month, year, userId: valueBeforeDash },
-                });
-                setWorkDays(response.data);
-            } catch (error) {
-                console.error('Error fetching work days:', error);
-            }
+            const data = await getRecordDataByMonth(month, year, valueBeforeDash);
+            setWorkDays(data);
         } else {
             console.error('Calendar API is not available');
         }
@@ -59,15 +52,8 @@ export default function CalendarComponent() {
             if (selectedName === '') return;
 
             const valueBeforeDash = selectedName.split('-')[0];
-            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/CountRecordsByMonth`;
-            try {
-                const response = await axios.get(apiUrl, {
-                    params: { month, year, userId: valueBeforeDash },
-                });
-                setWorkDays(response.data);
-            } catch (error) {
-                console.error('Error fetching work days:', error);
-            }
+            const data = await getRecordDataByMonth(month, year, valueBeforeDash)
+            setWorkDays(data);
         } else {
             console.error('Calendar API is not available');
         }
@@ -112,7 +98,8 @@ export default function CalendarComponent() {
                                 {new Date(selectedEvent.start as string).toLocaleString('vi-VN')}
                             </p>
                             <p
-                                className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === 'Về sớm' || selectedEvent.extendedProps?.description === 'Vào trễ'
+                                className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === t('InLate') || selectedEvent.extendedProps?.description === t('OutEarly')
+                                    
                                     ? 'bg-red-100 text-red-600'
                                     : 'bg-green-100 text-green-600'
                                     }`}
@@ -143,17 +130,12 @@ export default function CalendarComponent() {
     }
 
     useEffect(() => {
-        async function getAllUserName() {
-            const apiUrl = `${import.meta.env.VITE_API_URL}api/personalprofiles/GetAllUsersName`;
-            try {
-                const response = await axios.get(apiUrl);
-                setNameOfUsers(response.data);
-            } catch (error) {
-                console.error('Error fetching user names:', error);
-            }
+        async function fetchAllUserName() {
+            const data = await getAllUserName();
+            setNameOfUsers(data);
         }
         getWorkDaysInitial('');
-        getAllUserName();
+        fetchAllUserName();
     }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,11 +146,11 @@ export default function CalendarComponent() {
     const handleNameClick = (name: string) => {
         setSelectedName(name);
         setFilter('');
-        getWorkScheduleByMonthInitial(name);
+        fetchWorkScheduleByMonthInitial(name);
         getWorkDaysInitial(name);
     };
 
-    const getWorkScheduleByMonthInitial = async (id: string): Promise<void> => {
+    const fetchWorkScheduleByMonthInitial = async (id: string): Promise<void> => {
         if (id === '') {
             toast.error('Vui lòng nhập tên!', {
                 position: 'top-center',
@@ -191,12 +173,8 @@ export default function CalendarComponent() {
             const year = currentViewDate.getFullYear();
 
             const valueBeforeDash = id.split('-')[0];
-            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
             try {
-                const response = await axios.get(apiUrl, {
-                    params: { month, year, userId: valueBeforeDash },
-                });
-                const data = response.data;
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash);
 
                 if (data.length === 0) {
                     toast.error('Không tìm thấy lịch làm việc của nhân viên này!', {
@@ -299,12 +277,8 @@ export default function CalendarComponent() {
                 return;
             }
             const valueBeforeDash = selectedName.split('-')[0];
-            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
             try {
-                const response = await axios.get(apiUrl, {
-                    params: { month, year, userId: valueBeforeDash },
-                });
-                const data = response.data;
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash);
 
                 if (data.length === 0) {
                     toast.error('Không tìm thấy lịch làm việc của nhân viên này!', {
