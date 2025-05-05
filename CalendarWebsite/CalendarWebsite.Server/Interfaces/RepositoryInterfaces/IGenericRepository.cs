@@ -8,8 +8,10 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
         public Task<IEnumerable<T>> GetAllAsync();
         public Task<T> GetByIdAsync<TKey>(TKey id);
         public Task AddAsync(T entity);
-        public Task UpdateAsync(T entity);
+
         public Task DeleteAsync(T entity);
+        public Task UpdateAsync(T entity);
+        
 
         public Task<List<T>> FindList(
             Expression<Func<T, bool>> predicate,
