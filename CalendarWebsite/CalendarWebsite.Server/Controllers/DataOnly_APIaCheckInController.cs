@@ -63,11 +63,20 @@ namespace CalendarWebsite.Server.Controllers
         }
 
         [HttpGet("GetAllCheckinInDayRange")]
-        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo)
+        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
         {
 
-            var result = await _checkInDataService.GetAllCheckinInDayRange(day, month, year, dayTo, monthTo, yearTo);
-            return result == null ? NotFound() : Ok(result);
+            var (items, totalCount) = await _checkInDataService.GetAllCheckinInDayRangePaging(day, month, year, dayTo, monthTo, yearTo, page, pageSize);
+            if (items == null || !items.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+                items,
+                totalCount
+            });
         }
 
         [HttpGet("CountRecordsByMonth")]
@@ -79,10 +88,19 @@ namespace CalendarWebsite.Server.Controllers
 
 
         [HttpGet("GetCheckInByDepartmentId")]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo)
+        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
         {
-            var result = await _checkInDataService.GetByDepartment(id, day, month, year, dayTo, monthTo, yearTo);
-            return result == null ? NotFound() : Ok(result);
+            var (items, totalCount) = await _checkInDataService.GetByDepartmentPaging(id, day, month, year, dayTo, monthTo, yearTo, page, pageSize);
+            if (items == null || !items.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+                items,
+                totalCount
+            });
         }
 
     }

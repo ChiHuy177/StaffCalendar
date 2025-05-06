@@ -5,7 +5,7 @@ import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Box, Button, Skeleton, styled, useMediaQuery, useTheme } from '@mui/material';
-import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { formatTime, User } from '../interfaces/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
@@ -18,6 +18,7 @@ import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import i18n from '../i18n';
 import { getExportDataByDayRange } from '../apis/ExportDataApi';
 import { getCheckinDataByDayRange } from '../apis/CheckinDataApi';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 
 export default function CheckInByDayTable() {
@@ -113,13 +114,18 @@ export default function CheckInByDayTable() {
         { field: 'outAt', headerName: t('table.outTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
         { field: 'totalTime', headerName: t('table.workingTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
-    async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
+
+    function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
         setDateValue(newValue);
+    }
+
+    async function handleSearch(page: number, pageSize: number) {
+        const dateValueSelected = dateValue;
         setLoading(true);
         // Nếu đã chọn đủ ngày bắt đầu và kết thúc, lấy thông tin chi tiết cho ngày
-        if (newValue[0] && newValue[1]) {
-            const startDate = newValue[0];
-            const endDate = newValue[1];
+        if (dateValueSelected[0] && dateValueSelected[1]) {
+            const startDate = dateValueSelected[0];
+            const endDate = dateValueSelected[1];
 
             const startDay = startDate.date();
             const startMonth = startDate.month() + 1; // getMonth() trả về giá trị từ 0 đến 11
@@ -131,8 +137,9 @@ export default function CheckInByDayTable() {
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
             try {
-                const data = await getCheckinDataByDayRange(startDay, startMonth, startYear, endDay, endMonth, endYear);
-                const formattedData = data.map((item: User, index: number) => {
+                const data = await getCheckinDataByDayRange(startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
+                const formattedData = data.items.map((item: User, index: number) => {
+                    const rowIndex = (page * pageSize) + index + 1;
                     const inAt = item.inAt ? new Date(item.inAt) : null;
                     const outAt = item.outAt ? new Date(item.outAt) : null;
 
@@ -150,7 +157,7 @@ export default function CheckInByDayTable() {
                     const formattedMinutes = minutes.toString().padStart(2, "0");
 
                     return {
-                        id: index + 1,
+                        id: rowIndex,
                         userId: item.userId,
                         userFullName: item.fullName,
                         workingDate: formatDate(item.at),
@@ -160,6 +167,7 @@ export default function CheckInByDayTable() {
                     };
                 });
                 setRows(formattedData);
+                setRowCount(data.totalCount);
                 setTimeout(() => {
                     setLoading(false);
                 }, 2000)
@@ -171,6 +179,11 @@ export default function CheckInByDayTable() {
             }
 
         };
+    }
+
+    function handlePaginationModelChange(newModel: GridPaginationModel) {
+        setPaginationModel(newModel);
+        handleSearch(newModel.page, newModel.pageSize);
     }
 
 
@@ -301,7 +314,36 @@ export default function CheckInByDayTable() {
                     </DemoContainer>
 
                 </LocalizationProvider>
-
+                <Button
+                    
+                    variant="contained"
+                    onClick={() => handleSearch(paginationModel.page, paginationModel.pageSize)}
+                    sx={{
+                        backgroundColor: '#00B6E6', // Custom background color
+                        color: 'white', // Text color
+                        padding: '10px 20px', // Padding
+                        borderRadius: '8px', // Rounded corners
+                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Shadow
+                        '&:hover': {
+                            backgroundColor: '#052A5E', // Hover background color
+                        },
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: '20px'
+                    }}
+                >
+                    <SearchRoundedIcon
+                        sx={{
+                            fontSize: '1.5rem', // Icon size
+                        }}
+                    />
+                    <span
+                        className="font-medium ml-2 hidden sm:inline"
+                    >
+                        {t('Find')}
+                    </span>
+                </Button>
             </div>
             <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
                 {loading ? (<Box sx={{ width: '100%', height: '100%' }}>
@@ -315,8 +357,9 @@ export default function CheckInByDayTable() {
                         columns={columns}
                         paginationMode='server'
                         rowCount={rowCount}
-                        pageSizeOptions={[10, 20, 50]}
+                        pageSizeOptions={[5, 10, 20, 50]}
                         paginationModel={paginationModel}
+                        onPaginationModelChange={handlePaginationModelChange}
                         slots={{
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay

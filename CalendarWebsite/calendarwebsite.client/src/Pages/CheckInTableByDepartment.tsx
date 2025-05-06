@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Button, Skeleton, styled, TextField, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Department, formatTime, User } from "../interfaces/type";
-import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 // import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
 import dayjs, { Dayjs } from "dayjs";
@@ -24,6 +24,8 @@ export default function CheckInTableByDepartment() {
     const [loading, setLoading] = useState(false);
     const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
     const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
+    const [rowCount, setRowCount] = useState(0);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
@@ -148,7 +150,7 @@ export default function CheckInTableByDepartment() {
         }
         fetchDepartment();
     }, [])
-    async function handleFind() {
+    async function handleFind(page: number, pageSize: number) {
         setLoading(true);
         const newValue = dateValue;
         if (newValue[0] === null || newValue[1] === null || departmentId === undefined) {
@@ -182,8 +184,9 @@ export default function CheckInTableByDepartment() {
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
             try {
-                const data = await getCheckinDataByDepartmentId(departmentId, startDay, startMonth, startYear, endDay, endMonth, endYear);
-                const formattedData = data.map((item: User, index: number) => {
+                const data = await getCheckinDataByDepartmentId(departmentId, startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
+                const formattedData = data.items.map((item: User, index: number) => {
+                    const rowIndex = (page * pageSize) + index + 1;
                     const inAt = item.inAt ? new Date(item.inAt) : null;
                     const outAt = item.outAt ? new Date(item.outAt) : null;
 
@@ -201,7 +204,7 @@ export default function CheckInTableByDepartment() {
                     const formattedMinutes = minutes.toString().padStart(2, "0");
 
                     return {
-                        id: index + 1,
+                        id: rowIndex,
                         userId: item.userId,
                         userFullName: item.fullName,
                         workingDate: formatDate(item.at),
@@ -211,6 +214,7 @@ export default function CheckInTableByDepartment() {
                     };
                 });
                 setRows(formattedData);
+                setRowCount(data.totalCount)
                 setTimeout(() => {
                     setLoading(false);
                 }, 2000)
@@ -226,6 +230,11 @@ export default function CheckInTableByDepartment() {
     }
     async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
         setDateValue(newValue);
+    }
+
+    function handlePaginationModelChange(newModel : GridPaginationModel){
+        setPaginationModel(newModel);
+        handleFind(newModel.page, newModel.pageSize);
     }
 
     return (
@@ -327,7 +336,7 @@ export default function CheckInTableByDepartment() {
                         fontWeight: 'bold',  // Làm chữ đậm để dễ nhìn
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',  // Thêm hiệu ứng đổ bóng cho nút
                     }}
-                    onClick={handleFind}
+                    onClick={() =>handleFind(paginationModel.page, paginationModel.pageSize)}
                 >
                     {t('Find')}
                 </Button>
@@ -346,6 +355,11 @@ export default function CheckInTableByDepartment() {
                         disableVirtualization={true}
                         rows={rows}
                         columns={columns}
+                        paginationMode='server'
+                        rowCount={rowCount}
+                        pageSizeOptions={[5,10, 20, 50]}
+                        paginationModel={paginationModel}
+                        onPaginationModelChange={handlePaginationModelChange}
                         localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
                         slots={{
                             toolbar: MyCustomToolbar,

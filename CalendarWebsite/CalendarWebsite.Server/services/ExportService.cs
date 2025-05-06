@@ -69,7 +69,7 @@ namespace CalendarWebsite.Server.services
             return await Task.FromResult(stream.ToArray());
         }
 
-        public async Task<byte[]> ExportUserCheckInDataByDateRange(int month, int year, int monthTo, int yearTo, IEnumerable<DataOnly_APIaCheckIn> checkinData)
+        public async Task<byte[]> ExportUserCheckInDataByDateRange(int day,int month, int year, int dayTo,int monthTo, int yearTo, IEnumerable<DataOnly_APIaCheckIn> checkinData)
         {
             using var wb = new XLWorkbook();
             var sheet = wb.AddWorksheet("Checkin Data By Day");
@@ -91,7 +91,7 @@ namespace CalendarWebsite.Server.services
             sheet.Cell("A2").Style.Font.FontSize = 14;
 
             sheet.Range("A4:E4").Merge();
-            sheet.Cell("A4").Value = $"Thời gian: từ {month}/{year} đến {monthTo}/{yearTo}";
+            sheet.Cell("A4").Value = $"Thời gian: từ {day}/{month}/{year} đến {dayTo}/{monthTo}/{yearTo}";
 
             // Table headers
             sheet.Cell(6, 1).Value = "No";

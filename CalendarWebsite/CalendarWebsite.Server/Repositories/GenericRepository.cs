@@ -59,11 +59,11 @@ namespace CalendarWebsite.Server.Repositories
         }
 
         public virtual async Task<List<TResult>> FindListSelect<TResult>(
-            Expression<Func<T, bool>> predicate, 
-            Expression<Func<T, TResult>> selector, 
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, 
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, 
-            bool disableTracking = true, 
+            Expression<Func<T, bool>> predicate,
+            Expression<Func<T, TResult>> selector,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            bool disableTracking = true,
             bool distinct = false)
         {
             if (predicate == null)
@@ -171,6 +171,33 @@ namespace CalendarWebsite.Server.Repositories
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync(); ;
+        }
+
+        public virtual async Task<int> CountAsync(
+        Expression<Func<T, bool>> predicate,
+        Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+        bool disableTracking = true)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            IQueryable<T> query = _dbSet;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            query = query.Where(predicate);
+
+            return await query.CountAsync();
         }
     }
 }

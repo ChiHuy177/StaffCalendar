@@ -41,11 +41,12 @@ namespace CalendarWebsite.Server.Controllers
         public async Task<IActionResult> ExportDataByDateRange(int day, int month, int year, int dayTo, int monthTo, int yearTo){
             var checkinData = await _checkinDataService.GetAllCheckinInDayRange(day, month, year, dayTo, monthTo, yearTo);
             if (checkinData == null || checkinData.Count() == 0) {
-                return NotFound("No check-in data found for the specified period.");
+               return NotFound("No check-in data found for the specified period.");
             }
-            
-            var excelData = await _exportService.ExportUserCheckInDataByDateRange(month, year, monthTo, yearTo, checkinData);
+
+            var excelData = await _exportService.ExportUserCheckInDataByDateRange(day,month, year, dayTo,monthTo, yearTo, checkinData);
             return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"checkin-data-{month}-{year}-to-{monthTo}-{yearTo}.xlsx");
+            // return null;
         }
 
         // for testing

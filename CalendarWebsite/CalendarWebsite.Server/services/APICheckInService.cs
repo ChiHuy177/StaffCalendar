@@ -31,19 +31,21 @@ namespace CalendarWebsite.Server.services
             return _checkinRepository.GetAllAsync();
         }
 
-        public async Task<IEnumerable<DataOnly_APIaCheckIn>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo)
+        public async Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetAllCheckinInDayRangePaging(int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
         {
             DateTime startDate = new DateTime(year, month, day);
             DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
 
             // return await _apiRepository.GetAllCheckinInDayRange(startDate, endDate);
 
-            return await _checkinRepository.FindList(
+            var (items, totalCount) = await _checkinRepository.FindListPagedAsync(
                 predicate: e => e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate,
-                disableTracking: true
+                disableTracking: true,
+                page: page,
+                pageSize: pageSize
             );
 
-
+            return (items, totalCount);
         }
 
         public async Task<IEnumerable<string>> GetAllUsersName()
@@ -59,31 +61,36 @@ namespace CalendarWebsite.Server.services
 
         public async Task<IEnumerable<DataOnly_APIaCheckIn>> GetByDepartment(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo)
         {
-            DateTime startDate = new DateTime(year, month, day);
-            DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
-
-            var users = await _personalRepository.FindList(
-                predicate: w => w.DepartmentId == id
-            );
-            List<DataOnly_APIaCheckIn> result = new List<DataOnly_APIaCheckIn>();
-            foreach (var user in users)
+            // Xác thực và tạo khoảng thời gian
+            DateTime startDate;
+            DateTime endDate;
+            try
             {
-                if (user.Email != null)
-                {
-                    var foundUser = await _checkinRepository.FindList(
-                        predicate: e => e.UserId == user.Email && e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate
-                    );
-
-                    if (foundUser != null)
-                    {
-                        foreach (var each in foundUser)
-                        {
-                            result.Add(each);
-                        }
-                    }
-                }
+                startDate = new DateTime(year, month, day);
+                endDate = new DateTime(yearTo, monthTo, dayTo, 23, 59, 59, 999); // Bao gồm cả ngày cuối
             }
-            return result;
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new ArgumentException("Invalid date parameters.");
+            }
+
+            // Lấy danh sách Email của người dùng trong phòng ban
+            var userEmails = await _personalRepository.FindListSelect(
+                predicate: w => w.DepartmentId == id && w.Email != null,
+                selector: w => w.Email!
+            );
+
+            if (!userEmails.Any())
+            {
+                return Enumerable.Empty<DataOnly_APIaCheckIn>();
+            }
+
+            // Lấy tất cả check-in cho các Email trong khoảng thời gian
+            var checkins = await _checkinRepository.FindList(
+                predicate: e => userEmails.Contains(e.UserId) && e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate
+            );
+
+            return checkins;
         }
 
         public async Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetUserByUserIdPaging(int month, int year, string userID, int page, int pageSize)
@@ -99,7 +106,7 @@ namespace CalendarWebsite.Server.services
                 pageSize: pageSize,
                 orderBy: q => q.OrderBy(w => w.InAt)
             );
-            return(items, totalCount);
+            return (items, totalCount);
         }
         public async Task<IEnumerable<DataOnly_APIaCheckIn>> GetUserByUserId(int month, int year, string userID)
         {
@@ -113,6 +120,52 @@ namespace CalendarWebsite.Server.services
                 orderBy: w => w.OrderBy(w => w.InAt)
             );
 
+        }
+
+        public async Task<IEnumerable<DataOnly_APIaCheckIn>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo)
+        {
+            DateTime startDate = new DateTime(year, month, day);
+            DateTime endDate = new DateTime(yearTo, monthTo, dayTo).AddDays(1).AddTicks(-1);
+
+            return await _checkinRepository.FindList(
+                predicate: e => e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate,
+                disableTracking: true
+            );
+        }
+
+        public async Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetByDepartmentPaging(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
+        {
+            DateTime startDate;
+            DateTime endDate;
+            try
+            {
+                startDate = new DateTime(year, month, day);
+                endDate = new DateTime(yearTo, monthTo, dayTo, 23, 59, 59, 999); // Bao gồm cả ngày cuối
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new ArgumentException("Invalid date parameters.");
+            }
+
+            // Lấy danh sách Email của người dùng trong phòng ban
+            var userEmails = await _personalRepository.FindListSelect(
+                predicate: w => w.DepartmentId == id && w.Email != null,
+                selector: w => w.Email!
+            );
+
+            if (!userEmails.Any())
+            {
+                return (Enumerable.Empty<DataOnly_APIaCheckIn>() , 0);
+            }
+
+            // Lấy tất cả check-in cho các Email trong khoảng thời gian
+            var (items, totalCount) = await _checkinRepository.FindListPagedAsync(
+                predicate: e => userEmails.Contains(e.UserId) && e.At.HasValue && e.At.Value >= startDate && e.At.Value <= endDate,
+                page: page,
+                pageSize: pageSize
+            );
+
+            return (items, totalCount);
         }
     }
 }

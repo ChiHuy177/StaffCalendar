@@ -34,5 +34,10 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             bool disableTracking = true);
+
+        public Task<int> CountAsync(
+            Expression<Func<T, bool>> predicate,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            bool disableTracking = true);
     }
 }

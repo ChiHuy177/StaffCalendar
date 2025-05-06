@@ -282,6 +282,7 @@ export default function CheckinTablePage() {
         const userId = selectedName.split('-')[0];
         const data = await getCheckinDataByUserIdPaging(parseInt(selectedMonth), parseInt(selectedYear), userId, page, pageSize);
         const formattedData = data.items.map((item: User, index: number) => {
+            const rowIndex = (page * pageSize) + index + 1
             const inAt = item.inAt ? new Date(item.inAt) : null;
             const outAt = item.outAt ? new Date(item.outAt) : null;
 
@@ -299,7 +300,7 @@ export default function CheckinTablePage() {
             const formattedMinutes = minutes.toString().padStart(2, "0");
 
             return {
-                id: index + 1,
+                id: rowIndex,
                 userId: item.userId,
                 workingDate: formatDate(item.at),
                 inAt: formatTime(item.inAt.toString()),
@@ -458,7 +459,7 @@ export default function CheckinTablePage() {
                         columns={columns}
                         paginationMode='server'
                         rowCount={rowCount}
-                        pageSizeOptions={[10, 20, 50]}
+                        pageSizeOptions={[5,10, 20, 50]}
                         paginationModel={paginationModel}
                         onPaginationModelChange={handlePaginationModelChange}
                         localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}

@@ -60,7 +60,9 @@ export async function getCheckinDataByDayRange(
     year: number,
     dayTo: number,
     monthTo: number,
-    yearTo: number) {
+    yearTo: number,
+    page: number,
+    pageSize: number) {
     const apiUrl = `${API_BASE_URL}api/dataonly_apiacheckin/GetAllCheckinInDayRange`;
     try {
         const response = await axios.get(apiUrl, {
@@ -70,7 +72,9 @@ export async function getCheckinDataByDayRange(
                 year: year,
                 dayTo: dayTo,
                 monthTo: monthTo,
-                yearTo: yearTo
+                yearTo: yearTo,
+                page: page,
+                pageSize: pageSize
             }
         })
         return response.data
@@ -86,7 +90,9 @@ export async function getCheckinDataByDepartmentId(
     year: number,
     dayTo: number,
     monthTo: number,
-    yearTo: number) {
+    yearTo: number,
+    page: number,
+    pageSize: number) {
     const apiUrl = `${API_BASE_URL}api/dataonly_apiacheckin/GetCheckInByDepartmentId`;
     try {
         const response = await axios.get(apiUrl, {
@@ -97,7 +103,9 @@ export async function getCheckinDataByDepartmentId(
                 year: year,
                 dayTo: dayTo,
                 monthTo: monthTo,
-                yearTo: yearTo
+                yearTo: yearTo,
+                page: page,
+                pageSize: pageSize
             }
         })
         return response.data
