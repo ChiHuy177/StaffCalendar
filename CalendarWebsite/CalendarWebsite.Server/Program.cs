@@ -51,7 +51,8 @@ namespace CalendarWebsite.Server
                         "https://prismatic-cactus-d90033.netlify.app",
                         "https://calendar-frontend-54y9.onrender.com",
                         "https://calendarwebsite-2.onrender.com",
-                        "https://staffcalendar.vercel.app"
+                        "https://staffcalendar.vercel.app",
+                        "https://staff-calendar-5efr.vercel.app"
                         ).AllowAnyHeader().AllowAnyMethod();
 
                     });
