@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "Hash": "5Y1vpaVQSOrR/xCfkPtXYLYAzWYkAhyNZF2pxydPeg4=",
+  "Hash": "sHxY5cRzO2QOPi8IrTA17Smx1xKAoci7OeCm5sju0Xg=",
   "Source": "CalendarWebsite.Server",
   "BasePath": "_content/CalendarWebsite.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\calendarwebsite.client\\calendarwebsite.client.esproj",
+      "Identity": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\calendarwebsite.client\\calendarwebsite.client.esproj",
       "Version": 2,
       "Source": "calendarwebsite.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
@@ -22,17 +22,17 @@
     {
       "Name": "CalendarWebsite.Server\\wwwroot",
       "Source": "CalendarWebsite.Server",
-      "ContentRoot": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\",
+      "ContentRoot": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\",
       "BasePath": "_content/CalendarWebsite.Server",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
+      "Identity": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
       "SourceId": "CalendarWebsite.Server",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\",
+      "ContentRoot": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\",
       "BasePath": "_content/CalendarWebsite.Server",
       "RelativePath": "imgs/becamex#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -53,7 +53,7 @@
   "Endpoints": [
     {
       "Route": "imgs/becamex.j7ce7nqduk.png",
-      "AssetFile": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
+      "AssetFile": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -98,7 +98,7 @@
     },
     {
       "Route": "imgs/becamex.png",
-      "AssetFile": "D:\\GitHub\\My-Calendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
+      "AssetFile": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\wwwroot\\imgs\\becamex.png",
       "Selectors": [],
       "ResponseHeaders": [
         {

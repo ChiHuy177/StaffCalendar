@@ -28,6 +28,24 @@ namespace CalendarWebsite.Server.Controllers
             return result == null ? NotFound() : Ok(result);
         }
 
+        [HttpGet("GetUserByUserIdPaging")]
+        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserIdPaging(int month, int year, string userID, int page = 0, int pageSize = 10)
+        {
+            var (items, totalCount) = await _checkInDataService.GetUserByUserIdPaging(month, year, userID, page, pageSize);
+            if (items == null || !items.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+                items,
+                totalCount
+            });
+            
+        }
+
+        
         [HttpGet("GetUserByUserId")]
         public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserId(int month, int year, string userID)
         {

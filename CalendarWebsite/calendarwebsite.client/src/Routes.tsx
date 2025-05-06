@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import CalendarComponent from "./Pages/CalendarStaffPage";
-import ExportCustomToolbar from "./Pages/CheckinTable";
+import CheckinTablePage from "./Pages/CheckinTable";
 import DashboardLayout from "./Pages/DashboardLayout";
 import CheckInByDayTable from "./Pages/CheckInByDayTable";
 import CheckInTableByDepartment from "./Pages/CheckInTableByDepartment";
@@ -16,7 +16,7 @@ const router = createBrowserRouter(
             element: <DashboardLayout />,
             children: [
                 { index: true, element: <CalendarComponent /> },
-                { path: 'table', element: <ExportCustomToolbar /> },
+                { path: 'table', element: <CheckinTablePage /> },
                 {path: 'checkinbyday', element: <CheckInByDayTable />},
                 {path: 'checkintablebydepartment', element: <CheckInTableByDepartment />},
             ],

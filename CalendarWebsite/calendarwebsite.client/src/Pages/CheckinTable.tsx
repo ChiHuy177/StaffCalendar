@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { DataGrid, GridColDef, GridColumnGroupingModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridColumnGroupingModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { formatTime, User } from '../interfaces/type';
 import { formatDate } from '@fullcalendar/core/index.js';
@@ -11,22 +11,26 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
-import { getAllUserName } from '../apis/CheckinDataApi';
+import { getAllUserName, getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
 
 
 
 
 
-export default function ExportCustomToolbar() {
+export default function CheckinTablePage() {
     const [rows, setRows] = useState([]);
     const [nameOfUsers, setNameOfUsers] = useState<string[]>([]);
     const [selectedName, setSelectedName] = useState('');
     const [selectedMonth, setSelectedMonth] = useState(() => (new Date().getMonth() + 1).toString());
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear().toString());
     const [loading, setLoading] = useState(false);
+    const [rowCount, setRowCount] = useState(0);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
+
+
 
 
     const columnGroupingModel: GridColumnGroupingModel = [
@@ -127,30 +131,25 @@ export default function ExportCustomToolbar() {
         );
     }
 
-    // const localeText = {
-    //     // Toolbar
-    //     toolbarColumns: t('dataGrid.columns', 'columns'),
-    //     toolbarFilters: t('dataGrid.filter', 'Bộ lọc'),
-    //     toolbarDensity: t('dataGrid.density', 'Mật độ'),
-
-    // }
-
 
     async function fetchDataByUserId(userId: string, month: number, year: number): Promise<void> {
         try {
             setLoading(true);
             const userIdBeforeDash = userId.split('-')[0];
-            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
+            const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserIdPaging`;
             const response = await axios.get(apiUrl, {
                 params: {
                     month,
                     year,
                     userId: userIdBeforeDash,
+                    page: paginationModel.page,
+                    pageSize: paginationModel.pageSize
                 },
             });
-
+            console.log(response.data)
             const data = response.data;
-            const formattedData = data.map((item: User, index: number) => {
+
+            const formattedData = data.items.map((item: User, index: number) => {
                 const inAt = item.inAt ? new Date(item.inAt) : null;
                 const outAt = item.outAt ? new Date(item.outAt) : null;
 
@@ -176,7 +175,10 @@ export default function ExportCustomToolbar() {
                     totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
                 };
             });
+            console.log(data.totalCount);
+            setRowCount(data.totalCount);
             setRows(formattedData);
+            
             setTimeout(() => {
                 setLoading(false);
             }, 2000)
@@ -255,19 +257,71 @@ export default function ExportCustomToolbar() {
 
     useEffect(() => {
         async function fetchAllUserName() {
-            // try {
-            //     const apiUrl = `${import.meta.env.VITE_API_URL}api/personalprofiles/GetAllUsersName`;
-            //     const response = await axios.get(apiUrl);
-            //     setNameOfUsers(response.data);
-            // } catch (error) {
-            //     console.error('Error fetching user names:', error);
-            //     alert('Failed to fetch user names. Please try again.');
-            // }
             const data = await getAllUserName();
             setNameOfUsers(data);
         }
         fetchAllUserName();
     }, []);
+
+    async function fetchCheckinData( page : number,  pageSize: number) {
+        if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
+            toast.error(t('error.inValidInput'), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+        setLoading(true);
+        const userId = selectedName.split('-')[0];
+        const data = await getCheckinDataByUserIdPaging(parseInt(selectedMonth), parseInt(selectedYear), userId, page, pageSize);
+        const formattedData = data.items.map((item: User, index: number) => {
+            const inAt = item.inAt ? new Date(item.inAt) : null;
+            const outAt = item.outAt ? new Date(item.outAt) : null;
+
+            const oneHour = 1 * 3600000; // 1 hour in milliseconds
+            const oneMinute = 1 * 60000; // 1 minute in milliseconds
+
+            let totalTime = 0;
+            if (inAt && outAt) {
+                totalTime = (outAt.getTime() - inAt.getTime() - oneHour) / oneMinute;
+            }
+
+            const hours = Math.floor(totalTime / 60);
+            const minutes = Math.floor(totalTime % 60);
+
+            const formattedMinutes = minutes.toString().padStart(2, "0");
+
+            return {
+                id: index + 1,
+                userId: item.userId,
+                workingDate: formatDate(item.at),
+                inAt: formatTime(item.inAt.toString()),
+                outAt: formatTime(item.outAt.toString()),
+                totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
+            };
+        });
+        setRows(formattedData);
+        setRowCount(data.totalCount);
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000)
+    };
+
+    function handlePaginationModelChange(newModel : GridPaginationModel){
+        setPaginationModel(newModel);
+        fetchCheckinData(newModel.page, newModel.pageSize);
+    }
+
+
+
+
 
 
 
@@ -402,7 +456,11 @@ export default function ExportCustomToolbar() {
                         disableVirtualization={true}
                         rows={rows}
                         columns={columns}
-                        // localeText={localeText}
+                        paginationMode='server'
+                        rowCount={rowCount}
+                        pageSizeOptions={[10, 20, 50]}
+                        paginationModel={paginationModel}
+                        onPaginationModelChange={handlePaginationModelChange}
                         localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
                         slots={{
                             toolbar: MyCustomToolbar,

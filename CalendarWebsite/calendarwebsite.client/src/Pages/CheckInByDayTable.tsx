@@ -24,6 +24,8 @@ export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
     const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const [rows, setRows] = useState<User[]>([]);
+    const [rowCount, setRowCount] = useState(0);
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
@@ -128,7 +130,6 @@ export default function CheckInByDayTable() {
             const endYear = endDate.year();
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
-            // const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetAllCheckinInDayRange`;
             try {
                 const data = await getCheckinDataByDayRange(startDay, startMonth, startYear, endDay, endMonth, endYear);
                 const formattedData = data.map((item: User, index: number) => {
@@ -312,6 +313,10 @@ export default function CheckInByDayTable() {
                         disableVirtualization={true}
                         rows={rows}
                         columns={columns}
+                        paginationMode='server'
+                        rowCount={rowCount}
+                        pageSizeOptions={[10, 20, 50]}
+                        paginationModel={paginationModel}
                         slots={{
                             toolbar: MyCustomToolbar,
                             noRowsOverlay: CustomNoRowsOverlay

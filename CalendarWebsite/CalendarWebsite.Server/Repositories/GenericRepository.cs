@@ -58,7 +58,13 @@ namespace CalendarWebsite.Server.Repositories
             return await query.ToListAsync();
         }
 
-        public virtual async Task<List<TResult>> FindListSelect<TResult>(Expression<Func<T, bool>> predicate, Expression<Func<T, TResult>> selector, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, bool disableTracking = true, bool distinct = false)
+        public virtual async Task<List<TResult>> FindListSelect<TResult>(
+            Expression<Func<T, bool>> predicate, 
+            Expression<Func<T, TResult>> selector, 
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, 
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, 
+            bool disableTracking = true, 
+            bool distinct = false)
         {
             if (predicate == null)
             {
@@ -98,7 +104,58 @@ namespace CalendarWebsite.Server.Repositories
 
             return await resultQuery.ToListAsync();
         }
+        public virtual async Task<(List<T> Items, int TotalCount)> FindListPagedAsync(
+            Expression<Func<T, bool>> predicate,
+            int page,
+            int pageSize,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            bool disableTracking = true)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
 
+            if (page < 0)
+            {
+                throw new ArgumentException("Page must be greater than or equal to 0.", nameof(page));
+            }
+
+            if (pageSize <= 0)
+            {
+                throw new ArgumentException("PageSize must be greater than 0.", nameof(pageSize));
+            }
+
+            IQueryable<T> query = _dbSet;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            query = query.Where(predicate);
+
+            // Tính tổng số bản ghi cho data grid
+            int totalCount = await query.CountAsync();
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            // Phân trang
+            query = query.Skip(page * pageSize).Take(pageSize);
+
+            var items = await query.ToListAsync();
+
+            return (items, totalCount);
+        }
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();

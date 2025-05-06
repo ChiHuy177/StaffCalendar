@@ -1,2 +1,3 @@
 D:\GitHub\CalendarWebsite\CalendarWebsite\calendarwebsite.client\obj\Debug\calendarwebsite.client.esproj.CoreCompileInputs.cache
 D:\GitHub\My-Calendar\CalendarWebsite\calendarwebsite.client\obj\Debug\calendarwebsite.client.esproj.CoreCompileInputs.cache
+D:\GitHub\StaffCalendar\CalendarWebsite\calendarwebsite.client\obj\Debug\calendarwebsite.client.esproj.CoreCompileInputs.cache

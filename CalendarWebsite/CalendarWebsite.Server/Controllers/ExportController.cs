@@ -29,11 +29,12 @@ namespace CalendarWebsite.Server.Controllers
             var checkinData = await _checkinDataService.GetUserByUserId(month, year, userID);
             if (checkinData == null || checkinData.Count() == 0)
             {
-                return NotFound("No check-in data found for the specified user and period.");
+               return NotFound("No check-in data found for the specified user and period.");
             }
 
             var excelData = await _exportService.ExportCheckInDataByMonthToExcelAsync(userID, month, year, checkinData);
             return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"checkin-data-{userID}-{month}-{year}.xlsx");
+            
         }
 
         [HttpGet("ExportDataByDateRange")]

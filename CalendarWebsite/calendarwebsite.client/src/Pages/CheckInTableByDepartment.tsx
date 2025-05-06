@@ -1,7 +1,6 @@
 import { Autocomplete, Box, Button, Skeleton, styled, TextField, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Department, formatTime, User } from "../interfaces/type";
-import axios from "axios";
 import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 // import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
@@ -16,7 +15,7 @@ import { Bounce, toast } from "react-toastify";
 import { useTranslation } from 'react-i18next';
 import i18n from "../i18n";
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
-import { getAllDepartmentName } from "../apis/CheckinDataApi";
+import { getAllDepartmentName, getCheckinDataByDepartmentId } from "../apis/CheckinDataApi";
 
 
 export default function CheckInTableByDepartment() {
@@ -144,16 +143,6 @@ export default function CheckInTableByDepartment() {
     }
     useEffect(() => {
         async function fetchDepartment() {
-            // const apiURL = `${import.meta.env.VITE_API_URL}api/departments`;
-            // await axios.get(apiURL).then((response) => {
-            //     const data = response.data;
-            //     // const formattedData = data.map((item: Department) => {
-            //     //     return item.title                   
-            //     // })
-            //     setDepartments(data);
-            // }).catch((error) => {
-            //     console.error('Error fetching data:', error);
-            // })
             const data = await getAllDepartmentName();
             setDepartments(data);
         }
@@ -192,19 +181,8 @@ export default function CheckInTableByDepartment() {
             const endYear = endDate.year();
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
-            const apiURL = `${import.meta.env.VITE_API_URL}api/dataonly_apiacheckin/GetCheckInByDepartmentId`;
-            await axios.get(apiURL, {
-                params: {
-                    id: departmentId,
-                    day: startDay,
-                    month: startMonth,
-                    year: startYear,
-                    dayTo: endDay,
-                    monthTo: endMonth,
-                    yearTo: endYear
-                }
-            }).then((response) => {
-                const data = response.data;
+            try {
+                const data = await getCheckinDataByDepartmentId(departmentId, startDay, startMonth, startYear, endDay, endMonth, endYear);
                 const formattedData = data.map((item: User, index: number) => {
                     const inAt = item.inAt ? new Date(item.inAt) : null;
                     const outAt = item.outAt ? new Date(item.outAt) : null;
@@ -236,9 +214,11 @@ export default function CheckInTableByDepartment() {
                 setTimeout(() => {
                     setLoading(false);
                 }, 2000)
-            }).catch((error) => {
-                console.error('Error fetching data:', error);
-            })
+
+            } catch (error) {
+                console.log(error);
+            }
+           
         }
     };
     async function handleDepartmentChange(value: number | undefined) {

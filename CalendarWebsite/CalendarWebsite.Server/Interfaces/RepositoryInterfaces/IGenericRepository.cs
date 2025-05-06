@@ -11,7 +11,7 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
 
         public Task DeleteAsync(T entity);
         public Task UpdateAsync(T entity);
-        
+
 
         public Task<List<T>> FindList(
             Expression<Func<T, bool>> predicate,
@@ -27,5 +27,12 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             bool disableTracking = true,
             bool distinct = false);
+        public Task<(List<T> Items, int TotalCount)> FindListPagedAsync(
+            Expression<Func<T, bool>> predicate,
+            int page,
+            int pageSize,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            bool disableTracking = true);
     }
 }

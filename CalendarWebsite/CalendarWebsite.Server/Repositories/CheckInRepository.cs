@@ -17,7 +17,7 @@ namespace CalendarWebsite.Server.repositories
 
 
         public async Task<int> CountRecordsByMonth(int month, int year, string userId)
-        {
+        {   
             return await _context.Users
                 .Where(e => e.UserId == userId && e.InAt.HasValue && e.InAt.Value.Month == month && e.InAt.Value.Year == year)
                 .Where(e => EF.Functions.DateDiffHour(e.InAt, e.OutAt) > 6)
