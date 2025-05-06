@@ -43,11 +43,11 @@ export async function getCheckinDataByUserIdPaging(month: number, year: number, 
         console.error("Error when fetching data: ", error);
     }
 }
-export async function getCheckinDataByUserId(month: number, year: number, userId: string, page: number,  pageSize: number) {
+export async function getCheckinDataByUserId(month: number, year: number, userId: string) {
     const apiUrl = `${API_BASE_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
     try {
         const response = await axios.get(apiUrl, {
-            params: { month, year, userId, page, pageSize },
+            params: { month, year, userId },
         })
         return response.data;
     } catch (error) {
