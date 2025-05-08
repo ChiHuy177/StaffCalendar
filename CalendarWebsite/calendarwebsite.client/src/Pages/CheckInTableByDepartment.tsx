@@ -194,7 +194,7 @@ export default function CheckInTableByDepartment() {
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
             try {
-                const data = await getCheckinDataByDepartmentId(departmentId, userId ,startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
+                const data = await getCheckinDataByDepartmentId(departmentId, userId, startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
                 const formattedData = data.items.map((item: User, index: number) => {
                     const rowIndex = (page * pageSize) + index + 1;
                     const inAt = item.inAt ? new Date(item.inAt) : null;
@@ -251,10 +251,10 @@ export default function CheckInTableByDepartment() {
 
     function handleSelectionOfStaffNameChange(value: string | undefined) {
         console.log(value);
-        if(value!==undefined){
+        if (value !== undefined) {
             const parts = value.split('-');
             const email = parts.length > 1 ? parts[1].trim() : null;
-            if(email !== null){
+            if (email !== null) {
                 setUserId(email);
             }
         }
@@ -289,6 +289,34 @@ export default function CheckInTableByDepartment() {
                     onChange={(_event, value) => handleDepartmentChange(value?.key)}
                     renderInput={(params) => (
                         <TextField {...params} label={t('selectDept')} />
+                    )}
+                />
+            </div>
+            <div className="mb-8 flex flex-col items-center space-y-4">
+                <Autocomplete
+                    disablePortal
+                    options={nameOfUsers.map((name: string, index: number) => ({
+                        label: name,
+                        key: index
+                    }))}
+                    sx={{
+                        width: '50%',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        '& .MuiInputBase-root': {
+                            borderRadius: '8px',
+                            border: '2px solid #083B75',
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#083B75',
+                            backgroundColor: 'white',
+                            padding: '0 5px',
+                            borderRadius: '4px',
+                        },
+                    }}
+                    onChange={(_event, value) => handleSelectionOfStaffNameChange(value?.label)}
+                    renderInput={(params) => (
+                        <TextField {...params} label={t('selectStaff')} />
                     )}
                 />
             </div>
