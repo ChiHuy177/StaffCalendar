@@ -133,7 +133,7 @@ namespace CalendarWebsite.Server.services
             );
         }
 
-        public async Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetByDepartmentPaging(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
+        public async Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetByDepartmentPaging(int departmentId, string userId, int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
         {
             DateTime startDate;
             DateTime endDate;
@@ -149,7 +149,7 @@ namespace CalendarWebsite.Server.services
 
             // Lấy danh sách Email của người dùng trong phòng ban
             var userEmails = await _personalRepository.FindListSelect(
-                predicate: w => w.DepartmentId == id && w.Email != null,
+                predicate: w => w.DepartmentId == departmentId && w.Email != null && w.Email == userId,
                 selector: w => w.Email!
             );
 
@@ -175,7 +175,7 @@ namespace CalendarWebsite.Server.services
             );
             var result2 = await _checkinRepository.FindListSelect(
                 predicate: e => userEmails.Contains(e.UserId),
-                selector: e => e.FullName,
+                selector: e => e.FullName + " - " + e.UserId,
                 distinct: true
 
             );

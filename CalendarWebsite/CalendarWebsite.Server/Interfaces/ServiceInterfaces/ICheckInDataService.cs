@@ -9,7 +9,7 @@ namespace CalendarWebsite.Server.interfaces
         public Task<IEnumerable<string>> GetAllUsersName();
         public Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetUserByUserIdPaging(int month,int year ,string userID, int page, int pageSize);
         public Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetAllCheckinInDayRangePaging(int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize);
-         public Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetByDepartmentPaging(int id,int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize);
+         public Task<(IEnumerable<DataOnly_APIaCheckIn> Items, int TotalCount)> GetByDepartmentPaging(int departmentId, string userId,int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize);
        
         public Task<IEnumerable<DataOnly_APIaCheckIn>> GetAllCheckinInDayRange(int day, int month, int year, int dayTo, int monthTo, int yearTo);
         public Task<int> CountRecordsByMonth(int month, int year, string userId);

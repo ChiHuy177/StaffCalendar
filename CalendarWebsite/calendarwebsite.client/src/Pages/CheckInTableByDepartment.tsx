@@ -27,6 +27,7 @@ export default function CheckInTableByDepartment() {
     const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const [rowCount, setRowCount] = useState(0);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
+    const [userId, setUserId] = useState<string>("");
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
@@ -193,7 +194,7 @@ export default function CheckInTableByDepartment() {
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
             try {
-                const data = await getCheckinDataByDepartmentId(departmentId, startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
+                const data = await getCheckinDataByDepartmentId(departmentId, userId ,startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
                 const formattedData = data.items.map((item: User, index: number) => {
                     const rowIndex = (page * pageSize) + index + 1;
                     const inAt = item.inAt ? new Date(item.inAt) : null;
@@ -235,7 +236,7 @@ export default function CheckInTableByDepartment() {
         }
     };
     async function handleDepartmentChange(value: number | undefined) {
-        console.log(value);
+        // console.log(value);
         setDepartmentId(value);
         if (value !== undefined)
             fetchAllUserNameByDeparId(value);
@@ -247,6 +248,17 @@ export default function CheckInTableByDepartment() {
     function handlePaginationModelChange(newModel: GridPaginationModel) {
         setPaginationModel(newModel);
         handleFind(newModel.page, newModel.pageSize);
+    }
+
+    function handleSelectionOfStaffNameChange(value: string | undefined) {
+        console.log(value);
+        if(value!==undefined){
+            const parts = value.split('-');
+            const email = parts.length > 1 ? parts[1].trim() : null;
+            if(email !== null){
+                setUserId(email);
+            }
+        }
     }
 
     return (
@@ -303,7 +315,7 @@ export default function CheckInTableByDepartment() {
                             borderRadius: '4px',
                         },
                     }}
-                    onChange={(_event, value) => handleDepartmentChange(value?.key)}
+                    onChange={(_event, value) => handleSelectionOfStaffNameChange(value?.label)}
                     renderInput={(params) => (
                         <TextField {...params} label={t('selectStaff')} />
                     )}

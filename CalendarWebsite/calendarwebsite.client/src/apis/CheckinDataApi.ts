@@ -100,6 +100,7 @@ export async function getCheckinDataByDayRange(
 
 export async function getCheckinDataByDepartmentId(
     id: number,
+    userId: string,
     day: number,
     month: number,
     year: number,
@@ -113,6 +114,7 @@ export async function getCheckinDataByDepartmentId(
         const response = await axios.get(apiUrl, {
             params: {
                 id: id,
+                userId: userId,
                 day: day,
                 month: month,
                 year: year,
