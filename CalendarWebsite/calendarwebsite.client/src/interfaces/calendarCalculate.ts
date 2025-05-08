@@ -60,6 +60,57 @@ export const generateUserEvent = (item: User, t: TranslateFunction): EventInput[
 
     return eventList;
 };
+export const addAbsenceAndHolidayEvents = (
+    start: Date,
+    end: Date,
+    eventList: EventInput[],
+    holidays: string[],
+    datesWithEvents: Set<string>,
+    selectedName: string,
+    t: (key: string) => string
+): EventInput[] => {
+    const current = new Date(start);
+    const today = new Date();
+    
+    // Duyệt qua các ngày trong tháng
+    while (current <= end && current < today) {
+        const day = current.getDay(); // 0: CN, 1: Thứ 2, ..., 6: Thứ 7
+        const isoDate = current.toISOString().slice(0, 10);
+        const isHoliday = holidays.includes(isoDate); // Kiểm tra ngày lễ
+        const isWeekday = day > 1 && day <= 6; // Kiểm tra ngày trong tuần (Thứ 2 - Thứ 6)
+
+        // Nếu là ngày lễ
+        if (isHoliday) {
+            eventList.push({
+                id: `holiday-${isoDate}`,
+                title: t('holidays'), // Tên sự kiện ngày lễ
+                start: new Date(isoDate),
+                extendedProps: {
+                    description: t('holidays'),
+                    staffName: selectedName,
+                },
+                className: 'bg-green-600 text-white rounded px-2',
+            });
+        }
+        // Nếu là ngày trong tuần và không có sự kiện
+        else if (isWeekday && !datesWithEvents.has(isoDate)) {
+            eventList.push({
+                id: `nopay-${isoDate}`,
+                title: t('Absent'), // Tên sự kiện nghỉ không lương
+                start: new Date(isoDate),
+                extendedProps: {
+                    description: t('Absent'),
+                    staffName: selectedName,
+                },
+                className: 'bg-red-600 text-white rounded px-2',
+            });
+        }
+
+        current.setDate(current.getDate() + 1); // Chuyển sang ngày tiếp theo
+    }
+    
+    return eventList; // Trả về danh sách sự kiện đã được cập nhật
+};
 
 function isLate(date: string): boolean {
     const parsedDate = new Date(date);
