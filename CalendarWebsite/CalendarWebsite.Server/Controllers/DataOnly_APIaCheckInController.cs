@@ -42,16 +42,16 @@ namespace CalendarWebsite.Server.Controllers
                 items,
                 totalCount
             });
-            
+
         }
 
-        
+
         [HttpGet("GetUserByUserId")]
         public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserId(int month, int year, string userID)
         {
             var result = await _checkInDataService.GetUserByUserId(month, year, userID);
             return result == null ? NotFound() : Ok(result);
-            
+
         }
 
         [HttpGet("GetAllUsersName")]
@@ -88,10 +88,10 @@ namespace CalendarWebsite.Server.Controllers
 
 
         [HttpGet("GetCheckInByDepartmentId")]
-        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
+        public async Task<ActionResult<DataOnly_APIaCheckIn>> GetCheckInByDepartmentId(int id, string userId, int day, int month, int year, int dayTo, int monthTo, int yearTo, int page, int pageSize)
         {
-            var (items, totalCount) = await _checkInDataService.GetByDepartmentPaging(id, day, month, year, dayTo, monthTo, yearTo, page, pageSize);
-            if (items == null || !items.Any())
+            var (items, totalCount) = await _checkInDataService.GetByDepartmentPaging(id, userId, day, month, year, dayTo, monthTo, yearTo, page, pageSize);
+            if (items == null)
             {
                 return NotFound();
             }
@@ -101,6 +101,12 @@ namespace CalendarWebsite.Server.Controllers
                 items,
                 totalCount
             });
+        }
+        [HttpGet("GetAllFullNameByDepartmentId")]
+        public async Task<ActionResult<string>> GetAllFullNameByDepartmentId(int id)
+        {
+            var result = await _checkInDataService.GetAllUserFullNameByDepartmentId(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
     }

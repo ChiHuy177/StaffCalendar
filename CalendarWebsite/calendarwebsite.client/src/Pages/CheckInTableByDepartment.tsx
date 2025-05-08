@@ -15,17 +15,19 @@ import { Bounce, toast } from "react-toastify";
 import { useTranslation } from 'react-i18next';
 import i18n from "../i18n";
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
-import { getAllDepartmentName, getCheckinDataByDepartmentId } from "../apis/CheckinDataApi";
+import { getAllDepartmentName, getCheckinDataByDepartmentId, getUserFullNameByDepartmentId } from "../apis/CheckinDataApi";
 
 
 export default function CheckInTableByDepartment() {
     const [departments, setDepartments] = useState<Department[]>([]);
+    const [nameOfUsers, setNameOfUsers] = useState<string[]>([]);
     const [rows, setRows] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
     const [departmentId, setDepartmentId] = useState<number | undefined>(undefined);
     const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const [rowCount, setRowCount] = useState(0);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
+    const [userId, setUserId] = useState<string>("");
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
@@ -149,7 +151,15 @@ export default function CheckInTableByDepartment() {
             setDepartments(data);
         }
         fetchDepartment();
+
     }, [])
+
+
+    async function fetchAllUserNameByDeparId(id: number) {
+        const data = await getUserFullNameByDepartmentId(id);
+        setNameOfUsers(data);
+    }
+
     async function handleFind(page: number, pageSize: number) {
         setLoading(true);
         const newValue = dateValue;
@@ -184,7 +194,7 @@ export default function CheckInTableByDepartment() {
 
             console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
             try {
-                const data = await getCheckinDataByDepartmentId(departmentId, startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
+                const data = await getCheckinDataByDepartmentId(departmentId, userId ,startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
                 const formattedData = data.items.map((item: User, index: number) => {
                     const rowIndex = (page * pageSize) + index + 1;
                     const inAt = item.inAt ? new Date(item.inAt) : null;
@@ -222,19 +232,33 @@ export default function CheckInTableByDepartment() {
             } catch (error) {
                 console.log(error);
             }
-           
+
         }
     };
     async function handleDepartmentChange(value: number | undefined) {
+        // console.log(value);
         setDepartmentId(value);
+        if (value !== undefined)
+            fetchAllUserNameByDeparId(value);
     }
     async function handleDateRangeChange(newValue: [Dayjs | null, Dayjs | null]) {
         setDateValue(newValue);
     }
 
-    function handlePaginationModelChange(newModel : GridPaginationModel){
+    function handlePaginationModelChange(newModel: GridPaginationModel) {
         setPaginationModel(newModel);
         handleFind(newModel.page, newModel.pageSize);
+    }
+
+    function handleSelectionOfStaffNameChange(value: string | undefined) {
+        console.log(value);
+        if(value!==undefined){
+            const parts = value.split('-');
+            const email = parts.length > 1 ? parts[1].trim() : null;
+            if(email !== null){
+                setUserId(email);
+            }
+        }
     }
 
     return (
@@ -266,6 +290,34 @@ export default function CheckInTableByDepartment() {
                     onChange={(_event, value) => handleDepartmentChange(value?.key)}
                     renderInput={(params) => (
                         <TextField {...params} label={t('selectDept')} />
+                    )}
+                />
+            </div>
+            <div className="mb-8 flex flex-col items-center space-y-4">
+                <Autocomplete
+                    disablePortal
+                    options={nameOfUsers.map((name: string, index: number) => ({
+                        label: name,
+                        key: index
+                    }))}
+                    sx={{
+                        width: '50%',
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        '& .MuiInputBase-root': {
+                            borderRadius: '8px',
+                            border: '2px solid #083B75',
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#083B75',
+                            backgroundColor: 'white',
+                            padding: '0 5px',
+                            borderRadius: '4px',
+                        },
+                    }}
+                    onChange={(_event, value) => handleSelectionOfStaffNameChange(value?.label)}
+                    renderInput={(params) => (
+                        <TextField {...params} label={t('selectStaff')} />
                     )}
                 />
             </div>
@@ -336,7 +388,7 @@ export default function CheckInTableByDepartment() {
                         fontWeight: 'bold',  // Làm chữ đậm để dễ nhìn
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',  // Thêm hiệu ứng đổ bóng cho nút
                     }}
-                    onClick={() =>handleFind(paginationModel.page, paginationModel.pageSize)}
+                    onClick={() => handleFind(paginationModel.page, paginationModel.pageSize)}
                 >
                     {t('Find')}
                 </Button>
@@ -357,7 +409,7 @@ export default function CheckInTableByDepartment() {
                         columns={columns}
                         paginationMode='server'
                         rowCount={rowCount}
-                        pageSizeOptions={[5,10, 20, 50]}
+                        pageSizeOptions={[5, 10, 20, 50]}
                         paginationModel={paginationModel}
                         onPaginationModelChange={handlePaginationModelChange}
                         localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}

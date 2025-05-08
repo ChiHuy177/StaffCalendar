@@ -96,3 +96,9 @@ GET {{CalendarWebsite.Server_HostAddress}}/api/departments/{{id}}
 GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetCheckInByDepartmentId?id={{id}}&day={{day}}&month={{month}}&year={{year}}&dayTo={{dayTo}}&monthTo={{monthTo}}&yearTo={{yearTo}}
 
 ###
+
+@page=0
+@pageSize=0
+GET {{CalendarWebsite.Server_HostAddress}}/api/dataonly_apiacheckin/GetCheckInByDepartmentId?id={{id}}&userId={{userId}}&day={{day}}&month={{month}}&year={{year}}&dayTo={{dayTo}}&monthTo={{monthTo}}&yearTo={{yearTo}}&page={{page}}&pageSize={{pageSize}}
+
+###

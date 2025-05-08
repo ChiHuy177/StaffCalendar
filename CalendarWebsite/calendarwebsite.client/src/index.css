@@ -16,3 +16,6 @@
 .css-1ll44ll-MuiOutlinedInput-notchedOutline {
   border: none;
 }
+header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionFixed.mui-fixed.css-zanzjh-MuiPaper-root-MuiAppBar-root{
+  padding-right: 0 !important;
+}

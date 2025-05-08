@@ -21,8 +21,7 @@ namespace CalendarWebsite.Server.services
                 distinct: true,
                 disableTracking: true
             );
-            return result;
-            
+            return result;         
         }
 
         public async Task<PersonalProfile> GetById(long id)
