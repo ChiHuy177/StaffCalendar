@@ -236,7 +236,6 @@ export default function CheckInTableByDepartment() {
         }
     };
     async function handleDepartmentChange(value: number | undefined) {
-        // console.log(value);
         setDepartmentId(value);
         if (value !== undefined)
             fetchAllUserNameByDeparId(value);
@@ -290,34 +289,6 @@ export default function CheckInTableByDepartment() {
                     onChange={(_event, value) => handleDepartmentChange(value?.key)}
                     renderInput={(params) => (
                         <TextField {...params} label={t('selectDept')} />
-                    )}
-                />
-            </div>
-            <div className="mb-8 flex flex-col items-center space-y-4">
-                <Autocomplete
-                    disablePortal
-                    options={nameOfUsers.map((name: string, index: number) => ({
-                        label: name,
-                        key: index
-                    }))}
-                    sx={{
-                        width: '50%',
-                        backgroundColor: 'white',
-                        borderRadius: '8px',
-                        '& .MuiInputBase-root': {
-                            borderRadius: '8px',
-                            border: '2px solid #083B75',
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: '#083B75',
-                            backgroundColor: 'white',
-                            padding: '0 5px',
-                            borderRadius: '4px',
-                        },
-                    }}
-                    onChange={(_event, value) => handleSelectionOfStaffNameChange(value?.label)}
-                    renderInput={(params) => (
-                        <TextField {...params} label={t('selectStaff')} />
                     )}
                 />
             </div>
