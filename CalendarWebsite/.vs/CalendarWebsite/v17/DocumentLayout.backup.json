@@ -314,8 +314,7 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Controllers\\ExportController.cs",
               "ViewState": "AgIAACQAAAAAAAAAAAAQwCkAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-21T04:07:28.948Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-21T04:07:28.948Z"
             },
             {
               "$type": "Document",
@@ -347,9 +346,9 @@
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Program.cs",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Program.cs",
-              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Program.cs*",
-              "RelativeToolTip": "CalendarWebsite.Server\\Program.cs*",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAtwDYAAAA/AAAAAAAAAA==",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Program.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Program.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAtwDAAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-11T02:03:03.929Z",
               "EditorCaption": ""

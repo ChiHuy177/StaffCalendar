@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function getAllUserName() {
@@ -37,6 +38,20 @@ export async function getCheckinDataByUserIdPaging(month: number, year: number, 
     try {
         const response = await axios.get(apiUrl, {
             params: { month, year, userId, page, pageSize },
+        })
+        return response.data;
+    } catch (error) {
+        console.error("Error when fetching data: ", error);
+    }
+}
+export async function getUserFullNameByDepartmentId(id:number) {
+    if(id === undefined){
+        return;
+    }
+    const apiUrl = `${API_BASE_URL}api/DataOnly_APIaCheckIn/GetAllFullNameByDepartmentId`;
+    try {
+        const response = await axios.get(apiUrl, {
+            params: { id : id },
         })
         return response.data;
     } catch (error) {

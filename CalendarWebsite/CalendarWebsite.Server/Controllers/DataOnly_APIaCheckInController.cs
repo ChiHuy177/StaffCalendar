@@ -102,6 +102,11 @@ namespace CalendarWebsite.Server.Controllers
                 totalCount
             });
         }
+        [HttpGet("GetAllFullNameByDepartmentId")]
+        public async Task<ActionResult<string>> GetAllFullNameByDepartmentId(int id){
+            var result = await _checkInDataService.GetAllUserFullNameByDepartmentId(id);
+            return result == null ? NotFound() : Ok(result);
+        }
 
     }
 }

@@ -167,5 +167,19 @@ namespace CalendarWebsite.Server.services
 
             return (items, totalCount);
         }
+    
+        public async Task<IEnumerable<string>> GetAllUserFullNameByDepartmentId(int id){
+            var userEmails = await _personalRepository.FindListSelect(
+                predicate: w => w.DepartmentId == id && w.Email != null,
+                selector: w => w.Email!
+            );
+            var result2 = await _checkinRepository.FindListSelect(
+                predicate: e => userEmails.Contains(e.UserId),
+                selector: e => e.FullName,
+                distinct: true
+
+            );
+            return result2;
+        }
     }
 }

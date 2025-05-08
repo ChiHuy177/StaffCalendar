@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import CalendarComponent from "./Pages/CalendarStaffPage";
 import CheckinTablePage from "./Pages/CheckinTable";
-import DashboardLayout from "./Pages/DashboardLayout";
+import DashboardLayout from "./layout/DashboardLayout";
 import CheckInByDayTable from "./Pages/CheckInByDayTable";
 import CheckInTableByDepartment from "./Pages/CheckInTableByDepartment";
 
