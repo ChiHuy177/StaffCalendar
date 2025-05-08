@@ -11,6 +11,8 @@
         "byDay": "Staff checkin table by day",
         "byDept": "Staff checkin table by department"
     },
+    "holidays":"Holiday",
+    "Absent":"Absent",
     "workingDays": "Total working days",
     "selectName": "Select staff name",
     "selectMonth": "Select month",

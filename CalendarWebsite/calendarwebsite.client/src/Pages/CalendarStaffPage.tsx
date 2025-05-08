@@ -7,6 +7,9 @@ import { Bounce, toast } from 'react-toastify';
 import { User } from '../interfaces/type';
 import { useTranslation } from 'react-i18next';
 import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
+import dayjs from 'dayjs';
+import { holidays } from '../interfaces/holidays';
+import { generateUserEvent } from '../interfaces/calendarCalculate';
 
 export default function CalendarComponent() {
     const [loading, setLoading] = useState(false);
@@ -98,8 +101,10 @@ export default function CalendarComponent() {
                                 {new Date(selectedEvent.start as string).toLocaleString('vi-VN')}
                             </p>
                             <p
-                                className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === t('InLate') || selectedEvent.extendedProps?.description === t('OutEarly')
-                                    
+                                className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === t('InLate')
+                                    || selectedEvent.extendedProps?.description === t('OutEarly')
+                                    || selectedEvent.extendedProps?.description === t('Absent')
+
                                     ? 'bg-red-100 text-red-600'
                                     : 'bg-green-100 text-green-600'
                                     }`}
@@ -114,24 +119,12 @@ export default function CalendarComponent() {
     };
 
     // check date in
-    function isLate(date: string): boolean {
-        const parsedDate = new Date(date);
-        const hours = parsedDate.getHours();
-        const minutes = parsedDate.getMinutes();
 
-        return (hours > 8 || (hours === 7 && minutes > 30));
-    }
-    function isGoHomeEarly(date: string): boolean {
-        const parsedDate = new Date(date);
-        const hours = parsedDate.getHours();
-        const minutes = parsedDate.getMinutes();
-
-        return hours < 16 || (hours === 16 && minutes < 30);
-    }
 
     useEffect(() => {
         async function fetchAllUserName() {
             const data = await getAllUserName();
+            data.push("huync@becawifi.vn - Nguyễn Chí Huy")
             setNameOfUsers(data);
         }
         getWorkDaysInitial('');
@@ -195,64 +188,30 @@ export default function CalendarComponent() {
 
                 const eventList: EventInput[] = [];
                 data.forEach((item: User) => {
-                    const adjustedStart = new Date(item.inAt);
-                    adjustedStart.setHours(adjustedStart.getHours() + 7);
+                    const userEvents = generateUserEvent(item, t);
+                    eventList.push(...userEvents);  
+                }); 
+                const start = new Date(calendarApi.view.currentStart);
+                const end = new Date(calendarApi.view.currentEnd);
 
-                    const adjustedEnd = new Date(item.outAt);
-                    adjustedEnd.setHours(adjustedEnd.getHours() + 7);
+                const datesWithEvents = new Set(
+                    eventList
+                        .filter(e => e.start)
+                        .map(e => dayjs(e.start as string | Date).format('YYYY-MM-DD'))
+                );
 
-                    if (isLate(adjustedStart.toString())) {
-                        eventList.push({
-                            id: item.id?.toString(),
-                            title: t('InLate'),
-                            start: adjustedStart,
-                            extendedProps: {
-                                description: t('InLate'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-red-400 text-black rounded px-2',
-                        });
-                    } else {
-                        eventList.push({
-                            id: item.id?.toString(),
-                            title: t('In time'),
-                            start: adjustedStart,
-                            extendedProps: {
-                                description: t('OnTime'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-green-400 text-black rounded px-2',
-                        });
-                    }
-
-                    if (isGoHomeEarly(adjustedEnd.toString())) {
-                        eventList.push({
-                            id: item.id?.toString() + '-out',
-                            title: t('OutEarly'),
-                            start: adjustedEnd,
-                            extendedProps: {
-                                description: t('OutEarly'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-yellow-400 text-black rounded px-2',
-                        });
-                    } else {
-                        eventList.push({
-                            id: item.id?.toString() + '-out',
-                            title: t('Out time'),
-                            start: adjustedEnd,
-                            extendedProps: {
-                                description: t('OnTime'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-green-400 text-black rounded px-2',
-                        });
-                    }
-                });
-
+                const updatedEventList = addAbsenceAndHolidayEvents(
+                    start,
+                    end,
+                    eventList,
+                    holidays, // Danh sách các ngày lễ
+                    datesWithEvents,
+                    selectedName,
+                    t
+                );
                 setTimeout(() => {
                     setLoading(false);
-                    setEvents(eventList);
+                    setEvents(updatedEventList);
                     getWorkDays();
                 }, 1000);
             } catch (error) {
@@ -299,63 +258,32 @@ export default function CalendarComponent() {
                 const eventList: EventInput[] = [];
 
                 data.forEach((item: User) => {
-                    const adjustedStart = new Date(item.inAt);
-                    adjustedStart.setHours(adjustedStart.getHours() + 7);
-
-                    const adjustedEnd = new Date(item.outAt);
-                    adjustedEnd.setHours(adjustedEnd.getHours() + 7);
-                    if (isLate(adjustedStart.toString())) {
-                        eventList.push({
-                            id: item.id?.toString(),
-                            title: t('InLate'),
-                            start: adjustedStart,
-                            extendedProps: {
-                                description: t('InLate'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-red-400 text-black rounded px-2',
-                        });
-                    } else {
-                        eventList.push({
-                            id: item.id?.toString(),
-                            title: t('In time'),
-                            start: adjustedStart,
-                            extendedProps: {
-                                description: t('OnTime'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-green-400 text-black rounded px-2',
-                        });
-                    }
-
-                    if (isGoHomeEarly(adjustedEnd.toString())) {
-                        eventList.push({
-                            id: item.id?.toString() + '-out',
-                            title: t('OutEarly'),
-                            start: adjustedEnd,
-                            extendedProps: {
-                                description: t('OutEarly'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-yellow-400 text-black rounded px-2',
-                        });
-                    } else {
-                        eventList.push({
-                            id: item.id?.toString() + '-out',
-                            title: t('Out time'),
-                            start: adjustedEnd,
-                            extendedProps: {
-                                description: t('OnTime'),
-                                staffName: item.fullName,
-                            },
-                            className: 'bg-green-400 text-black rounded px-2',
-                        });
-                    }
+                    const userEvents = generateUserEvent(item, t);
+                    eventList.push(...userEvents);  // Thêm các sự kiện vào danh sách eventList
                 });
 
+                const start = new Date(calendarApi.view.currentStart);
+                const end = new Date(calendarApi.view.currentEnd);
+
+                const datesWithEvents = new Set(
+                    eventList
+                        .filter(e => e.start)
+                        .map(e => dayjs(e.start as string | Date).format('YYYY-MM-DD'))
+                );
+
+                
+                const updatedEventList = addAbsenceAndHolidayEvents(
+                    start,
+                    end,
+                    eventList,
+                    holidays, // Danh sách các ngày lễ
+                    datesWithEvents,
+                    selectedName,
+                    t
+                );
                 setTimeout(() => {
                     setLoading(false);
-                    setEvents(eventList);
+                    setEvents(updatedEventList);
                     getWorkDays();
                 }, 1000);
             } catch (error) {
@@ -364,6 +292,58 @@ export default function CalendarComponent() {
             }
         }
     };
+    const addAbsenceAndHolidayEvents = (
+        start: Date,
+        end: Date,
+        eventList: EventInput[],
+        holidays: string[],
+        datesWithEvents: Set<string>,
+        selectedName: string,
+        t: (key: string) => string
+    ): EventInput[] => {
+        const current = new Date(start);
+        const today = new Date();
+        
+        // Duyệt qua các ngày trong tháng
+        while (current <= end && current < today) {
+            const day = current.getDay(); // 0: CN, 1: Thứ 2, ..., 6: Thứ 7
+            const isoDate = current.toISOString().slice(0, 10);
+            const isHoliday = holidays.includes(isoDate); // Kiểm tra ngày lễ
+            const isWeekday = day > 1 && day <= 6; // Kiểm tra ngày trong tuần (Thứ 2 - Thứ 6)
+    
+            // Nếu là ngày lễ
+            if (isHoliday) {
+                eventList.push({
+                    id: `holiday-${isoDate}`,
+                    title: t('holidays'), // Tên sự kiện ngày lễ
+                    start: new Date(isoDate),
+                    extendedProps: {
+                        description: t('holidays'),
+                        staffName: selectedName,
+                    },
+                    className: 'bg-green-600 text-white rounded px-2',
+                });
+            }
+            // Nếu là ngày trong tuần và không có sự kiện
+            else if (isWeekday && !datesWithEvents.has(isoDate)) {
+                eventList.push({
+                    id: `nopay-${isoDate}`,
+                    title: t('Absent'), // Tên sự kiện nghỉ không lương
+                    start: new Date(isoDate),
+                    extendedProps: {
+                        description: t('Absent'),
+                        staffName: selectedName,
+                    },
+                    className: 'bg-red-600 text-white rounded px-2',
+                });
+            }
+    
+            current.setDate(current.getDate() + 1); // Chuyển sang ngày tiếp theo
+        }
+        
+        return eventList; // Trả về danh sách sự kiện đã được cập nhật
+    };
+    
 
     const handleEventClick = (info: EventClickArg) => {
         setAnchorEl(info.el); // Set the clicked element as anchor
@@ -477,8 +457,12 @@ export default function CalendarComponent() {
                             dayMaxEventRows={true}
                             eventContent={(arg) => (
                                 <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
-                                    <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'} </p>
-                                    <p className="text-gray-600">{arg.event.extendedProps?.description}</p>
+                                    {arg.event.title == t('Absent') || arg.event.title == t('holidays') ?
+                                        <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleDateString('vi-VN') : 'N/A'} </p>
+                                        : <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'} </p>
+                                    }
+                                    {/* <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'} </p> */}
+                                    <p className="text-black-600">{arg.event.extendedProps?.description}</p>
                                 </div>
                             )}
 

@@ -74,3 +74,4 @@ export function formatDate(dateString: string): string {
 
     return new Intl.DateTimeFormat('vi-VN', options).format(date);
 }
+

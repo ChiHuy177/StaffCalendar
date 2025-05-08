@@ -9,6 +9,8 @@
         "byDay": "Bảng chấm công nhân viên theo ngày",
         "byDept": "Bảng chấm công nhân viên theo phòng ban"
     },
+    "holidays":"Nghỉ lễ",
+    "Absent":"Vắng không lương",
     "staff": "Nhân viên",
     "time": "Thời gian",
     "workingDays": "Tổng số ngày làm việc của nhân viên",

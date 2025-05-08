@@ -51,7 +51,7 @@ namespace CalendarWebsite.Server.services
         public async Task<IEnumerable<string>> GetAllUsersName()
         {
             return await _checkinRepository.FindListSelect(
-                 predicate: e => e.UserId != "NULL",
+                 predicate: e => e.UserId != "NULL" ,
                  selector: e => e.UserId + " - " + e.FullName,
                  distinct: true
              );
@@ -111,7 +111,7 @@ namespace CalendarWebsite.Server.services
         public async Task<IEnumerable<DataOnly_APIaCheckIn>> GetUserByUserId(int month, int year, string userID)
         {
             Expression<Func<DataOnly_APIaCheckIn, bool>> predicate = w =>
-                w.UserId == userID &&
+                w.UserId == userID  &&
                 w.InAt.HasValue &&
                 w.InAt.Value.Month == month &&
                 w.InAt.Value.Year == year;
