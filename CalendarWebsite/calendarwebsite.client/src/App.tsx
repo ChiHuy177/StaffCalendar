@@ -2,7 +2,7 @@
 import './App.css';
 import { ToastContainer, Bounce } from 'react-toastify';
 // import DashboardLayout from './Pages/DashboardLayout';
-import { Routes } from './Routes';
+import { Routes } from './routing/Routes';
 
 import './i18n';
 

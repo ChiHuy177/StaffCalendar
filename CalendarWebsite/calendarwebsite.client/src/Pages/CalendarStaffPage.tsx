@@ -46,6 +46,7 @@ export default function CalendarComponent() {
     };
 
     const getWorkDays = async () => {
+        console.log("Call api")
         const calendarApi = calendarRef.current?.getApi();
         if (calendarApi) {
             const currentViewDate = calendarApi.view.currentStart;
@@ -401,7 +402,7 @@ export default function CalendarComponent() {
                             contentHeight="auto"
                             height="auto"
                             datesSet={() => {
-                                getWorkDays();
+                                // getWorkDays();
                                 getWorkScheduleByMonth();
                             }}
                             dayMaxEventRows={true}

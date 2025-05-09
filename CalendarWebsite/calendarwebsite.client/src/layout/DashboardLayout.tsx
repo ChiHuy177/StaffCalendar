@@ -4,7 +4,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Link, Outlet } from "react-router-dom";
 import LanguageSwitcherButton from "../components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
-import { navigationConfig, NavItemConfig } from "../utils/navItem";
+import { navigationConfig, NavItemConfig } from "../routing/navItem";
 
 const drawerWidth = 240;
 
