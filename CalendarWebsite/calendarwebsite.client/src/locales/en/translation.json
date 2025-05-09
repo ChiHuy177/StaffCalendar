@@ -11,6 +11,7 @@
         "byDay": "Staff checkin table by day",
         "byDept": "Staff checkin table by department"
     },
+    "canNotFind":"Cannot find the works of this staff",
     "holidays":"Holiday",
     "Absent":"Absent",
     "workingDays": "Total working days",

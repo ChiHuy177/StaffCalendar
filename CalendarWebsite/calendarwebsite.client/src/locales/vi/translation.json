@@ -9,6 +9,7 @@
         "byDay": "Bảng chấm công nhân viên theo ngày",
         "byDept": "Bảng chấm công nhân viên theo phòng ban"
     },
+    "canNotFind":"Không tìm thấy lịch làm việc của nhân viên",
     "holidays":"Nghỉ lễ",
     "Absent":"Vắng không lương",
     "staff": "Nhân viên",

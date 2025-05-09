@@ -32,7 +32,7 @@ namespace CalendarWebsite.Server.Controllers
         public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserIdPaging(int month, int year, string userID, int page = 0, int pageSize = 10)
         {
             var (items, totalCount) = await _checkInDataService.GetUserByUserIdPaging(month, year, userID, page, pageSize);
-            if (items == null || !items.Any())
+            if (items == null)
             {
                 return NotFound();
             }

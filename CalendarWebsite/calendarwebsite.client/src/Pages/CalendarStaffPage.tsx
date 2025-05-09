@@ -4,12 +4,12 @@ import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
 import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
-import { User } from '../interfaces/type';
+import { User } from '../utils/type';
 import { useTranslation } from 'react-i18next';
 import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
 import dayjs from 'dayjs';
-import { holidays } from '../interfaces/holidays';
-import { addAbsenceAndHolidayEvents, generateUserEvent } from '../interfaces/calendarCalculate';
+import { holidays } from '../utils/holidays';
+import { addAbsenceAndHolidayEvents, generateUserEvent } from '../utils/calendarCalculate';
 
 export default function CalendarComponent() {
     const [loading, setLoading] = useState(false);

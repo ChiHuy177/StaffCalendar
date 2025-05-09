@@ -1,6 +1,6 @@
 import { Autocomplete, Box, Button, Skeleton, styled, TextField, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Department, formatTime, User } from "../interfaces/type";
+import { Department, formatTime, User } from "../utils/type";
 import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 // import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { formatDate } from "@fullcalendar/core/index.js";
@@ -148,7 +148,12 @@ export default function CheckInTableByDepartment() {
     useEffect(() => {
         async function fetchDepartment() {
             const data = await getAllDepartmentName();
-            setDepartments(data);
+            if (data === undefined) {
+                setDepartments([]);
+            } else {
+                setDepartments(data);
+            }
+
         }
         fetchDepartment();
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { formatTime, User } from '../interfaces/type';
+import { formatTime, User } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -147,8 +147,22 @@ export default function CheckinTablePage() {
                 },
             });
             console.log(response.data)
-            const data = response.data;
 
+
+            const data = response.data;
+            if (data.items.length === 0) {
+                toast.error(t('canNotFind'), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
             const formattedData = data.items.map((item: User, index: number) => {
                 const inAt = item.inAt ? new Date(item.inAt) : null;
                 const outAt = item.outAt ? new Date(item.outAt) : null;
@@ -175,10 +189,9 @@ export default function CheckinTablePage() {
                     totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
                 };
             });
-            console.log(data.totalCount);
             setRowCount(data.totalCount);
             setRows(formattedData);
-            
+
             setTimeout(() => {
                 setLoading(false);
             }, 2000)
@@ -258,12 +271,15 @@ export default function CheckinTablePage() {
     useEffect(() => {
         async function fetchAllUserName() {
             const data = await getAllUserName();
-            setNameOfUsers(data);
+            if (data == undefined) {
+                setNameOfUsers([]);
+            } else
+                setNameOfUsers(data);
         }
         fetchAllUserName();
     }, []);
 
-    async function fetchCheckinData( page : number,  pageSize: number) {
+    async function fetchCheckinData(page: number, pageSize: number) {
         if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
             toast.error(t('error.inValidInput'), {
                 position: "top-center",
@@ -315,7 +331,7 @@ export default function CheckinTablePage() {
         }, 2000)
     };
 
-    function handlePaginationModelChange(newModel : GridPaginationModel){
+    function handlePaginationModelChange(newModel: GridPaginationModel) {
         setPaginationModel(newModel);
         fetchCheckinData(newModel.page, newModel.pageSize);
     }
@@ -459,7 +475,7 @@ export default function CheckinTablePage() {
                         columns={columns}
                         paginationMode='server'
                         rowCount={rowCount}
-                        pageSizeOptions={[5,10, 20, 50]}
+                        pageSizeOptions={[5, 10, 20, 50]}
                         paginationModel={paginationModel}
                         onPaginationModelChange={handlePaginationModelChange}
                         localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}

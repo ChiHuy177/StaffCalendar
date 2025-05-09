@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Box, Button, Skeleton, styled, useMediaQuery, useTheme } from '@mui/material';
 import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
-import { formatTime, User } from '../interfaces/type';
+import { formatTime, User } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
