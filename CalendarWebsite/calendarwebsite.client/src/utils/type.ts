@@ -75,3 +75,18 @@ export function formatDate(dateString: string): string {
     return new Intl.DateTimeFormat('vi-VN', options).format(date);
 }
 
+export type CheckinData = {
+    id: number;
+    userId?: string;
+    inAt: Date;
+    outAt: Date;
+    date: Date;
+    fullName?: string;
+    loaiPhepNam?: string;
+    attendant?: string;
+    tuNgay?: Date;
+    denNgay?: Date;
+    tongSoNgayNghi?: number;
+    ngayYeuCau?: Date;
+    ghiChu?: string;
+}

@@ -58,11 +58,11 @@ export async function getUserFullNameByDepartmentId(id:number) {
         console.error("Error when fetching data: ", error);
     }
 }
-export async function getCheckinDataByUserId(month: number, year: number, userId: string) {
+export async function getCheckinDataByUserId(month: number, year: number, userId: string, fullName: string) {
     const apiUrl = `${API_BASE_URL}api/DataOnly_APIaCheckIn/GetUserByUserId`;
     try {
         const response = await axios.get(apiUrl, {
-            params: { month, year, userId },
+            params: { month, year, userId, fullName },
         })
         return response.data;
     } catch (error) {

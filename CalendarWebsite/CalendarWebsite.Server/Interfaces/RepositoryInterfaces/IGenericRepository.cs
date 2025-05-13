@@ -7,6 +7,8 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
     {
         public Task<IEnumerable<T>> GetAllAsync();
         public Task<T> GetByIdAsync<TKey>(TKey id);
+        public Task<IEnumerable<T>> GetTop100();
+
         public Task AddAsync(T entity);
 
         public Task DeleteAsync(T entity);
@@ -39,5 +41,12 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
             Expression<Func<T, bool>> predicate,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             bool disableTracking = true);
+        public Task<T?> FindOne(
+            Expression<Func<T, bool>> predicate,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            string includeProperties = "",
+            bool disableTracking = false
+            );
+
     }
 }

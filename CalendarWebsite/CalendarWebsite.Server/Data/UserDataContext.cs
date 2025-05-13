@@ -10,5 +10,7 @@ namespace CalendarWebsite.Server.Data
         public DbSet<PersonalProfile> PersonalProfiles { get; set; }
 
         public DbSet<Department> Department { get; set; }
+
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
     }
 }

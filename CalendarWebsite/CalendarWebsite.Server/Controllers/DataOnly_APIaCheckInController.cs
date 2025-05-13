@@ -47,11 +47,12 @@ namespace CalendarWebsite.Server.Controllers
 
 
         [HttpGet("GetUserByUserId")]
-        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserId(int month, int year, string userID)
+        public async Task<ActionResult<IEnumerable<DataOnly_APIaCheckIn>>> GetUserByUserId(int month, int year, string userID, string fullName)
         {
-            var result = await _checkInDataService.GetUserByUserId(month, year, userID);
+            // var result = await _checkInDataService.GetUserByUserId(month, year, userID);
+            // return result == null ? NotFound() : Ok(result);
+            var result = await _checkInDataService.GetAttendanceStatus(month, year, userID, fullName);
             return result == null ? NotFound() : Ok(result);
-
         }
 
         [HttpGet("GetAllUsersName")]
@@ -108,6 +109,7 @@ namespace CalendarWebsite.Server.Controllers
             var result = await _checkInDataService.GetAllUserFullNameByDepartmentId(id);
             return result == null ? NotFound() : Ok(result);
         }
+
 
     }
 }

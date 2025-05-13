@@ -161,6 +161,11 @@ namespace CalendarWebsite.Server.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        public virtual async Task<IEnumerable<T>> GetTop100()
+        {
+            return await _dbSet.Take(100).ToListAsync();
+        }
+
         public virtual async Task<T> GetByIdAsync<TKey>(TKey id)
         {
 
@@ -198,6 +203,34 @@ namespace CalendarWebsite.Server.Repositories
             query = query.Where(predicate);
 
             return await query.CountAsync();
+        }
+        public async Task<T?> FindOne(
+        Expression<Func<T, bool>> predicate,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        string includeProperties = "",
+        bool disableTracking = false)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            foreach (var includeProperty in includeProperties.Split
+                (new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+
+            query = query.Where(predicate);
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.FirstOrDefaultAsync();
         }
     }
 }

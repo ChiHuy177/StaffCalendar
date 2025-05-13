@@ -1,7 +1,10 @@
 ﻿using System.Linq.Expressions;
+using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.interfaces;
 using CalendarWebsite.Server.interfaces.repositoryInterfaces;
+using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
 using CalendarWebsite.Server.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace CalendarWebsite.Server.services
@@ -14,11 +17,16 @@ namespace CalendarWebsite.Server.services
 
         private readonly ICheckInRepository _checkinRepository;
 
-        public APICheckInService(IPersonalProfileRepository personalRepository, ICheckInRepository checkinRepository)
-        {
+        private readonly ILeaveRequestRepository _leaveRequestRepository;
 
+        private readonly UserDataContext _context;
+
+        public APICheckInService(IPersonalProfileRepository personalRepository, ICheckInRepository checkinRepository, ILeaveRequestRepository leaveRequestRepository, UserDataContext context)
+        {
             _personalRepository = personalRepository;
             _checkinRepository = checkinRepository;
+            _context = context;
+            _leaveRequestRepository = leaveRequestRepository;
         }
 
         public Task<int> CountRecordsByMonth(int month, int year, string userId)
@@ -51,7 +59,7 @@ namespace CalendarWebsite.Server.services
         public async Task<IEnumerable<string>> GetAllUsersName()
         {
             return await _checkinRepository.FindListSelect(
-                 predicate: e => e.UserId != "NULL" ,
+                 predicate: e => e.UserId != "NULL",
                  selector: e => e.UserId + " - " + e.FullName,
                  distinct: true
              );
@@ -111,7 +119,7 @@ namespace CalendarWebsite.Server.services
         public async Task<IEnumerable<DataOnly_APIaCheckIn>> GetUserByUserId(int month, int year, string userID)
         {
             Expression<Func<DataOnly_APIaCheckIn, bool>> predicate = w =>
-                w.UserId == userID  &&
+                w.UserId == userID &&
                 w.InAt.HasValue &&
                 w.InAt.Value.Month == month &&
                 w.InAt.Value.Year == year;
@@ -155,7 +163,7 @@ namespace CalendarWebsite.Server.services
 
             if (!userEmails.Any())
             {
-                return (Enumerable.Empty<DataOnly_APIaCheckIn>() , 0);
+                return (Enumerable.Empty<DataOnly_APIaCheckIn>(), 0);
             }
 
             // Lấy tất cả check-in cho các Email trong khoảng thời gian
@@ -167,8 +175,9 @@ namespace CalendarWebsite.Server.services
 
             return (items, totalCount);
         }
-    
-        public async Task<IEnumerable<string>> GetAllUserFullNameByDepartmentId(int id){
+
+        public async Task<IEnumerable<string>> GetAllUserFullNameByDepartmentId(int id)
+        {
             var userEmails = await _personalRepository.FindListSelect(
                 predicate: w => w.DepartmentId == id && w.Email != null,
                 selector: w => w.Email!
@@ -181,5 +190,79 @@ namespace CalendarWebsite.Server.services
             );
             return result2;
         }
+        public async Task<IEnumerable<CheckinDataDTO>> GetAttendanceStatus(int month, int year, string userID, string fullName)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            var checkins = await _checkinRepository.FindList(
+                predicate: w => w.UserId == userID && w.InAt.HasValue &&
+                                w.InAt.Value.Month == month && w.InAt.Value.Year == year,
+                disableTracking: true
+            );
+
+
+            var attendanceList = new List<CheckinDataDTO>();
+
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                var checkin = checkins.FirstOrDefault(c => c.InAt?.Date == date.Date);
+
+                if (checkin != null)
+                {
+                    attendanceList.Add(new CheckinDataDTO
+                    {
+                        Id = checkin.Id,
+                        UserId = checkin.UserId,
+                        InAt = checkin.InAt,
+                        OutAt = checkin.OutAt,
+                        Date = checkin.InAt?.Date,
+                        FullName = checkin.FullName,
+                        Attendant = "Present"
+                    });
+                }
+                else
+                {
+                    var leaveRequest = await _leaveRequestRepository.FindOne(
+                        predicate: r => r.NguoiDeNghi == fullName &&
+                                        r.TuNgay.HasValue &&
+                                        date.Date == r.TuNgay.Value.Date.AddDays(1),
+                        disableTracking: true
+                    );
+                    // Console.WriteLine("LeaveRequest: " + leaveRequest.TuNgay.Value);
+
+                    if (leaveRequest != null)
+                    {
+                        attendanceList.Add(new CheckinDataDTO
+                        {
+                            UserId = userID,
+                            FullName = fullName,
+                            Date = date,
+                            LoaiPhepNam = leaveRequest.LoaiPhepNam,
+                            TuNgay = leaveRequest.TuNgay,
+                            DenNgay = leaveRequest.DenNgay,
+                            NgayYeuCau = leaveRequest.NgayYeuCau,
+                            GhiChu = leaveRequest.GhiChu,
+                            TongSoNgayNghi = leaveRequest.TongSoNgayNghi,
+                            Attendant = leaveRequest.LoaiPhepNam
+                        });
+                    }
+                    else
+                    {
+                        attendanceList.Add(new CheckinDataDTO
+                        {
+                            UserId = userID,
+                            FullName = fullName,
+                            Date = date,
+                            Attendant = "Absent"
+                        });
+                    }
+                }
+            }
+
+            return attendanceList;
+        }
+
+
     }
 }

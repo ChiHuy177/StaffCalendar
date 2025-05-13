@@ -4,9 +4,11 @@ using CalendarWebsite.Server.interfaces;
 using CalendarWebsite.Server.interfaces.repositoryInterfaces;
 using CalendarWebsite.Server.interfaces.serviceInterfaces;
 using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
+using CalendarWebsite.Server.Interfaces.ServiceInterfaces;
 using CalendarWebsite.Server.repositories;
 using CalendarWebsite.Server.Repositories;
 using CalendarWebsite.Server.services;
+using CalendarWebsite.Server.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -31,6 +33,7 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<ICheckInRepository, CheckInRepository>();
             builder.Services.AddScoped<IDeparmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IPersonalProfileRepository, PersonalProfileRepository>();
+            builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 
             //register service
             
@@ -38,6 +41,8 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<IPersonalProfileService, PersonalProfileService>();
             builder.Services.AddScoped<IExportService, ExportService>();
+            builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+
             //add CORS
             builder.Services.AddCors(options =>
             {

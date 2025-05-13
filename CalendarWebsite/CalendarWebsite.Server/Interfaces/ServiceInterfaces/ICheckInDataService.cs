@@ -16,5 +16,6 @@ namespace CalendarWebsite.Server.interfaces
         public Task<IEnumerable<DataOnly_APIaCheckIn>> GetUserByUserId(int month, int year, string userID);
         public Task<IEnumerable<DataOnly_APIaCheckIn>> GetByDepartment(int id, int day, int month, int year, int dayTo, int monthTo, int yearTo);
         public Task<IEnumerable<string>> GetAllUserFullNameByDepartmentId(int id);
+        public Task<IEnumerable<CheckinDataDTO>> GetAttendanceStatus(int month, int year, string userID, string fullName);
     }
 }

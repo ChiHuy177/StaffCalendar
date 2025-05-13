@@ -1,61 +1,79 @@
 import { EventInput } from "@fullcalendar/core/index.js";
-import { User } from "./type";
+import { CheckinData } from "./type";
+
 type TranslateFunction = (key: string) => string;
-export const generateUserEvent = (item: User, t: TranslateFunction): EventInput[] => {
+export const generateUserEvent = (item: CheckinData, t: TranslateFunction): EventInput[] => {
     const eventList: EventInput[] = [];
-
-    const adjustedStart = new Date(item.inAt);
-    adjustedStart.setHours(adjustedStart.getHours() + 7);
-
-    const adjustedEnd = new Date(item.outAt);
-    adjustedEnd.setHours(adjustedEnd.getHours() + 7);
-
-    if (isLate(adjustedStart.toString())) {
+    if (item.attendant === 'P = Phép năm') {
+        console.log('item', item);
+        const adjustedStart = new Date(item.date);
+        adjustedStart.setHours(adjustedStart.getHours() + 7);
         eventList.push({
-            id: item.id?.toString(),
-            title: t('InLate'),
-            start: adjustedStart,
-            extendedProps: {
-                description: t('InLate'),
-                staffName: item.fullName,
-            },
-            className: 'bg-red-400 text-black rounded px-2',
-        });
+                id: item.id?.toString()+'-leave',
+                title: "Nghỉ phép",
+                start: adjustedStart,
+                extendedProps: {
+                    description: item.attendant,
+                    description2: item.ghiChu,
+                    staffName: item.fullName,
+                },
+                className: 'bg-orange-400 text-white rounded px-2',
+            });
     } else {
-        eventList.push({
-            id: item.id?.toString(),
-            title: t('In time'),
-            start: adjustedStart,
-            extendedProps: {
-                description: t('OnTime'),
-                staffName: item.fullName,
-            },
-            className: 'bg-green-400 text-black rounded px-2',
-        });
-    }
+        const adjustedStart = new Date(item.inAt);
+        adjustedStart.setHours(adjustedStart.getHours() + 7);
 
-    if (isGoHomeEarly(adjustedEnd.toString())) {
-        eventList.push({
-            id: item.id?.toString() + '-out',
-            title: t('OutEarly'),
-            start: adjustedEnd,
-            extendedProps: {
-                description: t('OutEarly'),
-                staffName: item.fullName,
-            },
-            className: 'bg-yellow-400 text-black rounded px-2',
-        });
-    } else {
-        eventList.push({
-            id: item.id?.toString() + '-out',
-            title: t('Out time'),
-            start: adjustedEnd,
-            extendedProps: {
-                description: t('OnTime'),
-                staffName: item.fullName,
-            },
-            className: 'bg-green-400 text-black rounded px-2',
-        });
+        const adjustedEnd = new Date(item.outAt);
+        adjustedEnd.setHours(adjustedEnd.getHours() + 7);
+
+        if (isLate(adjustedStart.toString())) {
+            eventList.push({
+                id: item.id?.toString(),
+                title: t('InLate'),
+                start: adjustedStart,
+                extendedProps: {
+                    description: t('InLate'),
+                    staffName: item.fullName,
+                },
+                className: 'bg-red-400 text-black rounded px-2',
+            });
+        } else {
+            eventList.push({
+                id: item.id?.toString(),
+                title: t('In time'),
+                start: adjustedStart,
+                extendedProps: {
+                    description: t('OnTime'),
+                    staffName: item.fullName,
+                },
+                className: 'bg-green-400 text-black rounded px-2',
+            });
+        }
+
+        if (isGoHomeEarly(adjustedEnd.toString())) {
+            eventList.push({
+                id: item.id?.toString() + '-out',
+                title: t('OutEarly'),
+                start: adjustedEnd,
+                extendedProps: {
+                    description: t('OutEarly'),
+                    staffName: item.fullName,
+                },
+                className: 'bg-yellow-400 text-black rounded px-2',
+            });
+        } else {
+            eventList.push({
+                id: item.id?.toString() + '-out',
+                title: t('Out time'),
+                start: adjustedEnd,
+                extendedProps: {
+                    description: t('OnTime'),
+                    staffName: item.fullName,
+                },
+                className: 'bg-green-400 text-black rounded px-2',
+            });
+        }
+
     }
 
     return eventList;
@@ -71,7 +89,7 @@ export const addAbsenceAndHolidayEvents = (
 ): EventInput[] => {
     const current = new Date(start);
     const today = new Date();
-    
+
     // Duyệt qua các ngày trong tháng
     while (current <= end && current < today) {
         const day = current.getDay(); // 0: CN, 1: Thứ 2, ..., 6: Thứ 7
@@ -108,7 +126,7 @@ export const addAbsenceAndHolidayEvents = (
 
         current.setDate(current.getDate() + 1); // Chuyển sang ngày tiếp theo
     }
-    
+
     return eventList; // Trả về danh sách sự kiện đã được cập nhật
 };
 

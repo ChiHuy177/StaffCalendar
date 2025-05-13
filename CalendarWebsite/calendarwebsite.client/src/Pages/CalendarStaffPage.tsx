@@ -4,7 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
 import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
-import { User } from '../utils/type';
+import { CheckinData } from '../utils/type';
 import { useTranslation } from 'react-i18next';
 import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
 import dayjs from 'dayjs';
@@ -38,6 +38,7 @@ export default function CalendarComponent() {
             if (id === '') return;
 
             const valueBeforeDash = id.split('-')[0];
+            console.log("valueBeforeDash", valueBeforeDash);
             const data = await getRecordDataByMonth(month, year, valueBeforeDash);
             setWorkDays(data);
         } else {
@@ -56,8 +57,14 @@ export default function CalendarComponent() {
             if (selectedName === '') return;
 
             const valueBeforeDash = selectedName.split('-')[0];
-            const data = await getRecordDataByMonth(month, year, valueBeforeDash)
-            setWorkDays(data);
+            console.log("valueBeforeDash", valueBeforeDash);
+            try {
+                const data = await getRecordDataByMonth(month, year, valueBeforeDash);
+                setWorkDays(data);
+            } catch (error) {
+                console.error('Error fetching work schedule:', error);
+            }
+
         } else {
             console.error('Calendar API is not available');
         }
@@ -91,7 +98,7 @@ export default function CalendarComponent() {
                 <div className="p-4 max-w-xs">
                     {selectedEvent && (
                         <>
-                            <h2 className="text-lg font-bold text-blue-600 mb-2">
+                            <h2 className="text-lg font-bold text-black-600 mb-2">
                                 {selectedEvent.title}
                             </h2>
                             <h3 className="text-base font-medium text-gray-800 mb-2">
@@ -101,17 +108,32 @@ export default function CalendarComponent() {
                                 <span className="font-semibold text-gray-900">{t('time')}:</span>{' '}
                                 {new Date(selectedEvent.start as string).toLocaleString('vi-VN')}
                             </p>
-                            <p
-                                className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === t('InLate')
-                                    || selectedEvent.extendedProps?.description === t('OutEarly')
-                                    || selectedEvent.extendedProps?.description === t('Absent')
 
-                                    ? 'bg-red-100 text-red-600'
-                                    : 'bg-green-100 text-green-600'
-                                    }`}
-                            >
-                                {selectedEvent.extendedProps?.description}
-                            </p>
+                            <>
+                                {selectedEvent.title === 'Nghỉ phép' ?
+                                    <>
+                                        <p className='text-sm font-medium mt-2 px-3 py-1 rounded-full bg-green-100 text-green-600'>
+                                            {selectedEvent.extendedProps?.description}
+                                        </p>
+                                        <p className='text-sm font-medium mt-2 px-3 py-1 rounded-full bg-green-100 text-green-600'>
+                                            {selectedEvent.extendedProps?.description2}
+                                        </p>
+                                    </>
+
+
+                                    :
+                                    (<p
+                                        className={`text-sm font-medium mt-2 px-3 py-1 rounded-full ${selectedEvent.extendedProps?.description === t('InLate')
+                                            || selectedEvent.extendedProps?.description === t('OutEarly')
+                                            || selectedEvent.extendedProps?.description === t('Absent')
+
+                                            ? 'bg-red-100 text-red-600'
+                                            : 'bg-green-100 text-green-600'
+                                            }`}
+                                    >
+                                        {selectedEvent.extendedProps?.description}
+                                    </p>)}
+                            </>
                         </>
                     )}
                 </div>
@@ -138,6 +160,7 @@ export default function CalendarComponent() {
     };
 
     const handleNameClick = (name: string) => {
+        console.log("name", name);
         setSelectedName(name);
         setFilter('');
         fetchWorkScheduleByMonthInitial(name);
@@ -166,9 +189,10 @@ export default function CalendarComponent() {
             const month = currentViewDate.getMonth() + 1;
             const year = currentViewDate.getFullYear();
 
-            const valueBeforeDash = id.split('-')[0];
+            const valueBeforeDash = id.split('-')[0].trim();
+            const valueAfterDash = id.split('-')[1]?.trim();
             try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash);
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
 
                 if (data.length === 0) {
                     toast.error('Không tìm thấy lịch làm việc của nhân viên này!', {
@@ -188,10 +212,10 @@ export default function CalendarComponent() {
                 }
 
                 const eventList: EventInput[] = [];
-                data.forEach((item: User) => {
+                data.forEach((item: CheckinData) => {
                     const userEvents = generateUserEvent(item, t);
-                    eventList.push(...userEvents);  
-                }); 
+                    eventList.push(...userEvents);
+                });
                 const start = new Date(calendarApi.view.currentStart);
                 const end = new Date(calendarApi.view.currentEnd);
 
@@ -236,9 +260,12 @@ export default function CalendarComponent() {
             if (selectedName === "") {
                 return;
             }
-            const valueBeforeDash = selectedName.split('-')[0];
+            const valueBeforeDash = selectedName.split('-')[0].trim();
+            const valueAfterDash = selectedName.split('-')[1]?.trim();
+            console.log("valueBeforeDash", valueBeforeDash);
+            console.log("valueAfterDash", valueAfterDash);
             try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash);
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
 
                 if (data.length === 0) {
                     toast.error('Không tìm thấy lịch làm việc của nhân viên này!', {
@@ -258,9 +285,9 @@ export default function CalendarComponent() {
                 }
                 const eventList: EventInput[] = [];
 
-                data.forEach((item: User) => {
+                data.forEach((item: CheckinData) => {
                     const userEvents = generateUserEvent(item, t);
-                    eventList.push(...userEvents);  // Thêm các sự kiện vào danh sách eventList
+                    eventList.push(...userEvents);
                 });
 
                 const start = new Date(calendarApi.view.currentStart);
@@ -272,7 +299,7 @@ export default function CalendarComponent() {
                         .map(e => dayjs(e.start as string | Date).format('YYYY-MM-DD'))
                 );
 
-                
+
                 const updatedEventList = addAbsenceAndHolidayEvents(
                     start,
                     end,
@@ -293,8 +320,8 @@ export default function CalendarComponent() {
             }
         }
     };
-    
-    
+
+
 
     const handleEventClick = (info: EventClickArg) => {
         setAnchorEl(info.el); // Set the clicked element as anchor
@@ -408,7 +435,7 @@ export default function CalendarComponent() {
                             dayMaxEventRows={true}
                             eventContent={(arg) => (
                                 <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
-                                    {arg.event.title == t('Absent') || arg.event.title == t('holidays') ?
+                                    {arg.event.title == t('Absent') || arg.event.title == t('holidays') || arg.event.title === 'Nghỉ phép năm' ?
                                         <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleDateString('vi-VN') : 'N/A'} </p>
                                         : <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'} </p>
                                     }
