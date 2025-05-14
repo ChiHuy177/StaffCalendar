@@ -38,7 +38,7 @@ export default function CalendarComponent() {
 
             if (id === '') return;
 
-            const valueBeforeDash = id.split('-')[0];
+            const valueBeforeDash = id.split('-')[0].trim();
             console.log("valueBeforeDash", valueBeforeDash);
             const data = await getRecordDataByMonth(month, year, valueBeforeDash);
             setWorkDays(data);
@@ -57,7 +57,7 @@ export default function CalendarComponent() {
 
             if (selectedName === '') return;
 
-            const valueBeforeDash = selectedName.split('-')[0];
+            const valueBeforeDash = selectedName.split('-')[0].trim();
             console.log("valueBeforeDash", valueBeforeDash);
             try {
                 const data = await getRecordDataByMonth(month, year, valueBeforeDash);
@@ -240,9 +240,8 @@ export default function CalendarComponent() {
             const year = currentViewDate.getFullYear();
 
             const valueBeforeDash = id.split('-')[0].trim();
-            const valueAfterDash = id.split('-')[1]?.trim();
             try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, id);
 
                 if (data.length === 0) {
                     toast.error(t('toastMessages.employeeScheduleNotFound'), {
@@ -308,11 +307,9 @@ export default function CalendarComponent() {
             const year = currentViewDate.getFullYear();
 
             const valueBeforeDash = selectedName.split('-')[0].trim();
-            const valueAfterDash = selectedName.split('-')[1]?.trim();
             console.log("valueBeforeDash", valueBeforeDash);
-            console.log("valueAfterDash", valueAfterDash);
             try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, selectedName);
 
                 if (data.length === 0) {
                     toast.error(t('toastMessages.employeeScheduleNotFoundForMonth'), {
