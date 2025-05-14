@@ -21,6 +21,7 @@ export default function CheckinTablePage() {
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear().toString());
     const [loading, setLoading] = useState(false);
     const [exportLoading, setExportLoading] = useState(false);
+    const [loadingNames, setLoadingNames] = useState(true);
     const [rowCount, setRowCount] = useState(0);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const theme = useTheme();
@@ -127,9 +128,67 @@ export default function CheckinTablePage() {
     }
 
 
+    useEffect(() => {
+        async function fetchAllUserName() {
+            try {
+                setLoadingNames(true);
+                const data = await getAllUserName();
+                if (!data) {
+                    setNameOfUsers([]);
+                    toast.error(t('toastMessages.errorFetchingUsernames'), {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                } else {
+                    setNameOfUsers(data);
+                }
+            } catch (error) {
+                console.error('Error fetching user names:', error);
+                setNameOfUsers([]);
+            } finally {
+                setLoadingNames(false);
+            }
+        }
+        fetchAllUserName();
+    }, []);
+
+    function handleSearch() {
+        if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
+            toast.error(t('error.inValidInput'), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        } else {
+            fetchDataByUserId(selectedName, parseInt(selectedMonth), parseInt(selectedYear));
+        }
+    }
+
+    const handleMonthChange = (e: SelectChangeEvent) => {
+        setSelectedMonth(e.target.value);
+    };
+
+    const handleYearChange = (e: SelectChangeEvent) => {
+        setSelectedYear(e.target.value);
+    };
+
     async function fetchDataByUserId(userId: string, month: number, year: number): Promise<void> {
+        setLoading(true);
         try {
-            setLoading(true);
             const userIdBeforeDash = userId.split('-')[0];
             const apiUrl = `${import.meta.env.VITE_API_URL}api/DataOnly_APIaCheckIn/GetUserByUserIdPaging`;
             const response = await axios.get(apiUrl, {
@@ -141,11 +200,11 @@ export default function CheckinTablePage() {
                     pageSize: paginationModel.pageSize
                 },
             });
-            console.log(response.data)
-
 
             const data = response.data;
-            if (data.items.length === 0) {
+            if (!data || !data.items || data.items.length === 0) {
+                setRows([]);
+                setRowCount(0);
                 toast.error(t('canNotFind'), {
                     position: "top-center",
                     autoClose: 5000,
@@ -157,7 +216,9 @@ export default function CheckinTablePage() {
                     theme: "light",
                     transition: Bounce,
                 });
+                return;
             }
+
             const formattedData = data.items.map((item: User, index: number) => {
                 const inAt = item.inAt ? new Date(item.inAt) : null;
                 const outAt = item.outAt ? new Date(item.outAt) : null;
@@ -186,42 +247,14 @@ export default function CheckinTablePage() {
             });
             setRowCount(data.totalCount);
             setRows(formattedData);
-
-            setTimeout(() => {
-                setLoading(false);
-            }, 2000)
         } catch (error) {
             console.error('Error fetching data:', error);
-            alert('Failed to fetch data. Please try again.');
+            setRows([]);
+            setRowCount(0);
+        } finally {
+            setLoading(false);
         }
     }
-
-    function handleSearch() {
-        if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
-            toast.error(t('error.inValidInput'), {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-            return;
-        } else {
-            fetchDataByUserId(selectedName, parseInt(selectedMonth), parseInt(selectedYear));
-        }
-    }
-
-    const handleMonthChange = (e: SelectChangeEvent) => {
-        setSelectedMonth(e.target.value);
-    };
-
-    const handleYearChange = (e: SelectChangeEvent) => {
-        setSelectedYear(e.target.value);
-    };
 
     const handleExportExcel = async () => {
         if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
@@ -287,17 +320,6 @@ export default function CheckinTablePage() {
         }
     };
 
-    useEffect(() => {
-        async function fetchAllUserName() {
-            const data = await getAllUserName();
-            if (data == undefined) {
-                setNameOfUsers([]);
-            } else
-                setNameOfUsers(data);
-        }
-        fetchAllUserName();
-    }, []);
-
     async function fetchCheckinData(page: number, pageSize: number) {
         if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
             toast.error(t('error.inValidInput'), {
@@ -313,41 +335,83 @@ export default function CheckinTablePage() {
             });
             return;
         }
+        
         setLoading(true);
-        const userId = selectedName.split('-')[0];
-        const data = await getCheckinDataByUserIdPaging(parseInt(selectedMonth), parseInt(selectedYear), userId, page, pageSize);
-        const formattedData = data.items.map((item: User, index: number) => {
-            const rowIndex = (page * pageSize) + index + 1
-            const inAt = item.inAt ? new Date(item.inAt) : null;
-            const outAt = item.outAt ? new Date(item.outAt) : null;
-
-            const oneHour = 1 * 3600000; // 1 hour in milliseconds
-            const oneMinute = 1 * 60000; // 1 minute in milliseconds
-
-            let totalTime = 0;
-            if (inAt && outAt) {
-                totalTime = (outAt.getTime() - inAt.getTime() - oneHour) / oneMinute;
+        try {
+            const userId = selectedName.split('-')[0];
+            const result = await getCheckinDataByUserIdPaging(
+                parseInt(selectedMonth), 
+                parseInt(selectedYear), 
+                userId, 
+                page, 
+                pageSize
+            );
+            
+            if (!result || !result.items || result.items.length === 0) {
+                setRows([]);
+                setRowCount(0);
+                toast.error(t('canNotFind'), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
             }
 
-            const hours = Math.floor(totalTime / 60);
-            const minutes = Math.floor(totalTime % 60);
+            const formattedData = result.items.map((item: User, index: number) => {
+                const rowIndex = (page * pageSize) + index + 1
+                const inAt = item.inAt ? new Date(item.inAt) : null;
+                const outAt = item.outAt ? new Date(item.outAt) : null;
 
-            const formattedMinutes = minutes.toString().padStart(2, "0");
+                const oneHour = 1 * 3600000; // 1 hour in milliseconds
+                const oneMinute = 1 * 60000; // 1 minute in milliseconds
 
-            return {
-                id: rowIndex,
-                userId: item.userId,
-                workingDate: formatDate(item.at),
-                inAt: formatTime(item.inAt.toString()),
-                outAt: formatTime(item.outAt.toString()),
-                totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
-            };
-        });
-        setRows(formattedData);
-        setRowCount(data.totalCount);
-        setTimeout(() => {
+                let totalTime = 0;
+                if (inAt && outAt) {
+                    totalTime = (outAt.getTime() - inAt.getTime() - oneHour) / oneMinute;
+                }
+
+                const hours = Math.floor(totalTime / 60);
+                const minutes = Math.floor(totalTime % 60);
+
+                const formattedMinutes = minutes.toString().padStart(2, "0");
+
+                return {
+                    id: rowIndex,
+                    userId: item.userId,
+                    workingDate: formatDate(item.at),
+                    inAt: formatTime(item.inAt.toString()),
+                    outAt: formatTime(item.outAt.toString()),
+                    totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
+                };
+            });
+            
+            setRows(formattedData);
+            setRowCount(result.totalCount);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setRows([]);
+            setRowCount(0);
+            toast.error(t('error.fetchFailed'), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        } finally {
             setLoading(false);
-        }, 2000)
+        }
     };
 
     function handlePaginationModelChange(newModel: GridPaginationModel) {
@@ -397,65 +461,98 @@ export default function CheckinTablePage() {
                         <Stack spacing={3}>
                             {/* Name Autocomplete */}
                             <Box sx={{ position: 'relative', overflow: 'visible' }}>
-                                <Autocomplete
-                                    disablePortal
-                                    options={nameOfUsers}
-                                    value={selectedName}
-                                    onChange={(_event, value) => setSelectedName(value || '')}
-                                    slotProps={{
-                                        popper: {
-                                            sx: {
-                                                zIndex: 9999
-                                            },
-                                            placement: "bottom-start",
-                                            modifiers: [
-                                                {
-                                                    name: 'preventOverflow',
-                                                    enabled: false
+                                {loadingNames ? (
+                                    <Box sx={{ 
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '56px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: 'white',
+                                        borderRadius: '4px',
+                                        border: '1px solid rgba(0, 0, 0, 0.23)',
+                                        '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                            borderRadius: '4px',
+                                            zIndex: 1
+                                        }
+                                    }}>
+                                        <CircularProgress 
+                                            size={24} 
+                                            sx={{ 
+                                                position: 'relative',
+                                                zIndex: 2
+                                            }} 
+                                        />
+                                    </Box>
+                                ) : (
+                                    <Autocomplete
+                                        disablePortal
+                                        options={nameOfUsers}
+                                        value={selectedName}
+                                        onChange={(_event, value) => setSelectedName(value || '')}
+                                        slotProps={{
+                                            popper: {
+                                                sx: {
+                                                    zIndex: 9999
                                                 },
-                                                {
-                                                    name: 'flip',
-                                                    enabled: false
-                                                }
-                                            ]
-                                        },
-                                        listbox: {
-                                            sx: { 
-                                                backgroundColor: 'white',
-                                                color: 'text.primary',
-                                                zIndex: 9999,
-                                                maxHeight: '300px',
-                                                '& .MuiAutocomplete-option':{
-                                                    '&[aria-selected="true"]':{
-                                                        backgroundColor: 'primary.light',
-                                                        color: 'primary.contrastText',
-                                                        '&.Mui-focused': {
-                                                            backgroundColor: 'primary.main',
-                                                            color: 'primary.contrastText',
-                                                        }
+                                                placement: "bottom-start",
+                                                modifiers: [
+                                                    {
+                                                        name: 'preventOverflow',
+                                                        enabled: false
                                                     },
-                                                    '&:hover':{
-                                                        backgroundColor: 'action.hover',
+                                                    {
+                                                        name: 'flip',
+                                                        enabled: false
+                                                    }
+                                                ]
+                                            },
+                                            listbox: {
+                                                sx: { 
+                                                    backgroundColor: 'white',
+                                                    color: 'text.primary',
+                                                    zIndex: 9999,
+                                                    maxHeight: '300px',
+                                                    '& .MuiAutocomplete-option':{
+                                                        '&[aria-selected="true"]':{
+                                                            backgroundColor: 'primary.light',
+                                                            color: 'primary.contrastText',
+                                                            '&.Mui-focused': {
+                                                                backgroundColor: 'primary.main',
+                                                                color: 'primary.contrastText',
+                                                            }
+                                                        },
+                                                        '&:hover':{
+                                                            backgroundColor: 'action.hover',
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            label={t('selectName')}
-                                            variant="outlined"
-                                            fullWidth
-                                            sx={{
-                                                '& .MuiOutlinedInput-root': {
-                                                    borderRadius: 2,
-                                                    backgroundColor: 'white'
-                                                }
-                                            }}
-                                        />
-                                    )}
-                                />
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('selectName')}
+                                                variant="outlined"
+                                                fullWidth
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        borderRadius: 2,
+                                                        backgroundColor: 'white'
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                )}
                             </Box>
 
                             {/* Month, Year Selection and Search Button */}
