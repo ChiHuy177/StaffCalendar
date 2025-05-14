@@ -16,7 +16,6 @@ import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import i18n from '../i18n';
 import { getExportDataByDayRange } from '../apis/ExportDataApi';
 import { getCheckinDataByDayRange } from '../apis/CheckinDataApi';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Bounce, toast } from 'react-toastify';
 
