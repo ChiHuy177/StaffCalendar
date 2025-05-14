@@ -1,7 +1,10 @@
 import { EventInput } from "@fullcalendar/core/index.js";
 import { CheckinData } from "./type";
+import dayjs from 'dayjs';
+
 
 type TranslateFunction = (key: string) => string;
+
 export const generateUserEvent = (item: CheckinData, t: TranslateFunction): EventInput[] => {
     const eventList: EventInput[] = [];
     if (item.attendant === 'P = Phép năm') {
@@ -9,16 +12,16 @@ export const generateUserEvent = (item: CheckinData, t: TranslateFunction): Even
         const adjustedStart = new Date(item.date);
         adjustedStart.setHours(adjustedStart.getHours() + 7);
         eventList.push({
-                id: item.id?.toString()+'-leave',
-                title: "Nghỉ phép",
-                start: adjustedStart,
-                extendedProps: {
-                    description: item.attendant,
-                    description2: item.ghiChu,
-                    staffName: item.fullName,
-                },
-                className: 'bg-orange-400 text-white rounded px-2',
-            });
+            id: item.id?.toString() + '-leave',
+            title: "Nghỉ phép",
+            start: adjustedStart,
+            extendedProps: {
+                description: item.attendant,
+                description2: item.ghiChu,
+                staffName: item.fullName,
+            },
+            className: 'bg-orange-400 text-white rounded px-2',
+        });
     } else {
         const adjustedStart = new Date(item.inAt);
         adjustedStart.setHours(adjustedStart.getHours() + 7);
@@ -79,29 +82,29 @@ export const generateUserEvent = (item: CheckinData, t: TranslateFunction): Even
     return eventList;
 };
 export const addAbsenceAndHolidayEvents = (
-    start: Date,
-    end: Date,
+    monthStartDate: Date,
+    monthEndDate: Date,
     eventList: EventInput[],
     holidays: string[],
     datesWithEvents: Set<string>,
     selectedName: string,
     t: (key: string) => string
 ): EventInput[] => {
-    const current = new Date(start);
+    const current = new Date(monthStartDate.getFullYear(), monthStartDate.getMonth(), monthStartDate.getDate());
+
     const today = new Date();
+    while (current < monthEndDate && current < today) {
+        const dayOfWeek = current.getDay(); // 0: CN, 1: Thứ 2, ..., 6: Thứ 7
 
-    // Duyệt qua các ngày trong tháng
-    while (current <= end && current < today) {
-        const day = current.getDay(); // 0: CN, 1: Thứ 2, ..., 6: Thứ 7
-        const isoDate = current.toISOString().slice(0, 10);
-        const isHoliday = holidays.includes(isoDate); // Kiểm tra ngày lễ
-        const isWeekday = day > 1 && day <= 6; // Kiểm tra ngày trong tuần (Thứ 2 - Thứ 6)
+        const isoDate = dayjs(current).format('YYYY-MM-DD');
 
-        // Nếu là ngày lễ
+        const isHoliday = holidays.includes(isoDate);
+        const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5;
+
         if (isHoliday) {
             eventList.push({
-                id: `holiday-${isoDate}`,
-                title: t('holidays'), // Tên sự kiện ngày lễ
+                id: '-holiday',
+                title: t('holidays'),
                 start: new Date(isoDate),
                 extendedProps: {
                     description: t('holidays'),
@@ -110,11 +113,10 @@ export const addAbsenceAndHolidayEvents = (
                 className: 'bg-green-600 text-white rounded px-2',
             });
         }
-        // Nếu là ngày trong tuần và không có sự kiện
         else if (isWeekday && !datesWithEvents.has(isoDate)) {
             eventList.push({
                 id: `nopay-${isoDate}`,
-                title: t('Absent'), // Tên sự kiện nghỉ không lương
+                title: t('Absent'),
                 start: new Date(isoDate),
                 extendedProps: {
                     description: t('Absent'),
@@ -124,10 +126,10 @@ export const addAbsenceAndHolidayEvents = (
             });
         }
 
-        current.setDate(current.getDate() + 1); // Chuyển sang ngày tiếp theo
+        current.setDate(current.getDate() + 1);
     }
 
-    return eventList; // Trả về danh sách sự kiện đã được cập nhật
+    return eventList;
 };
 
 function isLate(date: string): boolean {

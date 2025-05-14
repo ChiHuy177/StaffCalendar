@@ -29,45 +29,133 @@ export default function CalendarComponent() {
     const { t } = useTranslation();
     const lang = localStorage.getItem('language') === 'vi' ? 'vi' : 'en';
 
-    const getWorkDaysInitial = async (id: string) => {
-        const calendarApi = calendarRef.current?.getApi();
-        if (calendarApi) {
-            const currentViewDate = calendarApi.view.currentStart;
-            const month = currentViewDate.getMonth() + 1;
-            const year = currentViewDate.getFullYear();
+    const getWorkDays = async (staffId: string, month: number, year: number) => {
+        console.log(`[getWorkDays] Called for staff: ${staffId}, month: ${month}, year: ${year}`);
 
-            if (id === '') return;
+        if (staffId === '') {
+            setWorkDays(0);
+            console.warn("[getWorkDays] Called with empty staffId. Setting workDays to 0.");
+            return;
+        }
 
-            const valueBeforeDash = id.split('-')[0];
-            console.log("valueBeforeDash", valueBeforeDash);
+        const valueBeforeDash = staffId.split('-')[0].trim();
+        try {
+            console.log(`[getWorkDays] Fetching record data for month: ${month}, year: ${year}, idPart: ${valueBeforeDash}`);
             const data = await getRecordDataByMonth(month, year, valueBeforeDash);
+            console.log(`[getWorkDays] Data received for workDays: ${data}. Setting workDays.`);
             setWorkDays(data);
-        } else {
-            console.error('Calendar API is not available');
+        } catch (error) {
+            console.error('[getWorkDays] Error fetching work days:', error);
+            setWorkDays(0); // Reset on error
         }
     };
 
-    const getWorkDays = async () => {
-        console.log("Call api")
+    const fetchWorkSchedule = async (nameFromSelection?: string): Promise<void> => {
+        const staffIdToFetch = nameFromSelection !== undefined ? nameFromSelection : selectedName;
+        console.log(`[fetchWorkSchedule] Called. nameFromSelection: ${nameFromSelection}, selectedName: ${selectedName}, Determined staffIdToFetch: ${staffIdToFetch}`);
+
+        if (!staffIdToFetch) {
+            if (nameFromSelection !== undefined) {
+                toast.error(t('toastMessages.pleaseEnterName'), {
+                    position: 'top-center',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: 'light',
+                    transition: Bounce,
+                });
+            }
+            console.log("[fetchWorkSchedule] No staffIdToFetch. Clearing events and workDays.");
+            setEvents([]);
+            setWorkDays(0);
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
         const calendarApi = calendarRef.current?.getApi();
+
         if (calendarApi) {
             const currentViewDate = calendarApi.view.currentStart;
             const month = currentViewDate.getMonth() + 1;
             const year = currentViewDate.getFullYear();
+            console.log(`[fetchWorkSchedule] Calendar view: month ${month}, year ${year}. Fetching for staff: ${staffIdToFetch}`);
 
-            if (selectedName === '') return;
+            const valueBeforeDash = staffIdToFetch.split('-')[0].trim();
+            const valueAfterDash = staffIdToFetch.split('-')[1]?.trim();
 
-            const valueBeforeDash = selectedName.split('-')[0].trim();
-            console.log("valueBeforeDash", valueBeforeDash);
             try {
-                const data = await getRecordDataByMonth(month, year, valueBeforeDash);
-                setWorkDays(data);
-            } catch (error) {
-                console.error('Error fetching work schedule:', error);
-            }
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
+                console.log(`[fetchWorkSchedule] Raw event data received for ${staffIdToFetch}, month ${month}:`, data.length, "items");
 
+                if (data.length === 0) {
+                    const toastMessage = nameFromSelection !== undefined
+                        ? t('toastMessages.employeeScheduleNotFound')
+                        : t('toastMessages.employeeScheduleNotFoundForMonth');
+                    toast.error(toastMessage, {
+                        position: "top-center",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                        transition: Bounce,
+                    });
+                    console.log("[fetchWorkSchedule] No event data found. Clearing events and workDays.");
+                    setEvents([]);
+                    setWorkDays(0);
+                    setLoading(false);
+                    return;
+                }
+
+                const eventList: EventInput[] = [];
+                data.forEach((item: CheckinData) => {
+                    const userEvents = generateUserEvent(item, t);
+                    eventList.push(...userEvents);
+                });
+
+                const start = new Date(calendarApi.view.currentStart);
+                const end = new Date(calendarApi.view.currentEnd);
+
+                const datesWithEvents = new Set(
+                    eventList
+                        .filter(e => e.start)
+                        .map(e => dayjs(e.start as string | Date).format('YYYY-MM-DD'))
+                );
+
+                const updatedEventList = addAbsenceAndHolidayEvents(
+                    start,
+                    end,
+                    eventList,
+                    holidays,
+                    datesWithEvents,
+                    staffIdToFetch,
+                    t
+                );
+                console.log(`[fetchWorkSchedule] Processed events for ${staffIdToFetch}, month ${month}. Count: ${updatedEventList.length}. Setting events.`);
+                setEvents(updatedEventList);
+                getWorkDays(staffIdToFetch, month, year);
+                setLoading(false);
+
+            } catch (error) {
+                console.error('[fetchWorkSchedule] Error fetching work schedule:', error);
+                setEvents([]);
+                setWorkDays(0);
+                setLoading(false);
+                toast.error(t('toastMessages.errorFetchingSchedule'), {
+                    position: 'top-center',
+                    autoClose: 5000,
+                });
+            }
         } else {
-            console.error('Calendar API is not available');
+            console.error('[fetchWorkSchedule] Calendar API is not available.');
+            setLoading(false);
+            setWorkDays(0);
         }
     };
 
@@ -200,170 +288,19 @@ export default function CalendarComponent() {
                 setLoadingUsername(false);
             }
         }
-        getWorkDaysInitial('');
         fetchAllUserName();
+        fetchWorkSchedule();
     }, []);
 
     const handleNameChange = (_event: React.SyntheticEvent, value: string | null) => {
         if (value) {
             console.log("name", value);
             setSelectedName(value);
-            fetchWorkScheduleByMonthInitial(value);
-            getWorkDaysInitial(value);
+            fetchWorkSchedule(value);
         } else {
             setSelectedName('');
             setEvents([]);
             setWorkDays(0);
-        }
-    };
-
-    const fetchWorkScheduleByMonthInitial = async (id: string): Promise<void> => {
-        if (id === '') {
-            toast.error(t('toastMessages.pleaseEnterName'), {
-                position: 'top-center',
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: 'light',
-                transition: Bounce,
-            });
-            return;
-        }
-        setLoading(true);
-        const calendarApi = calendarRef.current?.getApi();
-        if (calendarApi) {
-            const currentViewDate = calendarApi.view.currentStart;
-            const month = currentViewDate.getMonth() + 1;
-            const year = currentViewDate.getFullYear();
-
-            const valueBeforeDash = id.split('-')[0].trim();
-            const valueAfterDash = id.split('-')[1]?.trim();
-            try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
-
-                if (data.length === 0) {
-                    toast.error(t('toastMessages.employeeScheduleNotFound'), {
-                        position: 'top-center',
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: 'light',
-                        transition: Bounce,
-                    });
-                    setLoading(false);
-                    setEvents([]);
-                    return;
-                }
-
-                const eventList: EventInput[] = [];
-                data.forEach((item: CheckinData) => {
-                    const userEvents = generateUserEvent(item, t);
-                    eventList.push(...userEvents);
-                });
-                const start = new Date(calendarApi.view.currentStart);
-                const end = new Date(calendarApi.view.currentEnd);
-
-                const datesWithEvents = new Set(
-                    eventList
-                        .filter(e => e.start)
-                        .map(e => dayjs(e.start as string | Date).format('YYYY-MM-DD'))
-                );
-
-                const updatedEventList = addAbsenceAndHolidayEvents(
-                    start,
-                    end,
-                    eventList,
-                    holidays,
-                    datesWithEvents,
-                    selectedName,
-                    t
-                );
-                setTimeout(() => {
-                    setLoading(false);
-                    setEvents(updatedEventList);
-                    getWorkDays();
-                }, 1000);
-            } catch (error) {
-                console.error('Error fetching work schedule:', error);
-                setLoading(false);
-            }
-        }
-    };
-
-    const getWorkScheduleByMonth = async (): Promise<void> => {
-        if (selectedName === '') {
-            return;
-        }
-        setLoading(true);
-        const calendarApi = calendarRef.current?.getApi();
-        if (calendarApi) {
-            const currentViewDate = calendarApi.view.currentStart;
-            const month = currentViewDate.getMonth() + 1;
-            const year = currentViewDate.getFullYear();
-
-            const valueBeforeDash = selectedName.split('-')[0];
-            const valueAfterDash = selectedName.split('-')[1]?.trim();
-            try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
-
-                if (data.length === 0) {
-                    toast.error(t('toastMessages.employeeScheduleNotFoundForMonth'), {
-                        position: "top-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
-                        transition: Bounce,
-                    });
-                    setLoading(false);
-                    setEvents([]);
-                    setWorkDays(0);
-                    return;
-                }
-                const eventList: EventInput[] = [];
-
-                data.forEach((item: CheckinData) => {
-                    const userEvents = generateUserEvent(item, t);
-                    eventList.push(...userEvents);
-                });
-
-                const start = new Date(calendarApi.view.currentStart);
-                const end = new Date(calendarApi.view.currentEnd);
-
-                const datesWithEvents = new Set(
-                    eventList
-                        .filter(e => e.start)
-                        .map(e => dayjs(e.start as string | Date).format('YYYY-MM-DD'))
-                );
-
-
-                const updatedEventList = addAbsenceAndHolidayEvents(
-                    start,
-                    end,
-                    eventList,
-                    holidays,
-                    datesWithEvents,
-                    selectedName,
-                    t
-                );
-                setTimeout(() => {
-                    setLoading(false);
-                    setEvents(updatedEventList);
-                    getWorkDays();
-                }, 1000);
-            } catch (error) {
-                console.error('Error fetching work schedule for month:', error);
-                setLoading(false);
-            }
         }
     };
 
@@ -601,8 +538,9 @@ export default function CalendarComponent() {
                         aspectRatio={1.2}
                         contentHeight="auto"
                         height="auto"
-                        datesSet={() => {
-                            getWorkScheduleByMonth();
+                        datesSet={(viewInfo) => {
+                            console.log(`[FullCalendar datesSet] View changed. Current start: ${viewInfo.view.currentStart.toISOString()}`);
+                            fetchWorkSchedule();
                         }}
                         dayMaxEventRows={true}
                         eventContent={(arg) => (
