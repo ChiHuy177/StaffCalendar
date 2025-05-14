@@ -412,10 +412,20 @@ export default function CalendarComponent() {
                             alignItems: 'center', 
                             justifyContent: 'center',
                             minHeight: '56px',
-                            gap: 2
+                            gap: 2,
+                            p: 2
                         }}>
                             <CircularProgress size={24} sx={{ color: 'primary.main' }} />
-                            <Typography color="text.secondary">
+                            <Typography color="text.secondary" sx={{ 
+                                fontSize: '0.875rem',
+                                fontWeight: 500,
+                                animation: 'pulse 1.5s ease-in-out infinite',
+                                '@keyframes pulse': {
+                                    '0%': { opacity: 0.6 },
+                                    '50%': { opacity: 1 },
+                                    '100%': { opacity: 0.6 }
+                                }
+                            }}>
                                 {t('loadingData')}...
                             </Typography>
                         </Box>

@@ -5,7 +5,7 @@ import { formatTime, User } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import { Autocomplete, Box, Button, Card, Container, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Skeleton, Stack, styled, TextField, Typography, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, Card, Container, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Skeleton, Stack, styled, TextField, Typography, useTheme, CircularProgress } from '@mui/material';
 import { Bounce, toast } from 'react-toastify';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,7 @@ export default function CheckinTablePage() {
     const [selectedMonth, setSelectedMonth] = useState(() => (new Date().getMonth() + 1).toString());
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear().toString());
     const [loading, setLoading] = useState(false);
+    const [exportLoading, setExportLoading] = useState(false);
     const [rowCount, setRowCount] = useState(0);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const theme = useTheme();
@@ -111,14 +112,15 @@ export default function CheckinTablePage() {
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector
                     slotProps={{ tooltip: { title: 'Change density' } }}
-
                 />
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
                     onClick={handleExportExcel}
+                    disabled={exportLoading}
                     className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+                    startIcon={exportLoading ? <CircularProgress size={20} color="inherit" /> : <DownloadRoundedIcon />}
                 >
-                    <DownloadRoundedIcon /> {t('ExportExcel')}
+                    {exportLoading ? t('exporting') : t('ExportExcel')}
                 </Button>
             </GridToolbarContainer>
         );
@@ -236,6 +238,7 @@ export default function CheckinTablePage() {
             });
             return;
         }
+        setExportLoading(true);
         try {
             const apiUrl = `${import.meta.env.VITE_API_URL}api/export/ExportUserCheckinData`;
             const selectedNameBeforeDash = selectedName.split('-')[0];
@@ -245,7 +248,7 @@ export default function CheckinTablePage() {
                     year: selectedYear,
                     userID: selectedNameBeforeDash,
                 },
-                responseType: 'blob', // Để nhận file dưới dạng blob
+                responseType: 'blob',
             });
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -255,9 +258,32 @@ export default function CheckinTablePage() {
             document.body.appendChild(link);
             link.click();
             link.parentNode?.removeChild(link);
+            toast.success(t('exportSuccess'), {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         } catch (error) {
             console.error('Error exporting Excel:', error);
-            alert('Failed to export Excel file. Please try again.');
+            toast.error(t('error.exportFailed'), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        } finally {
+            setExportLoading(false);
         }
     };
 

@@ -34,6 +34,12 @@
     "time": "Time",
     "Find": "Search",
     "ExportExcel": "Export to Excel",
+    "exporting": "Exporting...",
+    "exportSuccess": "Excel file exported successfully!",
+    "error": {
+        "exportFailed": "Failed to export Excel file. Please try again!",
+        "inValidInput": "Please select a valid date range!"
+    },
     "table": {
         "day": "Day of working",
         "inTime": "Checkin time",
@@ -58,9 +64,6 @@
         "density": "Density",
         "pageSize": "Page size",
         "noRows": "No rows"
-    },
-    "error": {
-        "inValidInput" : "Please check all information before search!"
     },
     "logo": "/logovntt-en.png",
     "loadingData": "Loading data",

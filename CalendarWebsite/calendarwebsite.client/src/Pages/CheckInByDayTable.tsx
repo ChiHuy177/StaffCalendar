@@ -18,9 +18,11 @@ import { getExportDataByDayRange } from '../apis/ExportDataApi';
 import { getCheckinDataByDayRange } from '../apis/CheckinDataApi';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Bounce, toast } from 'react-toastify';
+import { CircularProgress } from '@mui/material';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
+    const [exportLoading, setExportLoading] = useState(false);
     const [dateValue, setDateValue] = useState<[Dayjs | null, Dayjs | null]>([dayjs(), dayjs()]);
     const [rows, setRows] = useState<User[]>([]);
     const [rowCount, setRowCount] = useState(0);
@@ -48,6 +50,7 @@ export default function CheckInByDayTable() {
             return;
         }
 
+        setExportLoading(true);
         const startDay = startDate.date();
         const startMonth = startDate.month() + 1;
         const startYear = startDate.year();
@@ -64,6 +67,17 @@ export default function CheckInByDayTable() {
             document.body.appendChild(link);
             link.click();
             link.parentNode?.removeChild(link);
+            toast.success(t('exportSuccess'), {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         } catch (error) {
             console.error("Lỗi khi gọi API:", error);
             toast.error(t('error.exportFailed'), {
@@ -77,7 +91,8 @@ export default function CheckInByDayTable() {
                 theme: "light",
                 transition: Bounce,
             });
-            return;
+        } finally {
+            setExportLoading(false);
         }
     }
 
@@ -273,9 +288,11 @@ export default function CheckInByDayTable() {
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
                     onClick={handleExportExcelOfAllStaffByDateRange}
+                    disabled={exportLoading}
                     className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+                    startIcon={exportLoading ? <CircularProgress size={20} color="inherit" /> : <DownloadRoundedIcon />}
                 >
-                    <DownloadRoundedIcon /> {t('ExportExcel')}
+                    {exportLoading ? t('exporting') : t('ExportExcel')}
                 </Button>
             </GridToolbarContainer>
         );

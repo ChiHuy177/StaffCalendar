@@ -31,6 +31,12 @@
     "OnTime": "Đúng giờ",
     "Find": "Tìm kiếm",
     "ExportExcel": "Xuất Excel",
+    "exporting": "Đang xuất...",
+    "exportSuccess": "Xuất file Excel thành công!",
+    "error": {
+        "exportFailed": "Xuất file Excel thất bại. Vui lòng thử lại!",
+        "inValidInput": "Vui lòng chọn khoảng thời gian hợp lệ!"
+    },
     "table": {
         "day": "Ngày làm việc",
         "inTime": "Thời gian vào",
@@ -55,9 +61,6 @@
         "density": "Mật độ",
         "pageSize": "Kích thước trang",
         "noRows": "Không có dữ liệu"
-    },
-    "error": {
-        "inValidInput": "Vui lòng nhập đầy đủ tên, tháng và năm tìm kiếm!"
     },
     "logo": "/logovntt.png",
     "loadingData": "Đang tải dữ liệu",
