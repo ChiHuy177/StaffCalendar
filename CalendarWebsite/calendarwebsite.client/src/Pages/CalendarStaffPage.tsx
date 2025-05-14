@@ -3,7 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
 import Popover from '@mui/material/Popover';
-import { Bounce, toast } from 'react-toastify'; 
+import { Bounce, toast } from 'react-toastify';
 import { CheckinData } from '../utils/type';
 import { useTranslation } from 'react-i18next';
 import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
@@ -38,7 +38,7 @@ export default function CalendarComponent() {
 
             if (id === '') return;
 
-            const valueBeforeDash = id.split('-')[0].trim();
+            const valueBeforeDash = id.split('-')[0];
             console.log("valueBeforeDash", valueBeforeDash);
             const data = await getRecordDataByMonth(month, year, valueBeforeDash);
             setWorkDays(data);
@@ -240,8 +240,9 @@ export default function CalendarComponent() {
             const year = currentViewDate.getFullYear();
 
             const valueBeforeDash = id.split('-')[0].trim();
+            const valueAfterDash = id.split('-')[1]?.trim();
             try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, id);
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
 
                 if (data.length === 0) {
                     toast.error(t('toastMessages.employeeScheduleNotFound'), {
@@ -306,10 +307,10 @@ export default function CalendarComponent() {
             const month = currentViewDate.getMonth() + 1;
             const year = currentViewDate.getFullYear();
 
-            const valueBeforeDash = selectedName.split('-')[0].trim();
-            console.log("valueBeforeDash", valueBeforeDash);
+            const valueBeforeDash = selectedName.split('-')[0];
+            const valueAfterDash = selectedName.split('-')[1]?.trim();
             try {
-                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, selectedName);
+                const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
 
                 if (data.length === 0) {
                     toast.error(t('toastMessages.employeeScheduleNotFoundForMonth'), {
@@ -399,24 +400,24 @@ export default function CalendarComponent() {
                     {t('staffCalendar')}
                 </Typography>
 
-                <Card sx={{ 
-                    p: 2, 
-                    mb: 3, 
+                <Card sx={{
+                    p: 2,
+                    mb: 3,
                     borderRadius: '16px',
                     backgroundColor: 'white',
                     boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
                 }}>
                     {loadingUsername ? (
-                        <Box sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
                             justifyContent: 'center',
                             minHeight: '56px',
                             gap: 2,
                             p: 2
                         }}>
                             <CircularProgress size={24} sx={{ color: 'primary.main' }} />
-                            <Typography color="text.secondary" sx={{ 
+                            <Typography color="text.secondary" sx={{
                                 fontSize: '0.875rem',
                                 fontWeight: 500,
                                 animation: 'pulse 1.5s ease-in-out infinite',
@@ -443,20 +444,20 @@ export default function CalendarComponent() {
                                     placement: "bottom-start"
                                 },
                                 listbox: {
-                                    sx: { 
+                                    sx: {
                                         backgroundColor: 'white',
                                         color: 'text.primary',
                                         zIndex: 99999,
-                                        '& .MuiAutocomplete-option':{
-                                            '&[aria-selected="true"]':{
+                                        '& .MuiAutocomplete-option': {
+                                            '&[aria-selected="true"]': {
                                                 backgroundColor: 'primary.light',
                                                 color: 'primary.contrastText',
                                                 '&.Mui-focused': {
-                                                     backgroundColor: 'primary.main',
-                                                     color: 'primary.contrastText',
+                                                    backgroundColor: 'primary.main',
+                                                    color: 'primary.contrastText',
                                                 }
                                             },
-                                            '&:hover':{
+                                            '&:hover': {
                                                 backgroundColor: 'action.hover',
                                             }
                                         }
@@ -500,7 +501,7 @@ export default function CalendarComponent() {
                                         ...params.InputProps,
                                         startAdornment: (
                                             <>
-                                                <SearchIcon sx={{ color: 'text.secondary', ml: 1, mr:0.5 }} />
+                                                <SearchIcon sx={{ color: 'text.secondary', ml: 1, mr: 0.5 }} />
                                                 {params.InputProps.startAdornment}
                                             </>
                                         ),
@@ -525,7 +526,7 @@ export default function CalendarComponent() {
                     )}
                 </Card>
 
-                <Card sx={{ 
+                <Card sx={{
                     p: { xs: 1, sm: 2, md: 3 },
                     borderRadius: '16px',
                     backgroundColor: 'white',
@@ -553,21 +554,21 @@ export default function CalendarComponent() {
                                     borderRadius: '16px',
                                 }}
                             >
-                                <CircularProgress sx={{color: '#b39ddb'}} />
+                                <CircularProgress sx={{ color: '#b39ddb' }} />
                                 <Typography sx={{ mt: 2, color: 'white' }}>{`${t('loadingData')}...`}</Typography>
                             </motion.div>
                         )}
                     </AnimatePresence>
 
                     {selectedName && (
-                        <Box sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'space-between', 
-                            mb: 2, 
-                            p: 1.5, 
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            mb: 2,
+                            p: 1.5,
                             backgroundColor: 'grey.100',
-                            borderRadius: '12px' 
+                            borderRadius: '12px'
                         }}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                 <CalendarTodayIcon sx={{ mr: 1, color: 'primary.main' }} />
@@ -578,7 +579,7 @@ export default function CalendarComponent() {
                             <Chip label={workDays} sx={{ backgroundColor: '#b39ddb', color: 'black', fontWeight: 'bold' }} />
                         </Box>
                     )}
-                    
+
                     <FullCalendar
                         ref={calendarRef}
                         plugins={[dayGridPlugin]}
@@ -607,8 +608,19 @@ export default function CalendarComponent() {
                         eventContent={(arg) => (
                             <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
                                 {arg.event.title == t('Absent') || arg.event.title == t('holidays') || arg.event.title === 'Nghỉ phép năm' ?
-                                    <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleDateString('vi-VN') : 'N/A'} </p>
-                                    : <p className="font-bold">{arg.event.title} : {arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'} </p>
+                                    (<>
+                                        <p className="font-bold">{arg.event.title}</p>
+                                        <p className="font-bold">{arg.event.start ? new Date(arg.event.start).toLocaleDateString('vi-VN') : 'N/A'} </p>
+                                    </>
+
+                                    )
+
+                                    : (
+                                        <>
+                                            <p className="font-bold">{arg.event.title}</p>
+                                            <p className="font-bold">{arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'}</p>
+                                        </>
+                                    )
                                 }
                                 <p className="text-black-600">{arg.event.extendedProps?.description}</p>
                             </div>

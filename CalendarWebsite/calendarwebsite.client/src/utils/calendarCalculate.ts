@@ -134,13 +134,11 @@ function isLate(date: string): boolean {
     const parsedDate = new Date(date);
     const hours = parsedDate.getHours();
     const minutes = parsedDate.getMinutes();
-
-    return (hours > 8 || (hours === 7 && minutes > 30));
+    return (hours >= 8 || (hours === 7 && minutes > 30));
 }
 function isGoHomeEarly(date: string): boolean {
     const parsedDate = new Date(date);
     const hours = parsedDate.getHours();
     const minutes = parsedDate.getMinutes();
-
     return hours < 16 || (hours === 16 && minutes < 30);
 }
