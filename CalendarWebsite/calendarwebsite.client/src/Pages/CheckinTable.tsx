@@ -5,17 +5,13 @@ import { formatTime, User } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import { Autocomplete, Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Skeleton, styled, TextField, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, Card, Container, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Skeleton, Stack, styled, TextField, Typography, useTheme } from '@mui/material';
 import { Bounce, toast } from 'react-toastify';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getAllUserName, getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
-
-
-
-
 
 export default function CheckinTablePage() {
     const [rows, setRows] = useState([]);
@@ -29,9 +25,6 @@ export default function CheckinTablePage() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
-
-
-
 
     const columnGroupingModel: GridColumnGroupingModel = [
         {
@@ -336,176 +329,228 @@ export default function CheckinTablePage() {
         fetchCheckinData(newModel.page, newModel.pageSize);
     }
 
-
-
-
-
-
-
     return (
-        <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-            <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCheckinTable')}</h1>
-            <div className="mb-8 flex flex-col items-center">
-                <Autocomplete
-                    disablePortal
-                    options={nameOfUsers}
-                    sx={{
-                        width: '50%',
-                        backgroundColor: 'white',
-                        borderRadius: '20px',
-                        '& .MuiDataGrid-cell': {
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center', // Căn giữa nội dung trong ô
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: '#083B75', // Màu chữ của label
-                            backgroundColor: 'white', // Màu nền của label
-                            padding: '0 5px',
-                            borderRadius: '5px', // Bo tròn góc của label
-                        },
-                    }}
-                    value={selectedName}
-                    onChange={(_event, value) => setSelectedName(value || '')}
-                    renderInput={(params) => (
-                        <TextField {...params}
-                            label={t('selectName')}
-                        ></TextField>)
-                    }
-                />
-            </div>
-
-            <div className="mb-6 flex justify-center space-x-4">
-                <Box sx={{
-                    minWidth: 120,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="month-select-label"
-                            sx={{
-                                backgroundColor: 'white',
-                                padding: '0 5px',
-                                borderRadius: '4px',
-                            }}>
-                            {t('selectMonth')}
-                        </InputLabel>
-                        <Select
-                            labelId="month-select-label"
-                            id="month-select"
-                            value={selectedMonth}
-                            onChange={handleMonthChange}
-                        >
-                            {Array.from({ length: 12 }, (_, i) => (
-                                <MenuItem key={i + 1} value={i + 1}>
-                                    {i + 1}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-                <Box sx={{
-                    minWidth: 120,
-                    backgroundColor: 'white',
-                    borderRadius: '4px',
-                }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="year-select-label"
-                            sx={{
-                                backgroundColor: 'white',
-                                padding: '0 5px',
-                                borderRadius: '4px',
-                            }}>
-                            {t('selectYear')}
-                        </InputLabel>
-                        <Select
-                            labelId="year-select-label"
-                            id="year-select"
-                            value={selectedYear}
-                            onChange={handleYearChange}
-                        >
-                            {Array.from({ length: 10 }, (_, i) => (
-                                <MenuItem key={i} value={2025 - i}>
-                                    {2025 - i}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-                <Button
-                    variant="contained"
-                    onClick={handleSearch}
-                    sx={{
-                        backgroundColor: '#00B6E6', // Custom background color
-                        color: 'white', // Text color
-                        padding: '10px 20px', // Padding
-                        borderRadius: '8px', // Rounded corners
-                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Shadow
-                        '&:hover': {
-                            backgroundColor: '#052A5E', // Hover background color
-                        },
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <SearchRoundedIcon
+        <Box
+            sx={{
+                minHeight: '100vh',
+                background: 'linear-gradient(135deg, #083B75 0%, #052A5E 100%)',
+                py: 4,
+                px: { xs: 2, sm: 4, md: 6 }
+            }}
+        >
+            <Container maxWidth="xl">
+                <Stack spacing={4}>
+                    {/* Header */}
+                    <Typography
+                        variant="h3"
+                        component="h1"
                         sx={{
-                            fontSize: '1.5rem', // Icon size
+                            color: 'white',
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            mb: 2,
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
                         }}
-                    />
-                    <span
-                        className="font-medium ml-2 hidden sm:inline"
                     >
-                        {t('Find')}
-                    </span>
-                </Button>
-            </div>
+                        {t('staffCheckinTable')}
+                    </Typography>
 
-
-            <div className="w-full h-screen overflow-x-auto p-5 bg-white rounded-lg shadow-md">
-                {loading ? (<Box sx={{ width: '100%', height: '100vh' }}>
-                    <Skeleton />
-                    <Skeleton animation="wave" className='h-screen' />
-                    <Skeleton animation={false} />
-                </Box>) :
-                    <DataGrid
-                        disableVirtualization={true}
-                        rows={rows}
-                        columns={columns}
-                        paginationMode='server'
-                        rowCount={rowCount}
-                        pageSizeOptions={[5, 10, 20, 50]}
-                        paginationModel={paginationModel}
-                        onPaginationModelChange={handlePaginationModelChange}
-                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
-                        slots={{
-                            toolbar: MyCustomToolbar,
-                            noRowsOverlay: CustomNoRowsOverlay
-                        }}
-                        columnGroupingModel={columnGroupingModel}
-                        columnVisibilityModel={columnVisibilityModel}
+                    {/* Search Section */}
+                    <Card
+                        elevation={3}
                         sx={{
-                            '& .MuiDataGrid-columnHeader': {
-                                backgroundColor: '#f5f5f5',
-
-                            },
-                            '& .MuiDataGrid-row:nth-of-type(odd)': {
-                                backgroundColor: '#EEEEEE', // Màu nền cho hàng lẻ
-                            },
-                            '& .MuiDataGrid-row:nth-of-type(even)': {
-                                backgroundColor: '#ffffff', // Màu nền cho hàng chẵn
-                            },
-                            '& .MuiDataGrid-row:hover': {
-                                backgroundColor: '#D1E4F6', // Màu nền khi hover
-                            }
+                            p: 3,
+                            borderRadius: 2,
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            position: 'relative',
+                            overflow: 'visible',
+                            zIndex: 2
                         }}
-                    />
-                }
+                    >
+                        <Stack spacing={3}>
+                            {/* Name Autocomplete */}
+                            <Box sx={{ position: 'relative', overflow: 'visible' }}>
+                                <Autocomplete
+                                    disablePortal
+                                    options={nameOfUsers}
+                                    value={selectedName}
+                                    onChange={(_event, value) => setSelectedName(value || '')}
+                                    slotProps={{
+                                        popper: {
+                                            sx: {
+                                                zIndex: 9999
+                                            },
+                                            placement: "bottom-start",
+                                            modifiers: [
+                                                {
+                                                    name: 'preventOverflow',
+                                                    enabled: false
+                                                },
+                                                {
+                                                    name: 'flip',
+                                                    enabled: false
+                                                }
+                                            ]
+                                        },
+                                        listbox: {
+                                            sx: { 
+                                                backgroundColor: 'white',
+                                                color: 'text.primary',
+                                                zIndex: 9999,
+                                                maxHeight: '300px',
+                                                '& .MuiAutocomplete-option':{
+                                                    '&[aria-selected="true"]':{
+                                                        backgroundColor: 'primary.light',
+                                                        color: 'primary.contrastText',
+                                                        '&.Mui-focused': {
+                                                            backgroundColor: 'primary.main',
+                                                            color: 'primary.contrastText',
+                                                        }
+                                                    },
+                                                    '&:hover':{
+                                                        backgroundColor: 'action.hover',
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            label={t('selectName')}
+                                            variant="outlined"
+                                            fullWidth
+                                            sx={{
+                                                '& .MuiOutlinedInput-root': {
+                                                    borderRadius: 2,
+                                                    backgroundColor: 'white'
+                                                }
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </Box>
 
-            </div>
-        </div>
+                            {/* Month, Year Selection and Search Button */}
+                            <Stack
+                                direction={{ xs: 'column', sm: 'row' }}
+                                spacing={2}
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                <FormControl sx={{ minWidth: 120 }}>
+                                    <InputLabel id="month-select-label">{t('selectMonth')}</InputLabel>
+                                    <Select
+                                        labelId="month-select-label"
+                                        value={selectedMonth}
+                                        onChange={handleMonthChange}
+                                        label={t('selectMonth')}
+                                    >
+                                        {Array.from({ length: 12 }, (_, i) => (
+                                            <MenuItem key={i + 1} value={i + 1}>
+                                                {i + 1}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
+                                <FormControl sx={{ minWidth: 120 }}>
+                                    <InputLabel id="year-select-label">{t('selectYear')}</InputLabel>
+                                    <Select
+                                        labelId="year-select-label"
+                                        value={selectedYear}
+                                        onChange={handleYearChange}
+                                        label={t('selectYear')}
+                                    >
+                                        {Array.from({ length: 10 }, (_, i) => (
+                                            <MenuItem key={i} value={2025 - i}>
+                                                {2025 - i}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
+                                <Button
+                                    variant="contained"
+                                    onClick={handleSearch}
+                                    startIcon={<SearchRoundedIcon />}
+                                    sx={{
+                                        px: 4,
+                                        py: 1.5,
+                                        borderRadius: 2,
+                                        background: 'linear-gradient(45deg, #00B6E6 30%, #0088B3 90%)',
+                                        boxShadow: '0 3px 5px 2px rgba(0, 182, 230, .3)',
+                                        '&:hover': {
+                                            background: 'linear-gradient(45deg, #0088B3 30%, #006688 90%)',
+                                        }
+                                    }}
+                                >
+                                    {t('Find')}
+                                </Button>
+                            </Stack>
+                        </Stack>
+                    </Card>
+
+                    {/* Data Grid Section */}
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            p: 2,
+                            borderRadius: 2,
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            height: 'calc(100vh - 300px)',
+                            minHeight: 400,
+                            position: 'relative',
+                            zIndex: 1
+                        }}
+                    >
+                        {loading ? (
+                            <Box sx={{ width: '100%', height: '100%' }}>
+                                <Skeleton animation="wave" height={60} />
+                                <Skeleton animation="wave" height={60} />
+                                <Skeleton animation="wave" height={60} />
+                                <Skeleton animation="wave" height={60} />
+                            </Box>
+                        ) : (
+                            <DataGrid
+                                disableVirtualization={true}
+                                rows={rows}
+                                columns={columns}
+                                paginationMode='server'
+                                rowCount={rowCount}
+                                pageSizeOptions={[5, 10, 20, 50]}
+                                paginationModel={paginationModel}
+                                onPaginationModelChange={handlePaginationModelChange}
+                                localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
+                                slots={{
+                                    toolbar: MyCustomToolbar,
+                                    noRowsOverlay: CustomNoRowsOverlay
+                                }}
+                                columnGroupingModel={columnGroupingModel}
+                                columnVisibilityModel={columnVisibilityModel}
+                                sx={{
+                                    border: 'none',
+                                    '& .MuiDataGrid-columnHeader': {
+                                        backgroundColor: '#f5f5f5',
+                                        fontWeight: 'bold'
+                                    },
+                                    '& .MuiDataGrid-row:nth-of-type(odd)': {
+                                        backgroundColor: '#fafafa'
+                                    },
+                                    '& .MuiDataGrid-row:hover': {
+                                        backgroundColor: '#e3f2fd'
+                                    },
+                                    '& .MuiDataGrid-cell': {
+                                        borderColor: '#e0e0e0'
+                                    }
+                                }}
+                            />
+                        )}
+                    </Paper>
+                </Stack>
+            </Container>
+        </Box>
     );
 }

@@ -2,7 +2,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
-import { Box, Button, Skeleton, styled, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Card, CardContent, Container, Fade, IconButton, Paper, Skeleton, Stack, styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { formatTime, User } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
@@ -17,7 +17,8 @@ import i18n from '../i18n';
 import { getExportDataByDayRange } from '../apis/ExportDataApi';
 import { getCheckinDataByDayRange } from '../apis/CheckinDataApi';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Bounce, toast } from 'react-toastify';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
@@ -34,12 +35,22 @@ export default function CheckInByDayTable() {
         const startDate = dateRangeSelected[0];
         const endDate = dateRangeSelected[1];
         if (startDate == null || endDate == null) {
-            alert("Not found date")
+            toast.error(t('error.inValidInput'), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
 
         const startDay = startDate.date();
-        const startMonth = startDate.month() + 1; // getMonth() trả về giá trị từ 0 đến 11
+        const startMonth = startDate.month() + 1;
         const startYear = startDate.year();
 
         const endDay = endDate.date();
@@ -56,10 +67,19 @@ export default function CheckInByDayTable() {
             link.parentNode?.removeChild(link);
         } catch (error) {
             console.error("Lỗi khi gọi API:", error);
-            alert("Không thể tải xuống báo cáo. Vui lòng thử lại sau.");
+            toast.error(t('error.exportFailed'), {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
-
     }
 
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
@@ -95,13 +115,10 @@ export default function CheckInByDayTable() {
         { label: t('dayRange.reset'), getValue: () => [null, null] },
     ];
 
-
     const columnVisibilityModel = {
         userId: !isMobile,
         totalTime: !isMobile,
-        // Các cột khác không định nghĩa sẽ mặc định hiển thị
     };
-
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
@@ -120,20 +137,18 @@ export default function CheckInByDayTable() {
     async function handleSearch(page: number, pageSize: number) {
         const dateValueSelected = dateValue;
         setLoading(true);
-        // Nếu đã chọn đủ ngày bắt đầu và kết thúc, lấy thông tin chi tiết cho ngày
         if (dateValueSelected[0] && dateValueSelected[1]) {
             const startDate = dateValueSelected[0];
             const endDate = dateValueSelected[1];
 
             const startDay = startDate.date();
-            const startMonth = startDate.month() + 1; // getMonth() trả về giá trị từ 0 đến 11
+            const startMonth = startDate.month() + 1;
             const startYear = startDate.year();
 
             const endDay = endDate.date();
             const endMonth = endDate.month() + 1;
             const endYear = endDate.year();
 
-            console.log(`Từ: ${startDay}/${startMonth}/${startYear} - Đến: ${endDay}/${endMonth}/${endYear}`);
             try {
                 const data = await getCheckinDataByDayRange(startDay, startMonth, startYear, endDay, endMonth, endYear, page, pageSize);
                 const formattedData = data.items.map((item: User, index: number) => {
@@ -141,8 +156,8 @@ export default function CheckInByDayTable() {
                     const inAt = item.inAt ? new Date(item.inAt) : null;
                     const outAt = item.outAt ? new Date(item.outAt) : null;
 
-                    const oneHour = 1 * 3600000; // 1 hour in milliseconds
-                    const oneMinute = 1 * 60000; // 1 minute in milliseconds
+                    const oneHour = 1 * 3600000;
+                    const oneMinute = 1 * 60000;
 
                     let totalTime = 0;
                     if (inAt && outAt) {
@@ -172,18 +187,27 @@ export default function CheckInByDayTable() {
             }
             catch (error) {
                 console.error('Error fetching data:', error);
+                toast.error(t('error.fetchFailed'), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
             } finally {
                 setLoading(false);
             }
-
-        };
+        }
     }
 
     function handlePaginationModelChange(newModel: GridPaginationModel) {
         setPaginationModel(newModel);
         handleSearch(newModel.page, newModel.pageSize);
     }
-
 
     const StyledGridOverlay = styled('div')(({ theme }) => ({
         display: 'flex',
@@ -238,6 +262,7 @@ export default function CheckInByDayTable() {
             </StyledGridOverlay>
         );
     }
+
     function MyCustomToolbar() {
         return (
             <GridToolbarContainer>
@@ -256,133 +281,207 @@ export default function CheckInByDayTable() {
             </GridToolbarContainer>
         );
     }
+
+    const CustomButton = styled(Button)(() => ({
+        background: 'linear-gradient(45deg, #00CAFF 30%, #0A4C94 90%)',
+        borderRadius: '12px',
+        border: 0,
+        color: 'white',
+        padding: '12px 24px',
+        boxShadow: '0 3px 5px 2px rgba(8, 59, 117, .3)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 6px 12px rgba(8, 59, 117, .4)',
+        },
+    }));
+
     return (
-        <div className="p-6 bg-[#083B75] min-h-screen text-center max-w-screen rounded-lg">
-            <h1 className="font-bold text-5xl pb-6 text-white">{t('staffCheckinTableByDay')}</h1>
-            <div className="mb-8 flex flex-col items-center">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DateRangePicker']}>
-                        <DateRangePicker
-                            defaultValue={[dayjs(), dayjs()]}
+        <Fade in={true} timeout={800}>
+            <Box
+                sx={{
+                    minHeight: '100vh',
+                    background: 'linear-gradient(135deg, #083B75 0%, #052A5E 100%)',
+                    py: 4,
+                    px: { xs: 2, sm: 4, md: 6 }
+                }}
+            >
+                <Container maxWidth="xl">
+                    <Stack spacing={4}>
+                        {/* Header */}
+                        <Typography
+                            variant="h3"
+                            component="h1"
                             sx={{
-                                backgroundColor: 'white',
-                                borderRadius: '12px',  // Bo góc mềm mại
-                                border: '2px solid #083B75',  // Thêm viền để nổi bật
-                                padding: '0.5rem',  // Thêm padding cho phần nhập
-                                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',  // Thêm hiệu ứng đổ bóng nhẹ
-                                '& .MuiInputLabel-root': {
-                                    color: '#083B75',
-                                    fontSize: '16px',
-                                    backgroundColor: 'white',
-                                    padding: '0 5px',
-                                    borderRadius: '4px',
-                                    transform: 'translate(14px, -8px) scale(0.9)', // Làm label nổi bật khi chưa nhập
-                                    transition: 'transform 0.2s ease, font-size 0.2s ease',
-                                },
-                                '& .MuiInputBase-root': {
-                                    borderRadius: '12px',  // Bo góc cho input
-                                    '&:hover': {
-                                        borderColor: '#06528A',  // Thay đổi màu khi hover
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#083B75', // Màu viền cho input
-                                    }
-                                },
-                                '& .MuiPickersDay-root': {
-                                    fontSize: '14px',  // Thay đổi font size của ngày
-                                    '&:hover': {
-                                        backgroundColor: '#D1E4F6',  // Thêm màu khi hover vào ngày
-                                    },
-                                },
-                                '& .MuiPickersDay-daySelected': {
-                                    backgroundColor: '#083B75',  // Màu nền của ngày đã chọn
-                                    color: 'white',  // Chữ màu trắng khi chọn
-                                },
-                                '& .MuiButtonBase-root': {
-                                    borderRadius: '8px',  // Bo góc các nút
-                                }
+                                color: 'white',
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                mb: 2,
+                                textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
                             }}
-                            slotProps={{
-                                shortcuts: {
-                                    items: shortcutsItems,
-                                }
+                        >
+                            {t('staffCheckinTableByDay')}
+                        </Typography>
+
+                        {/* Search Section */}
+                        <Card
+                            elevation={3}
+                            sx={{
+                                p: 3,
+                                borderRadius: 2,
+                                background: 'rgba(255, 255, 255, 0.95)',
+                                backdropFilter: 'blur(10px)',
+                                position: 'relative',
+                                overflow: 'visible',
+                                zIndex: 2
                             }}
-                            onChange={handleDateRangeChange}
-                        />
-                    </DemoContainer>
+                        >
+                            <CardContent>
+                                <Stack spacing={3}>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DemoContainer components={['DateRangePicker']}>
+                                            <DateRangePicker
+                                                defaultValue={[dayjs(), dayjs()]}
+                                                sx={{
+                                                    width: '100%',
+                                                    '& .MuiInputBase-root': {
+                                                        borderRadius: '12px',
+                                                        transition: 'all 0.3s ease',
+                                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                                        '&:hover': {
+                                                            boxShadow: '0 4px 8px rgba(8, 59, 117, 0.1)',
+                                                            backgroundColor: 'white',
+                                                        },
+                                                    },
+                                                    '& .MuiPickersDay-root': {
+                                                        borderRadius: '8px',
+                                                        transition: 'all 0.2s ease',
+                                                        '&:hover': {
+                                                            backgroundColor: '#D1E4F6',
+                                                            transform: 'scale(1.1)',
+                                                        },
+                                                        '&.Mui-selected': {
+                                                            backgroundColor: '#083B75',
+                                                            color: 'white',
+                                                            '&:hover': {
+                                                                backgroundColor: '#0A4C94',
+                                                            },
+                                                        },
+                                                    },
+                                                }}
+                                                slotProps={{
+                                                    shortcuts: { items: shortcutsItems },
+                                                }}
+                                                onChange={handleDateRangeChange}
+                                            />
+                                        </DemoContainer>
+                                    </LocalizationProvider>
 
-                </LocalizationProvider>
-                <Button
-                    
-                    variant="contained"
-                    onClick={() => handleSearch(paginationModel.page, paginationModel.pageSize)}
-                    sx={{
-                        backgroundColor: '#00B6E6', // Custom background color
-                        color: 'white', // Text color
-                        padding: '10px 20px', // Padding
-                        borderRadius: '8px', // Rounded corners
-                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Shadow
-                        '&:hover': {
-                            backgroundColor: '#052A5E', // Hover background color
-                        },
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: '20px'
-                    }}
-                >
-                    <SearchRoundedIcon
-                        sx={{
-                            fontSize: '1.5rem', // Icon size
-                        }}
-                    />
-                    <span
-                        className="font-medium ml-2 hidden sm:inline"
-                    >
-                        {t('Find')}
-                    </span>
-                </Button>
-            </div>
-            <div className="w-full overflow-x-auto p-5 bg-white rounded-lg shadow-md">
-                {loading ? (<Box sx={{ width: '100%', height: '100%' }}>
-                    <Skeleton />
-                    <Skeleton animation="wave" />
-                    <Skeleton animation={false} />
-                </Box>) :
-                    <DataGrid
-                        disableVirtualization={true}
-                        rows={rows}
-                        columns={columns}
-                        paginationMode='server'
-                        rowCount={rowCount}
-                        pageSizeOptions={[5, 10, 20, 50]}
-                        paginationModel={paginationModel}
-                        onPaginationModelChange={handlePaginationModelChange}
-                        slots={{
-                            toolbar: MyCustomToolbar,
-                            noRowsOverlay: CustomNoRowsOverlay
-                        }}
-                        // columnGroupingModel={columnGroupingModel}
-                        localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
-                        columnVisibilityModel={columnVisibilityModel}
-                        sx={{
-                            '& .MuiDataGrid-columnHeader': {
-                                backgroundColor: '#f5f5f5',
+                                    <div className="flex justify-center items-center space-x-4">
+                                        <CustomButton
+                                            className="w-full md:w-1/3 text-lg py-3"
+                                            onClick={() => handleSearch(paginationModel.page, paginationModel.pageSize)}
+                                        >
+                                            {t('Find')}
+                                        </CustomButton>
+                                        <Tooltip title={t('refresh')} arrow>
+                                            <IconButton 
+                                                onClick={() => handleSearch(paginationModel.page, paginationModel.pageSize)}
+                                                sx={{
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                                    '&:hover': {
+                                                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                                    }
+                                                }}
+                                            >
+                                                <RefreshIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </div>
+                                </Stack>
+                            </CardContent>
+                        </Card>
 
-                            },
-                            '& .MuiDataGrid-row:nth-of-type(odd)': {
-                                backgroundColor: '#EEEEEE', // Màu nền cho hàng lẻ
-                            },
-                            '& .MuiDataGrid-row:nth-of-type(even)': {
-                                backgroundColor: '#ffffff', // Màu nền cho hàng chẵn
-                            },
-                            '& .MuiDataGrid-row:hover': {
-                                backgroundColor: '#D1E4F6', // Màu nền khi hover
-                            }
-                        }}
-                    />}
-
-            </div>
-        </div>
+                        {/* Data Grid Section */}
+                        <Paper
+                            elevation={3}
+                            sx={{
+                                p: 2,
+                                borderRadius: 2,
+                                background: 'rgba(255, 255, 255, 0.95)',
+                                backdropFilter: 'blur(10px)',
+                                height: 'calc(100vh - 300px)',
+                                minHeight: 400,
+                                position: 'relative',
+                                zIndex: 1
+                            }}
+                        >
+                            {loading ? (
+                                <Box sx={{ width: '100%', height: '100%' }}>
+                                    <Skeleton animation="wave" height={60} />
+                                    <Skeleton animation="wave" height={60} />
+                                    <Skeleton animation="wave" height={60} />
+                                    <Skeleton animation="wave" height={60} />
+                                </Box>
+                            ) : (
+                                <DataGrid
+                                    disableVirtualization={true}
+                                    rows={rows}
+                                    columns={columns}
+                                    paginationMode='server'
+                                    rowCount={rowCount}
+                                    pageSizeOptions={[5, 10, 20, 50]}
+                                    paginationModel={paginationModel}
+                                    onPaginationModelChange={handlePaginationModelChange}
+                                    localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
+                                    slots={{
+                                        toolbar: MyCustomToolbar,
+                                        noRowsOverlay: CustomNoRowsOverlay
+                                    }}
+                                    columnVisibilityModel={columnVisibilityModel}
+                                    sx={{
+                                        border: 'none',
+                                        '& .MuiDataGrid-columnHeader': {
+                                            backgroundColor: '#f8fafc',
+                                            color: '#083B75',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.95rem',
+                                            '&:hover': {
+                                                backgroundColor: '#D1E4F6',
+                                            }
+                                        },
+                                        '& .MuiDataGrid-row': {
+                                            transition: 'background-color 0.2s ease',
+                                            '&:nth-of-type(odd)': {
+                                                backgroundColor: '#f8fafc',
+                                            },
+                                            '&:hover': {
+                                                backgroundColor: '#D1E4F6',
+                                                transform: 'scale(1.002)',
+                                            },
+                                        },
+                                        '& .MuiDataGrid-cell': {
+                                            borderBottom: '1px solid #e2e8f0',
+                                            '&:hover': {
+                                                color: '#083B75',
+                                            }
+                                        },
+                                        '& .MuiDataGrid-columnSeparator': {
+                                            display: 'none',
+                                        },
+                                        '& .MuiDataGrid-footerContainer': {
+                                            borderTop: '1px solid #e2e8f0',
+                                        },
+                                        '& .MuiTablePagination-root': {
+                                            color: '#083B75',
+                                        }
+                                    }}
+                                />
+                            )}
+                        </Paper>
+                    </Stack>
+                </Container>
+            </Box>
+        </Fade>
     );
 }

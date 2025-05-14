@@ -21,7 +21,11 @@
     "selectDept": "Select department",
     "selectYear": "Select year",
     "selectStaff": "Select staff",
-    "In time": "Checkin time",
+    "selectDeptHelper": "Select a department to view staff list",
+    "selectStaffHelper": "Select a staff member to view attendance information",
+    "dateRangeHelper": "Select a date range to view",
+    "refresh": "Refresh data",
+    "In time": "Checkin time",  
     "Out time": "Checkout time",
     "InLate": "Check in late",
     "OutEarly": "Check out early",
@@ -58,7 +62,11 @@
     "error": {
         "inValidInput" : "Please check all information before search!"
     },
-    "logo": "/logovntt-en.png"
-    
-    
+    "logo": "/logovntt-en.png",
+    "loadingData": "Loading data",
+    "toastMessages": {
+        "pleaseEnterName": "Please enter a name!",
+        "employeeScheduleNotFound": "Employee's work schedule not found!",
+        "employeeScheduleNotFoundForMonth": "Employee's work schedule not found for this month!"
+    }
 }

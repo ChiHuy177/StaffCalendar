@@ -19,3 +19,118 @@
 header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionFixed.mui-fixed.css-zanzjh-MuiPaper-root-MuiAppBar-root{
   padding-right: 0 !important;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* DataGrid Custom Styles */
+.grid-cell-center {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Card Hover Effect */
+.card-hover {
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Animation */
+.button-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 202, 255, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 202, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 202, 255, 0);
+    }
+}
+
+/* Gradient Text */
+.gradient-text {
+    background: linear-gradient(45deg, #00CAFF, #0A4C94);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Input Focus Effect */
+.input-focus-effect:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(8, 59, 117, 0.1);
+}
+
+/* Table Row Hover Animation */
+.table-row-hover {
+    transition: all 0.2s ease;
+}
+
+.table-row-hover:hover {
+    transform: scale(1.002);
+    background-color: rgba(209, 228, 246, 0.5) !important;
+}
+
+/* Loading Skeleton Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
