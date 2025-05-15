@@ -19,6 +19,12 @@ namespace CalendarWebsite.Server.Services
             return Task.CompletedTask;
         }
 
+        public Task DeleteCustomWorkingTime(long id)
+        {
+            _customWorkingTimeRepository.DeleteAsyncByKey(id);
+            return Task.CompletedTask;
+        }
+
         public async Task<IEnumerable<CustomWorkingTime>> GetAllCustomWorkingTimeByPersonalProfileId(long personalProfileId)
         {
             var result = await _customWorkingTimeRepository.FindList(

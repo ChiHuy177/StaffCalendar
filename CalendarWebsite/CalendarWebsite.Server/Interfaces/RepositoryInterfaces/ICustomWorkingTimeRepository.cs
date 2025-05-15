@@ -4,5 +4,6 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
 {
     public interface ICustomWorkingTimeRepository : IGenericRepository<CustomWorkingTime>
     {
+        
     }
 }

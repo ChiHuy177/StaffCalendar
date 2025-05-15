@@ -49,31 +49,14 @@ namespace CalendarWebsite.Server.Controllers
             return Ok();
         }
 
-        // POST: api/CustomWorkingTimes
-        // [HttpPost]
-        // public async Task<ActionResult<CustomWorkingTime>> PostCustomWorkingTime(CustomWorkingTime customWorkingTime)
-        // {
-        //     _customWorkingTimeService.Add(customWorkingTime);
-        //     await _customWorkingTimeService.SaveChangesAsync();
-
-        //     return CreatedAtAction("GetCustomWorkingTime", new { id = customWorkingTime.Id }, customWorkingTime);
-        // }
-
-        // DELETE: api/CustomWorkingTimes/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteCustomWorkingTime(long id)
-        // {
-        //     var customWorkingTime = await _customWorkingTimeService.(id);
-        //     if (customWorkingTime == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     _customWorkingTimeService.CustomWorkingTimes.Remove(customWorkingTime);
-        //     await _customWorkingTimeService.SaveChangesAsync();
-
-        //     return NoContent();
-        // }
+        [HttpDelete("DeleteCustomWorkingTime")]
+        public async Task<IActionResult> DeleteCustomWorkingTime(long id)
+        {
+            if (id == 0)
+                return BadRequest("Id is required");
+            await _customWorkingTimeService.DeleteCustomWorkingTime(id);
+            return Ok();
+        }
 
 
     }

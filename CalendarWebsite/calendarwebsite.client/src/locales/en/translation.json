@@ -95,5 +95,13 @@
     "sunday": "Sunday",
     "workWeekInfo": "Information",
     "workWeekDescription": "This configuration affects how attendance is calculated for staff members. Non-working days will not be counted in attendance reports.",
-    "workWeekNote": "Changes to working hours will only affect future calculations and will not modify historical attendance data."
+    "workWeekNote": "Changes to working hours will only affect future calculations and will not modify historical attendance data.",
+    "add": "Add",
+    "row": "row",
+    "selected": "selected",
+    "hide": "Hide",
+    "unsort": "Unsort",
+    "sortAsc": "Sort ascending",
+    "sortDesc": "Sort descending",
+    "sort": "Sort"
 }

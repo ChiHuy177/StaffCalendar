@@ -17,6 +17,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
+import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 
 interface WorkDay {
     id: number;
@@ -33,8 +35,16 @@ export default function CustomWorkWeek() {
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === 'dark';
     
-    // Empty array for work days
-    const [workDays, setWorkDays] = useState<WorkDay[]>([]);
+    // Sample data for work days
+    const [workDays, setWorkDays] = useState<WorkDay[]>([
+        { id: 1, name: t('monday'), morningStart: '08:00', morningEnd: '12:00', afternoonStart: '13:30', afternoonEnd: '17:30', isWorkingDay: true },
+        { id: 2, name: t('tuesday'), morningStart: '08:00', morningEnd: '12:00', afternoonStart: '13:30', afternoonEnd: '17:30', isWorkingDay: true },
+        { id: 3, name: t('wednesday'), morningStart: '08:00', morningEnd: '12:00', afternoonStart: '13:30', afternoonEnd: '17:30', isWorkingDay: true },
+        { id: 4, name: t('thursday'), morningStart: '08:00', morningEnd: '12:00', afternoonStart: '13:30', afternoonEnd: '17:30', isWorkingDay: true },
+        { id: 5, name: t('friday'), morningStart: '08:00', morningEnd: '12:00', afternoonStart: '13:30', afternoonEnd: '17:30', isWorkingDay: true },
+        { id: 6, name: t('saturday'), morningStart: '08:00', morningEnd: '12:00', afternoonStart: '00:00', afternoonEnd: '00:00', isWorkingDay: false },
+        { id: 7, name: t('sunday'), morningStart: '00:00', morningEnd: '00:00', afternoonStart: '00:00', afternoonEnd: '00:00', isWorkingDay: false }
+    ]);
 
     // Handlers would be connected to real functionality in a complete implementation
     const handleEdit = (id: number) => {
@@ -67,9 +77,7 @@ export default function CustomWorkWeek() {
             <GridToolbarContainer>
                 <GridToolbarColumnsButton />
                 <GridToolbarFilterButton />
-                <GridToolbarDensitySelector 
-                    slotProps={{ tooltip: { title: 'Change density' } }}
-                />
+                <GridToolbarDensitySelector />
                 <Box sx={{ flexGrow: 1 }} />
                 <Button
                     onClick={handleAddWorkDay}
@@ -89,7 +97,7 @@ export default function CustomWorkWeek() {
         );
     }
 
-    // Define columns for DataGrid
+    // Define columns for DataGrid - rerender when language changes
     const columns: GridColDef[] = [
         { 
             field: 'name', 
@@ -219,6 +227,12 @@ export default function CustomWorkWeek() {
                         <Typography variant="subtitle1" color="textSecondary" gutterBottom>
                             {t('configureWorkHours')}
                         </Typography>
+                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                            {t('workWeekDescription')}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" sx={{ mt: 1, fontStyle: 'italic' }}>
+                            {t('workWeekNote')}
+                        </Typography>
                     </Card>
 
                     {/* Data Grid Section */}
@@ -303,19 +317,17 @@ export default function CustomWorkWeek() {
                             disableRowSelectionOnClick
                             autoHeight
                             slots={{
-                                toolbar: CustomToolbar
+                                toolbar: CustomToolbar,
                             }}
-                            localeText={{
-                                noRowsLabel: t('dataGrid.noRows'),
-                                footerRowSelected: (count) => `${count} ${t('row')} ${t('selected')}`,
-                                columnMenuLabel: t('dataGrid.columns'),
-                                columnMenuShowColumns: t('dataGrid.columns'),
-                                columnMenuFilter: t('dataGrid.filter'),
-                                columnMenuHideColumn: t('hide'),
-                                columnMenuUnsort: t('unsort'),
-                                columnMenuSortAsc: t('sortAsc'),
-                                columnMenuSortDesc: t('sortDesc'),
-                                columnHeaderSortIconLabel: t('sort'),
+                            localeText={
+                                i18n.language === 'vi' 
+                                ? viVNGrid.components.MuiDataGrid.defaultProps.localeText 
+                                : undefined
+                            }
+                            sx={{
+                                '& .grid-cell-center': {
+                                    textAlign: 'center',
+                                }
                             }}
                         />
                     </Paper>

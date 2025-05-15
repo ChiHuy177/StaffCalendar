@@ -12,6 +12,8 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
         public Task AddAsync(T entity);
 
         public Task DeleteAsync(T entity);
+
+        public Task DeleteAsyncByKey<TKey>(TKey id);
         public Task UpdateAsync(T entity);
 
 

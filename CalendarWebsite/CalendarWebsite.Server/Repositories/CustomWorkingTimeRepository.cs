@@ -8,6 +8,8 @@ namespace CalendarWebsite.Server.Repositories
     {
         public CustomWorkingTimeRepository(UserDataContext context) : base(context)
         {
+            
         }
+        
     }
 }

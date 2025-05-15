@@ -261,5 +261,19 @@ namespace CalendarWebsite.Server.Repositories
 
             return await query.Select(selector).FirstOrDefaultAsync();
         }
+
+        public Task DeleteAsyncByKey<TKey>(TKey id)
+        {
+            var entity = _dbSet.Find(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+                return _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Entity not found");
+            }
+        }
     }
 }

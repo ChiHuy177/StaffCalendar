@@ -92,5 +92,13 @@
     "sunday": "Chủ Nhật",
     "workWeekInfo": "Thông tin",
     "workWeekDescription": "Cấu hình này ảnh hưởng đến cách tính chấm công cho nhân viên. Những ngày không làm việc sẽ không được tính trong báo cáo chấm công.",
-    "workWeekNote": "Thay đổi giờ làm việc sẽ chỉ ảnh hưởng đến các tính toán trong tương lai và sẽ không sửa đổi dữ liệu chấm công lịch sử."
+    "workWeekNote": "Thay đổi giờ làm việc sẽ chỉ ảnh hưởng đến các tính toán trong tương lai và sẽ không sửa đổi dữ liệu chấm công lịch sử.",
+    "add": "Thêm mới",
+    "row": "dòng",
+    "selected": "đã chọn",
+    "hide": "Ẩn",
+    "unsort": "Bỏ sắp xếp",
+    "sortAsc": "Sắp xếp tăng dần",
+    "sortDesc": "Sắp xếp giảm dần",
+    "sort": "Sắp xếp"
 }

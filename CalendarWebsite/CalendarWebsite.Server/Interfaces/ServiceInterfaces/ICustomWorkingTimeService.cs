@@ -8,5 +8,7 @@ namespace CalendarWebsite.Server.Interfaces.ServiceInterfaces
             (long personalProfileId);
 
         public Task AddCustomWorkingTime(CustomWorkingTime customWorkingTime);
+
+        public Task DeleteCustomWorkingTime(long id);
     }
 }
