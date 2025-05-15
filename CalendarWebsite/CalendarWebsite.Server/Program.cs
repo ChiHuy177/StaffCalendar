@@ -34,6 +34,7 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IDeparmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IPersonalProfileRepository, PersonalProfileRepository>();
             builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
+            builder.Services.AddScoped<IWorkWeekRepository, WorkWeekRepository>();
 
             //register service
             
@@ -42,6 +43,7 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IPersonalProfileService, PersonalProfileService>();
             builder.Services.AddScoped<IExportService, ExportService>();
             builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+            builder.Services.AddScoped<IWorkingWeekService, WorkWeekService>();
 
             //add CORS
             builder.Services.AddCors(options =>

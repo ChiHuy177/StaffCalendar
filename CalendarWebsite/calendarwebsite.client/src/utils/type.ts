@@ -90,3 +90,8 @@ export type CheckinData = {
     ngayYeuCau?: Date;
     ghiChu?: string;
 }
+
+export type UserInfo = {
+    emailAndName: string;
+    personalProfileId: number;
+}

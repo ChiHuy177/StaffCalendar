@@ -29,7 +29,7 @@ export const generateUserEvent = (item: CheckinData, t: TranslateFunction): Even
         const adjustedEnd = new Date(item.outAt);
         adjustedEnd.setHours(adjustedEnd.getHours() + 7);
 
-        if (isLate(adjustedStart.toString())) {
+        if (isLate(adjustedStart.toString(), 7,30)) {
             eventList.push({
                 id: item.id?.toString(),
                 title: t('InLate'),
@@ -132,11 +132,11 @@ export const addAbsenceAndHolidayEvents = (
     return eventList;
 };
 
-function isLate(date: string): boolean {
+function isLate(date: string, lateHour: number, lateMinute: number): boolean {
     const parsedDate = new Date(date);
     const hours = parsedDate.getHours();
     const minutes = parsedDate.getMinutes();
-    return (hours >= 8 || (hours === 7 && minutes > 30));
+    return hours > lateHour || (hours === lateHour && minutes > lateMinute);
 }
 function isGoHomeEarly(date: string): boolean {
     const parsedDate = new Date(date);

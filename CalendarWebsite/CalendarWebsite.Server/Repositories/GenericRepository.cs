@@ -232,5 +232,34 @@ namespace CalendarWebsite.Server.Repositories
 
             return await query.FirstOrDefaultAsync();
         }
+
+        public virtual async Task<TResult?> FindOneSelect<TResult>(
+            Expression<Func<T, bool>> predicate,
+            Expression<Func<T, TResult>> selector,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            string includeProperties = "",
+            bool disableTracking = false)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            foreach (var includeProperty in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                query = query.Include(includeProperty);
+            }
+
+            query = query.Where(predicate);
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.Select(selector).FirstOrDefaultAsync();
+        }
     }
 }

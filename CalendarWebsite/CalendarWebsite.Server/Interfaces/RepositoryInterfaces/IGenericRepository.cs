@@ -47,6 +47,14 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
             string includeProperties = "",
             bool disableTracking = false
             );
+        public Task<TResult?> FindOneSelect<TResult>(
+        Expression<Func<T, bool>> predicate,
+        Expression<Func<T, TResult>> selector,
+        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+        string includeProperties = "",
+        bool disableTracking = false
+    );
+
 
     }
 }

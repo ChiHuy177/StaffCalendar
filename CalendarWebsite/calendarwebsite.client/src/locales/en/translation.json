@@ -9,8 +9,11 @@
         "home": "Staff checkin calendar",
         "staffTable": "Staff checkin table",
         "byDay": "Staff checkin table by day",
-        "byDept": "Staff checkin table by department"
+        "byDept": "Staff checkin table by department",
+        "customWorkWeek": "Custom Work Week"
     },
+    "lightMode":"Light mode",
+    "darkMode":"Dark mode",
     "home":"Home",
     "toastMessages.errorFetchingUsernames": "Error fetching usernames. Please try again later.",
     "absentReason":"",
@@ -73,5 +76,24 @@
         "pleaseEnterName": "Please enter a name!",
         "employeeScheduleNotFound": "Employee's work schedule not found!",
         "employeeScheduleNotFoundForMonth": "Employee's work schedule not found for this month!"
-    }
+    },
+    "customWorkWeek": "Custom Work Week",
+    "configureWorkHours": "Configure your organization's working hours by day of the week",
+    "day": "Day",
+    "morningStart": "Morning Start",
+    "morningEnd": "Morning End",
+    "afternoonStart": "Afternoon Start",
+    "afternoonEnd": "Afternoon End",
+    "workingDay": "Working Day",
+    "actions": "Actions",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "workWeekInfo": "Information",
+    "workWeekDescription": "This configuration affects how attendance is calculated for staff members. Non-working days will not be counted in attendance reports.",
+    "workWeekNote": "Changes to working hours will only affect future calculations and will not modify historical attendance data."
 }
