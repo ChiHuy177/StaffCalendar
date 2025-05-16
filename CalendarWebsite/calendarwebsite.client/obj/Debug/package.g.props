@@ -31,6 +31,7 @@
     <PackageJsonDependenciesTailwindcssVite Condition="$(PackageJsonDependenciesTailwindcssVite) == ''">^4.1.3</PackageJsonDependenciesTailwindcssVite>
     <PackageJsonDependenciesToolpadCore Condition="$(PackageJsonDependenciesToolpadCore) == ''">^0.13.0</PackageJsonDependenciesToolpadCore>
     <PackageJsonDependenciesAxios Condition="$(PackageJsonDependenciesAxios) == ''">^1.8.4</PackageJsonDependenciesAxios>
+    <PackageJsonDependenciesCalendarwebsiteClient Condition="$(PackageJsonDependenciesCalendarwebsiteClient) == ''">file:</PackageJsonDependenciesCalendarwebsiteClient>
     <PackageJsonDependenciesDayjs Condition="$(PackageJsonDependenciesDayjs) == ''">^1.11.13</PackageJsonDependenciesDayjs>
     <PackageJsonDependenciesFramerMotion Condition="$(PackageJsonDependenciesFramerMotion) == ''">^12.7.4</PackageJsonDependenciesFramerMotion>
     <PackageJsonDependenciesFullcalendar Condition="$(PackageJsonDependenciesFullcalendar) == ''">^6.1.17</PackageJsonDependenciesFullcalendar>

@@ -12,5 +12,9 @@ namespace CalendarWebsite.Server.Data
         public DbSet<Department> Department { get; set; }
 
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
+
+        public DbSet<CustomWorkingTime> CustomWorkingTimes { get; set; }
+
+        public DbSet<Workweek> Workweeks { get; set; }
     }
 }

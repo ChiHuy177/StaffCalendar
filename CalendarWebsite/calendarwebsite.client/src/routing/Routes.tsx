@@ -4,6 +4,7 @@ import CheckinTablePage from "../Pages/CheckinTable";
 import DashboardLayout from "../layout/DashboardLayout";
 import CheckInByDayTable from "../Pages/CheckInByDayTable";
 import CheckInTableByDepartment from "../Pages/CheckInTableByDepartment";
+import CustomWorkWeek from "../Pages/CustomWorkWeek";
 
 
 
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
                 { path: 'table', element: <CheckinTablePage /> },
                 {path: 'checkinbyday', element: <CheckInByDayTable />},
                 {path: 'checkintablebydepartment', element: <CheckInTableByDepartment />},
+                {path: 'customworkweek', element: <CustomWorkWeek />},
             ],
         },
     ]

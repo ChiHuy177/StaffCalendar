@@ -1,11 +1,12 @@
 import { EventInput } from "@fullcalendar/core/index.js";
-import { CheckinData } from "./type";
+import { CheckinData, WorkScheduleDetail } from "./type";
 import dayjs from 'dayjs';
+
 
 
 type TranslateFunction = (key: string) => string;
 
-export const generateUserEvent = (item: CheckinData, t: TranslateFunction): EventInput[] => {
+export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkScheduleDetail[], t: TranslateFunction): EventInput[] => {
     const eventList: EventInput[] = [];
     if (item.attendant === 'P = Phép năm') {
         console.log('item', item);
@@ -29,7 +30,31 @@ export const generateUserEvent = (item: CheckinData, t: TranslateFunction): Even
         const adjustedEnd = new Date(item.outAt);
         adjustedEnd.setHours(adjustedEnd.getHours() + 7);
 
-        if (isLate(adjustedStart.toString())) {
+        //  (0: Chủ nhật, 1: Thứ 2, ..., 6: Thứ 7)
+        const dayOfWeek = adjustedStart.getDay();
+        
+        // Chuyển đổi dayOfWeek sang tên ngày trong tuần
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const dayName = dayNames[dayOfWeek];
+        
+        // Tìm thông tin giờ làm việc cho ngày trong tuần
+        const workSchedule = workScheduleDetails.find(schedule => schedule.workweekTitle === dayName);
+        
+        // Giá trị mặc định
+        let startTime = 7.5;
+        let endTime = 16.5;
+        
+        // Nếu tìm thấy thông tin giờ làm việc, sử dụng thông tin đó
+        if (workSchedule) {
+            if (workSchedule.morningStart !== null) {
+                startTime = workSchedule.morningStart;
+            }
+            if (workSchedule.afternoonEnd !== null) {
+                endTime = workSchedule.afternoonEnd;
+            }
+        }
+
+        if (isLate(adjustedStart.toString(), startTime)) {
             eventList.push({
                 id: item.id?.toString(),
                 title: t('InLate'),
@@ -53,7 +78,7 @@ export const generateUserEvent = (item: CheckinData, t: TranslateFunction): Even
             });
         }
 
-        if (isGoHomeEarly(adjustedEnd.toString())) {
+        if (isGoHomeEarly(adjustedEnd.toString(), endTime)) {
             eventList.push({
                 id: item.id?.toString() + '-out',
                 title: t('OutEarly'),
@@ -132,15 +157,23 @@ export const addAbsenceAndHolidayEvents = (
     return eventList;
 };
 
-function isLate(date: string): boolean {
+function isLate(date: string, lateTime: number): boolean {
     const parsedDate = new Date(date);
     const hours = parsedDate.getHours();
     const minutes = parsedDate.getMinutes();
-    return (hours >= 8 || (hours === 7 && minutes > 30));
+
+    const lateHour = Math.floor(lateTime);
+    const lateMinute = Math.round((lateTime - lateHour) * 60);
+
+    return hours > lateHour || (hours === lateHour && minutes > lateMinute);
 }
-function isGoHomeEarly(date: string): boolean {
+function isGoHomeEarly(date: string, earlyTime: number): boolean {
     const parsedDate = new Date(date);
     const hours = parsedDate.getHours();
     const minutes = parsedDate.getMinutes();
-    return hours < 16 || (hours === 16 && minutes < 30);
+
+    const earlyHour = Math.floor(earlyTime);
+    const earlyMinute = Math.round((earlyTime - earlyHour) * 60);
+
+    return hours < earlyHour || (hours === earlyHour && minutes < earlyMinute);
 }

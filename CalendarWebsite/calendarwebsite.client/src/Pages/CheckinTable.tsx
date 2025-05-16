@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { formatTime, User } from '../utils/type';
+import { formatTime, User, UserInfo } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -15,8 +15,8 @@ import { getAllUserName, getCheckinDataByUserIdPaging } from '../apis/CheckinDat
 
 export default function CheckinTablePage() {
     const [rows, setRows] = useState([]);
-    const [nameOfUsers, setNameOfUsers] = useState<string[]>([]);
-    const [selectedName, setSelectedName] = useState('');
+    const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
+    const [selectedName, setSelectedName] = useState<UserInfo>();
     const [selectedMonth, setSelectedMonth] = useState(() => (new Date().getMonth() + 1).toString());
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear().toString());
     const [loading, setLoading] = useState(false);
@@ -157,10 +157,10 @@ export default function CheckinTablePage() {
             }
         }
         fetchAllUserName();
-    }, []);
+    }, [t]);
 
     function handleSearch() {
-        if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
+        if (selectedName?.emailAndName === '' || selectedMonth === '' || selectedYear === '') {
             toast.error(t('error.inValidInput'), {
                 position: "top-center",
                 autoClose: 5000,
@@ -174,7 +174,9 @@ export default function CheckinTablePage() {
             });
             return;
         } else {
-            fetchDataByUserId(selectedName, parseInt(selectedMonth), parseInt(selectedYear));
+            if (selectedName?.emailAndName != undefined) {
+                fetchDataByUserId(selectedName.emailAndName, parseInt(selectedMonth), parseInt(selectedYear));
+            }
         }
     }
 
@@ -257,7 +259,7 @@ export default function CheckinTablePage() {
     }
 
     const handleExportExcel = async () => {
-        if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
+        if (selectedName?.emailAndName === '' || selectedMonth === '' || selectedYear === '') {
             toast.error('Vui lòng chọn tên, tháng và năm trước khi xuất file!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -274,7 +276,7 @@ export default function CheckinTablePage() {
         setExportLoading(true);
         try {
             const apiUrl = `${import.meta.env.VITE_API_URL}api/export/ExportUserCheckinData`;
-            const selectedNameBeforeDash = selectedName.split('-')[0];
+            const selectedNameBeforeDash = selectedName?.emailAndName.split('-')[0];
             const response = await axios.get(apiUrl, {
                 params: {
                     month: selectedMonth,
@@ -321,7 +323,7 @@ export default function CheckinTablePage() {
     };
 
     async function fetchCheckinData(page: number, pageSize: number) {
-        if (selectedName === '' || selectedMonth === '' || selectedYear === '') {
+        if (selectedName?.emailAndName === '' || selectedMonth === '' || selectedYear === '') {
             toast.error(t('error.inValidInput'), {
                 position: "top-center",
                 autoClose: 5000,
@@ -335,18 +337,32 @@ export default function CheckinTablePage() {
             });
             return;
         }
-        
+
         setLoading(true);
         try {
-            const userId = selectedName.split('-')[0];
+            const userId = selectedName?.emailAndName.split('-')[0];
+            if (!userId) {
+                toast.error(t('error.inValidInput'), {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
+            }
             const result = await getCheckinDataByUserIdPaging(
-                parseInt(selectedMonth), 
-                parseInt(selectedYear), 
-                userId, 
-                page, 
+                parseInt(selectedMonth),
+                parseInt(selectedYear),
+                userId,
+                page,
                 pageSize
             );
-            
+
             if (!result || !result.items || result.items.length === 0) {
                 setRows([]);
                 setRowCount(0);
@@ -391,7 +407,7 @@ export default function CheckinTablePage() {
                     totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
                 };
             });
-            
+
             setRows(formattedData);
             setRowCount(result.totalCount);
         } catch (error) {
@@ -462,7 +478,7 @@ export default function CheckinTablePage() {
                             {/* Name Autocomplete */}
                             <Box sx={{ position: 'relative', overflow: 'visible' }}>
                                 {loadingNames ? (
-                                    <Box sx={{ 
+                                    <Box sx={{
                                         position: 'relative',
                                         width: '100%',
                                         height: '56px',
@@ -484,20 +500,21 @@ export default function CheckinTablePage() {
                                             zIndex: 1
                                         }
                                     }}>
-                                        <CircularProgress 
-                                            size={24} 
-                                            sx={{ 
+                                        <CircularProgress
+                                            size={24}
+                                            sx={{
                                                 position: 'relative',
                                                 zIndex: 2
-                                            }} 
+                                            }}
                                         />
                                     </Box>
                                 ) : (
                                     <Autocomplete
                                         disablePortal
                                         options={nameOfUsers}
+                                        getOptionLabel={(option) => option.emailAndName}
                                         value={selectedName}
-                                        onChange={(_event, value) => setSelectedName(value || '')}
+                                        onChange={(_event, value) => setSelectedName(value || undefined)}
                                         slotProps={{
                                             popper: {
                                                 sx: {
@@ -516,13 +533,13 @@ export default function CheckinTablePage() {
                                                 ]
                                             },
                                             listbox: {
-                                                sx: { 
+                                                sx: {
                                                     backgroundColor: 'white',
                                                     color: 'text.primary',
                                                     zIndex: 9999,
                                                     maxHeight: '300px',
-                                                    '& .MuiAutocomplete-option':{
-                                                        '&[aria-selected="true"]':{
+                                                    '& .MuiAutocomplete-option': {
+                                                        '&[aria-selected="true"]': {
                                                             backgroundColor: 'primary.light',
                                                             color: 'primary.contrastText',
                                                             '&.Mui-focused': {
@@ -530,7 +547,7 @@ export default function CheckinTablePage() {
                                                                 color: 'primary.contrastText',
                                                             }
                                                         },
-                                                        '&:hover':{
+                                                        '&:hover': {
                                                             backgroundColor: 'action.hover',
                                                         }
                                                     }
