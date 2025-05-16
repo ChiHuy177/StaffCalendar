@@ -50,7 +50,9 @@ export default function CustomWorkWeek() {
     const isDarkMode = theme.palette.mode === 'dark';
     const [workDays, setWorkDays] = useState<ExtendedWorkSchedule[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
     const [employees, setEmployees] = useState<UserInfo[]>([]);
+    const [editingWorkSchedule, setEditingWorkSchedule] = useState<ExtendedWorkSchedule | null>(null);
     const [newWorkSchedule, setNewWorkSchedule] = useState<{
         workweekTitle: string;
         employeeName: UserInfo | null;
@@ -135,6 +137,41 @@ export default function CustomWorkWeek() {
     // Handlers would be connected to real functionality in a complete implementation
     const handleEdit = (id: number) => {
         console.log('Edit day with ID:', id);
+        const workSchedule = workDays.find(day => day.id === id);
+        if (workSchedule) {
+            console.log('PersonalProfileId:', workSchedule.personalProfileId);
+            setEditingWorkSchedule(workSchedule);
+            
+            // Tìm employee tương ứng với personalProfileId
+            const employeeMatch = employees.find(emp => emp.personalProfileId === workSchedule.personalProfileId);
+            
+            // Chuẩn bị dữ liệu cho form chỉnh sửa
+            setNewWorkSchedule({
+                workweekTitle: workSchedule.workweekTitle,
+                employeeName: employeeMatch || null,
+                morningStart: workSchedule.morningStart,
+                morningEnd: workSchedule.morningEnd,
+                afternoonStart: workSchedule.afternoonStart,
+                afternoonEnd: workSchedule.afternoonEnd
+            });
+            
+            setOpenEditDialog(true);
+        }
+    };
+
+    const handleCloseEditDialog = () => {
+        setOpenEditDialog(false);
+        setEditingWorkSchedule(null);
+        // Reset form
+        setNewWorkSchedule({
+            workweekTitle: '',
+            employeeName: null,
+            morningStart: null,
+            morningEnd: null,
+            afternoonStart: null,
+            afternoonEnd: null
+        });
+        setErrors({});
     };
 
     const handleDelete = (id: number) => {
@@ -236,7 +273,7 @@ export default function CustomWorkWeek() {
                 const currentDate = new Date();
 
                 const apiData : WorkScheduleApiData = {
-                    workweekId: formData.workweekId, 
+                    workweekId: formData.workweekId, // ID sẽ được tạo bởi API nếu là bản ghi mới, hoặc truyền ID hiện có nếu cập nhật
                     personalProfileId: formData.personalProfileId || 0,
                     morningStart: formData.morningStart,
                     morningEnd: formData.morningEnd,
@@ -248,15 +285,57 @@ export default function CustomWorkWeek() {
                     modifiedBy: "Chí Huy", 
                     isDeleted: false
                 }
-                
+                // Ở đây sẽ thêm xử lý API sau
                 await createCustomWorkingTime(apiData);
 
+                // Cập nhật danh sách sau khi lưu thành công
                 handleRefresh();
 
+                // Đóng dialog
                 handleCloseDialog();
             } catch (error) {
                 console.error("Error saving new work schedule:", error);
+                // Hiển thị thông báo lỗi nếu cần
+            }
+        }
+    };
 
+    const handleSubmitEdit = async () => {
+        if (validateForm() && editingWorkSchedule) {
+            try {
+                // Lấy dữ liệu từ form
+                const formData = getFormData();
+                console.log('Updated work schedule to be saved:', formData);
+                // const currentDate = new Date();
+
+                // Tạo đối tượng dữ liệu cho API cập nhật
+                /* Biến apiData này sẽ được sử dụng khi API cập nhật được triển khai
+                const apiData: WorkScheduleApiData = {
+                    workweekId: formData.workweekId,
+                    personalProfileId: formData.personalProfileId || 0,
+                    morningStart: formData.morningStart,
+                    morningEnd: formData.morningEnd,
+                    afternoonStart: formData.afternoonStart,
+                    afternoonEnd: formData.afternoonEnd,
+                    createdBy: editingWorkSchedule.createdBy || "Chí Huy",
+                    createdTime: editingWorkSchedule.createdTime || currentDate,
+                    lastModified: currentDate,
+                    modifiedBy: "Chí Huy",
+                    isDeleted: false
+                }
+                */
+
+                // TODO: Thêm gọi API cập nhật workSchedule ở đây
+                // await updateCustomWorkingTime(editingWorkSchedule.id, apiData);
+
+                // Cập nhật danh sách sau khi lưu thành công
+                handleRefresh();
+
+                // Đóng dialog
+                handleCloseEditDialog();
+            } catch (error) {
+                console.error("Error updating work schedule:", error);
+                // Hiển thị thông báo lỗi nếu cần
             }
         }
     };
@@ -834,6 +913,249 @@ export default function CustomWorkWeek() {
                     </Button>
                     <Button
                         onClick={handleSubmit}
+                        variant="contained"
+                        sx={{
+                            borderRadius: 8,
+                            px: 4,
+                            py: 1,
+                            ml: 1,
+                            textTransform: 'none',
+                            fontWeight: 'bold',
+                            background: 'linear-gradient(45deg, #1976d2 0%, #304ffe 100%)',
+                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)',
+                            '&:hover': {
+                                background: 'linear-gradient(45deg, #1565c0 0%, #283593 100%)',
+                                boxShadow: '0 6px 15px rgba(0, 0, 0, 0.2)',
+                            }
+                        }}
+                    >
+                        {t('save')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Dialog để chỉnh sửa lịch làm việc */}
+            <Dialog
+                open={openEditDialog}
+                onClose={handleCloseEditDialog}
+                fullWidth
+                maxWidth="md"
+                PaperProps={{
+                    elevation: 24,
+                    sx: {
+                        borderRadius: '12px',
+                        overflow: 'hidden'
+                    }
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        fontWeight: 'bold',
+                        bgcolor: theme.palette.primary.main,
+                        color: 'white',
+                        py: 2.5,
+                        fontSize: '1.3rem',
+                        backgroundImage: 'linear-gradient(45deg, #1976d2, #304ffe)'
+                    }}
+                >
+                    {t('editWorkSchedule')}
+                </DialogTitle>
+                <DialogContent sx={{ py: 4, px: 3 }}>
+                    <Box sx={{ mt: 1 }}>
+                        {/* Thông tin chung */}
+                        <Box sx={{ mb: 4 }}>
+                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                                {t('generalInformation')}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+
+                            <FormControl fullWidth sx={{ mb: 3 }}>
+                                <InputLabel required>{t('workweekTitle')}</InputLabel>
+                                <Select
+                                    value={newWorkSchedule.workweekTitle}
+                                    onChange={(e) => handleInputChange('workweekTitle', e.target.value)}
+                                    label={t('workweekTitle')}
+                                    error={!!errors.workweekTitle}
+                                    sx={{
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    <MenuItem value="Monday">Thứ 2</MenuItem>
+                                    <MenuItem value="Tuesday">Thứ 3</MenuItem>
+                                    <MenuItem value="Wednesday">Thứ 4</MenuItem>
+                                    <MenuItem value="Thursday">Thứ 5</MenuItem>
+                                    <MenuItem value="Friday">Thứ 6</MenuItem>
+                                    <MenuItem value="Saturday">Thứ 7</MenuItem>
+                                    <MenuItem value="Sunday">Chủ nhật</MenuItem>
+                                </Select>
+                                {!!errors.workweekTitle && (
+                                    <FormHelperText error>{errors.workweekTitle}</FormHelperText>
+                                )}
+                            </FormControl>
+
+                            <Autocomplete
+                                options={employees}
+                                getOptionLabel={(option) => option.emailAndName}
+                                value={newWorkSchedule.employeeName}
+                                onChange={(_, newValue) => {
+                                    setNewWorkSchedule({
+                                        ...newWorkSchedule,
+                                        employeeName: newValue
+                                    });
+
+                                    // Clear error if exists
+                                    if (errors.personalProfileId) {
+                                        setErrors({
+                                            ...errors,
+                                            personalProfileId: undefined
+                                        });
+                                    }
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label={t('selectEmployee')}
+                                        error={!!errors.personalProfileId}
+                                        helperText={errors.personalProfileId}
+                                        required
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            sx: { borderRadius: '8px' }
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Box>
+
+                        {/* Giờ làm việc buổi sáng */}
+                        <Box sx={{ mb: 4 }}>
+                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                                {t('morningShift')}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+
+                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel>{t('startTime')}</InputLabel>
+                                        <Select
+                                            value={newWorkSchedule.morningStart !== null ? newWorkSchedule.morningStart : ''}
+                                            onChange={(e) => handleInputChange('morningStart', e.target.value === '' ? null : Number(e.target.value))}
+                                            label={t('startTime')}
+                                            sx={{
+                                                borderRadius: '8px'
+                                            }}
+                                        >
+                                            <MenuItem value=""><em>{t('none')}</em></MenuItem>
+                                            {timeOptionsMorning.map((option) => (
+                                                <MenuItem key={`morning-start-${option.value}`} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel>{t('endTime')}</InputLabel>
+                                        <Select
+                                            value={newWorkSchedule.morningEnd !== null ? newWorkSchedule.morningEnd : ''}
+                                            onChange={(e) => handleInputChange('morningEnd', e.target.value === '' ? null : Number(e.target.value))}
+                                            label={t('endTime')}
+                                            sx={{
+                                                borderRadius: '8px'
+                                            }}
+                                        >
+                                            <MenuItem value=""><em>{t('none')}</em></MenuItem>
+                                            {timeOptionsMorning.map((option) => (
+                                                <MenuItem key={`morning-end-${option.value}`} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                            </Box>
+                            {errors.morningTime && (
+                                <FormHelperText error sx={{ ml: 2, mt: 1, fontSize: '0.85rem' }}>
+                                    {errors.morningTime}
+                                </FormHelperText>
+                            )}
+                        </Box>
+
+                        {/* Giờ làm việc buổi chiều */}
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                                {t('afternoonShift')}
+                            </Typography>
+                            <Divider sx={{ mb: 2 }} />
+
+                            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel>{t('startTime')}</InputLabel>
+                                        <Select
+                                            value={newWorkSchedule.afternoonStart !== null ? newWorkSchedule.afternoonStart : ''}
+                                            onChange={(e) => handleInputChange('afternoonStart', e.target.value === '' ? null : Number(e.target.value))}
+                                            label={t('startTime')}
+                                            sx={{
+                                                borderRadius: '8px'
+                                            }}
+                                        >
+                                            <MenuItem value=""><em>{t('none')}</em></MenuItem>
+                                            {timeOptionsAfternoon.map((option) => (
+                                                <MenuItem key={`afternoon-start-${option.value}`} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel>{t('endTime')}</InputLabel>
+                                        <Select
+                                            value={newWorkSchedule.afternoonEnd !== null ? newWorkSchedule.afternoonEnd : ''}
+                                            onChange={(e) => handleInputChange('afternoonEnd', e.target.value === '' ? null : Number(e.target.value))}
+                                            label={t('endTime')}
+                                            sx={{
+                                                borderRadius: '8px'
+                                            }}
+                                        >
+                                            <MenuItem value=""><em>{t('none')}</em></MenuItem>
+                                            {timeOptionsAfternoon.map((option) => (
+                                                <MenuItem key={`afternoon-end-${option.value}`} value={option.value}>
+                                                    {option.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                            </Box>
+                            {errors.afternoonTime && (
+                                <FormHelperText error sx={{ ml: 2, mt: 1, fontSize: '0.85rem' }}>
+                                    {errors.afternoonTime}
+                                </FormHelperText>
+                            )}
+                        </Box>
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 3, pt: 1 }}>
+                    <Button
+                        onClick={handleCloseEditDialog}
+                        variant="outlined"
+                        sx={{
+                            borderRadius: 8,
+                            px: 3,
+                            py: 1,
+                            textTransform: 'none',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        {t('cancel')}
+                    </Button>
+                    <Button
+                        onClick={handleSubmitEdit}
                         variant="contained"
                         sx={{
                             borderRadius: 8,

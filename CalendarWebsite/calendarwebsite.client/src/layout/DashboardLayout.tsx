@@ -55,10 +55,40 @@ export default function DashboardLayout() {
 
     // Close sidebar on mobile when navigating to a new page
     useEffect(() => {
-        if (isMobile && isSidebarOpen) {
-            setIsSidebarOpen(false);
-        }
-    }, [location, isMobile, isSidebarOpen]);
+        console.log("Navigation effect: path changed or mobile status changed");
+        setIsSidebarOpen(false);
+    }, [location.pathname, isMobile]);
+
+    // Đảm bảo đóng menu khi nhấn ra ngoài trên thiết bị di động
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+            if (isMobile && isSidebarOpen) {
+                // Kiểm tra nếu click không phải trong Drawer và không phải nút menu
+                const drawerElement = document.querySelector('.MuiDrawer-paper');
+                const menuButton = document.querySelector('[aria-label="toggle drawer"]');
+                
+                if (drawerElement && menuButton) {
+                    const target = event.target as Node;
+                    if (!drawerElement.contains(target) && !menuButton.contains(target)) {
+                        setIsSidebarOpen(false);
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside, { passive: true });
+        
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [isMobile, isSidebarOpen]);
+
+    // Log mỗi khi isSidebarOpen thay đổi
+    useEffect(() => {
+        console.log("isSidebarOpen changed to:", isSidebarOpen);
+    }, [isSidebarOpen]);
 
     const navigationItems = useMemo(
         () => navigationConfig.map((item: NavItemConfig) => ({
@@ -70,6 +100,7 @@ export default function DashboardLayout() {
     );
 
     const toggleSidebar = () => {
+        console.log("toggleSidebar called, current state:", isSidebarOpen);
         setIsSidebarOpen(prev => !prev);
     };
 
@@ -144,15 +175,13 @@ export default function DashboardLayout() {
                 <Toolbar className={`flex justify-between items-center w-full box-border ${darkMode ? 'bg-gradient-to-b from-[#1E293B] to-[#0F172A]' : 'bg-gradient-to-b from-[#0D2463] to-[#050E35]'} text-white`}>
                     {/* Logo Section */}
                     <div className="flex items-center">
-                        <IconButton
-                            className="mr-[5px] transition-all duration-300 hover:rotate-180"
-                            color="inherit"
-                            aria-label="toggle drawer"
-                            edge="end"
+                        <button 
                             onClick={toggleSidebar}
+                            className="p-2 mr-2 rounded-full hover:bg-blue-800 focus:outline-none"
+                            style={{ zIndex: 2000 }}
                         >
-                            {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
-                        </IconButton>
+                            <MenuIcon style={{ color: 'white' }} />
+                        </button>
 
                         <Link to="/" className="flex items-center">
                             <motion.img
@@ -225,10 +254,10 @@ export default function DashboardLayout() {
                 ModalProps={{
                     keepMounted: true,
                 }}
-                sx={{
-                    width: isSidebarOpen ? drawerWidth : 0,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
+                className="mobile-drawer"
+                PaperProps={{
+                    className: "mobile-drawer-paper",
+                    sx: {
                         width: drawerWidth,
                         boxSizing: 'border-box',
                         background: darkMode
@@ -236,8 +265,11 @@ export default function DashboardLayout() {
                             : 'linear-gradient(to bottom, #0D2463, #050E35)',
                         color: 'white',
                         borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-                        boxShadow: '4px 0 15px rgba(0, 0, 0, 0.2)'
-                    },
+                        boxShadow: '4px 0 15px rgba(0, 0, 0, 0.2)',
+                        zIndex: 1400,
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden'
+                    }
                 }}
             >
                 <AnimatePresence>
@@ -253,13 +285,11 @@ export default function DashboardLayout() {
                             <IconButton
                                 onClick={toggleSidebar}
                                 color="inherit"
-                                size="small"
-                                sx={{
-                                    color: 'rgba(255,255,255,0.7)',
-                                    '&:hover': {
-                                        color: 'white',
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
+                                size="medium"
+                                style={{
+                                    color: 'white',
+                                    backgroundColor: 'rgba(255,255,255,0.1)',
+                                    zIndex: 1500
                                 }}
                             >
                                 <CloseIcon />
@@ -308,7 +338,10 @@ export default function DashboardLayout() {
                                     <ListItem
                                         component={Link}
                                         to={item.path}
-                                        onClick={toggleSidebar}
+                                        onClick={(e) => {
+                                            console.log("Clicked on menu item:", item.path);
+                                            toggleSidebar();
+                                        }}
                                         className={`mx-2 mb-1 rounded-lg transition-all duration-300 ${item.isActive
                                                 ? `${darkMode ? 'bg-blue-800' : 'bg-blue-700'} bg-opacity-80 shadow-md`
                                                 : `hover:${darkMode ? 'bg-slate-800' : 'bg-blue-900'} hover:bg-opacity-50`
