@@ -338,7 +338,7 @@ export default function DashboardLayout() {
                                     <ListItem
                                         component={Link}
                                         to={item.path}
-                                        onClick={(e) => {
+                                        onClick={() => {
                                             console.log("Clicked on menu item:", item.path);
                                             toggleSidebar();
                                         }}
