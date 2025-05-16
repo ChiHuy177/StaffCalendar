@@ -2,12 +2,16 @@
 
 namespace CalendarWebsite.Server.Models
 {
-    [Table("WorkWeek", Schema = "dbo")]
-    public class Workweek
+    public class CustomWorkingTimeDTO
     {
         public long Id { get; set; }
-        public string? Title { get; set; }
-        public bool IsFullTime { get; set; }
+        public string? WorkweekTitle { get; set; }
+        public long PersonalProfileId { get; set; }
+
+        public double? MorningStart { get; set; }
+        public double? MorningEnd { get; set; }
+        public double? AfternoonStart { get; set; }
+        public double? AfternoonEnd { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedTime { get; set; }
@@ -16,5 +20,6 @@ namespace CalendarWebsite.Server.Models
         public string? ModifiedBy { get; set; }
 
         public bool? IsDeleted { get; set; }
+
     }
 }

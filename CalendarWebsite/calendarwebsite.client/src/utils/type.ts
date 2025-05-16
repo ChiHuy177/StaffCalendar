@@ -95,3 +95,37 @@ export type UserInfo = {
     emailAndName: string;
     personalProfileId: number;
 }
+export interface WorkSchedule {
+    id: number;
+    workweekTitle: string;
+    personalProfileId: number;
+    morningStart: number | null;
+    morningEnd: number | null;
+    afternoonStart: number | null;
+    afternoonEnd: number | null;
+    createdBy: string;
+    createdTime: Date | null;
+    lastModified: Date | null;
+    modifiedBy: string | null;
+    isDeleted: boolean;
+}
+export interface WorkScheduleApiData {
+    workweekId: number;
+    personalProfileId: number;
+    morningStart: number | null;
+    morningEnd: number | null;
+    afternoonStart: number | null;
+    afternoonEnd: number | null;
+    createdBy: string;
+    createdTime: Date | null;
+    lastModified: Date | null;
+    modifiedBy: string | null;
+    isDeleted: boolean;
+}
+export interface WorkScheduleDetail {
+    workweekTitle: string;
+    morningStart: number | null;
+    morningEnd: number | null;
+    afternoonStart: number | null;
+    afternoonEnd: number | null;
+}

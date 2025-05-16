@@ -23,5 +23,11 @@ namespace CalendarWebsite.Server.Controllers
             var result = await _personalProfileService.GetAllName();
             return result == null ? NotFound() : Ok(result);
         }
+        [HttpGet("GetNameById")]
+        public async Task<ActionResult<string>> GetNameById(long id)
+        {
+            var result = await _personalProfileService.GetNameById(id);
+            return result == null ? NotFound() : Ok(result);
+        }
     }
 }

@@ -3,20 +3,16 @@
   "WorkspaceRootPath": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\controllers\\customworkingtimescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\controllers\\customworkingtimescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\services\\customworkingtimeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\services\\customworkingtimeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\interfaces\\serviceinterfaces\\icustomworkingtimeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\interfaces\\serviceinterfaces\\icustomworkingtimeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\services\\customworkingtimeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\services\\customworkingtimeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\repositories\\customworkingtimerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,47 +34,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Program.cs",
-              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Program.cs",
-              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Program.cs",
-              "RelativeToolTip": "CalendarWebsite.Server\\Program.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAQwCUAAABgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-15T08:14:21.654Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CustomWorkingTimesController.cs",
-              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
-              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
-              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
-              "RelativeToolTip": "CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABIAAABNAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-15T08:12:09.869Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ICustomWorkingTimeService.cs",
-              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
-              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
-              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
-              "RelativeToolTip": "CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-15T07:59:00.9Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
@@ -93,20 +50,46 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CustomWorkingTimesController.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Controllers\\CustomWorkingTimesController.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAgwD0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-15T08:12:09.869Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ICustomWorkingTimeService.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\ICustomWorkingTimeService.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwAgAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-15T07:59:00.9Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
               "Title": "CustomWorkingTimeService.cs",
               "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\CustomWorkingTimeService.cs",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Services\\CustomWorkingTimeService.cs",
               "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\CustomWorkingTimeService.cs",
               "RelativeToolTip": "CalendarWebsite.Server\\Services\\CustomWorkingTimeService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAgwFoAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-15T07:58:51.932Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "CustomWorkingTimeRepository.cs",
               "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Repositories\\CustomWorkingTimeRepository.cs",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Repositories\\CustomWorkingTimeRepository.cs",
@@ -114,12 +97,11 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Repositories\\CustomWorkingTimeRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-15T07:57:23.788Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-15T07:57:23.788Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "WorkWeekRepository.cs",
               "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Repositories\\WorkWeekRepository.cs",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Repositories\\WorkWeekRepository.cs",
@@ -127,12 +109,11 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Repositories\\WorkWeekRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-15T07:57:11.236Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-15T07:57:11.236Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "ICustomWorkingTimeRepository.cs",
               "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\ICustomWorkingTimeRepository.cs",
               "RelativeDocumentMoniker": "CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\ICustomWorkingTimeRepository.cs",
@@ -140,8 +121,7 @@
               "RelativeToolTip": "CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\ICustomWorkingTimeRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-15T07:57:04.613Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-15T07:57:04.613Z"
             }
           ]
         }

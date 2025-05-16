@@ -3,6 +3,7 @@ using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Newtonsoft.Json;
 
 namespace CalendarWebsite.Server.Repositories
 {
@@ -19,8 +20,23 @@ namespace CalendarWebsite.Server.Repositories
 
         public virtual async Task AddAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                Console.WriteLine($"Đang thêm entity: {JsonConvert.SerializeObject(entity)}");
+                await _dbSet.AddAsync(entity);
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Thêm entity thành công");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi thêm entity: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
+            }
         }
 
         public virtual async Task DeleteAsync(T entity)

@@ -65,7 +65,9 @@
         "filter": "Bộ lọc",
         "density": "Mật độ",
         "pageSize": "Kích thước trang",
-        "noRows": "Không có dữ liệu"
+        "noRows": "Không có dữ liệu",
+        "no": "Số thứ tự",
+        "name": "Tên"
     },
     "logo": "/logovntt.png",
     "loadingData": "Đang tải dữ liệu",
@@ -100,5 +102,22 @@
     "unsort": "Bỏ sắp xếp",
     "sortAsc": "Sắp xếp tăng dần",
     "sortDesc": "Sắp xếp giảm dần",
-    "sort": "Sắp xếp"
+    "sort": "Sắp xếp",
+    
+    "addNewWorkSchedule": "Thêm lịch làm việc mới",
+    "workweekTitle": "Tên lịch làm việc",
+    "selectEmployee": "Chọn nhân viên",
+    "generalInformation": "Thông tin chung",
+    "morningShift": "Ca làm việc buổi sáng",
+    "afternoonShift": "Ca làm việc buổi chiều",
+    "startTime": "Giờ bắt đầu",
+    "endTime": "Giờ kết thúc",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "none": "Không có",
+    
+    "errorRequired": "Trường này là bắt buộc",
+    "errorBothTimesRequired": "Cần nhập cả giờ bắt đầu và kết thúc",
+    "errorEndTimeMustBeAfterStart": "Giờ kết thúc phải sau giờ bắt đầu",
+    "errorAtLeastOneShiftRequired": "Cần có ít nhất một ca làm việc"
 }

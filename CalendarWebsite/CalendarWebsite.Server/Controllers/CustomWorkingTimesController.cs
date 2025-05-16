@@ -27,9 +27,22 @@ namespace CalendarWebsite.Server.Controllers
 
         // GET: api/CustomWorkingTimes/5
         [HttpGet("GetAllCustomWorkingTimeByPersonalProfileId")]
-        public async Task<ActionResult<IEnumerable<CustomWorkingTime>>> GetAllCustomWorkingTimeByPersonalProfileId(long id)
+        public async Task<ActionResult<IEnumerable<CustomWorkingTimeDTO>>> GetAllCustomWorkingTimeByPersonalProfileId(long id)
         {
-            var customWorkingTime = await _customWorkingTimeService.GetAllCustomWorkingTimeByPersonalProfileId(id);
+            var customWorkingTime = await _customWorkingTimeService.GetAllCustomWorkingTimeByPersonalProfileIdDTO(id);
+
+            if (customWorkingTime == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(customWorkingTime);
+        }
+
+        [HttpGet("GetAllCustomWorkingTime")]
+        public async Task<ActionResult<IEnumerable<CustomWorkingTimeDTO>>> GetAllCustomWorkingTime()
+        {
+            var customWorkingTime = await _customWorkingTimeService.GetAllCustomWorkingTimeDTO();
 
             if (customWorkingTime == null)
             {
@@ -42,11 +55,47 @@ namespace CalendarWebsite.Server.Controllers
         [HttpPost("AddCustomWorkingTime")]
         public async Task<IActionResult> AddCustomWorkingTime([FromBody] CustomWorkingTime customWorkingTime)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            Console.WriteLine(JsonConvert.SerializeObject(customWorkingTime));
-            await _customWorkingTimeService.AddCustomWorkingTime(customWorkingTime);
-            return Ok();
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                Console.WriteLine("Đang thêm CustomWorkingTime. Dữ liệu nhận được:");
+                Console.WriteLine(JsonConvert.SerializeObject(customWorkingTime));
+                
+                // Kiểm tra workweekId và personalProfileId có tồn tại
+                Console.WriteLine($"WorkweekId: {customWorkingTime.WorkweekId}, PersonalProfileId: {customWorkingTime.PersonalProfileId}");
+                
+                // Cập nhật thời gian hiện tại cho CreatedTime và LastModified
+                if (customWorkingTime.CreatedTime != null && customWorkingTime.CreatedTime.Value.Year > 2024)
+                {
+                    customWorkingTime.CreatedTime = DateTime.Now;
+                    Console.WriteLine("Đã cập nhật CreatedTime thành thời gian hiện tại");
+                }
+                
+                if (customWorkingTime.LastModified != null && customWorkingTime.LastModified.Value.Year > 2024)
+                {
+                    customWorkingTime.LastModified = DateTime.Now;
+                    Console.WriteLine("Đã cập nhật LastModified thành thời gian hiện tại");
+                }
+                
+                Console.WriteLine("Dữ liệu sau khi xử lý:");
+                Console.WriteLine(JsonConvert.SerializeObject(customWorkingTime));
+                
+                await _customWorkingTimeService.AddCustomWorkingTime(customWorkingTime);
+                Console.WriteLine("Thêm CustomWorkingTime thành công");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi thêm CustomWorkingTime: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, $"Lỗi nội bộ: {ex.Message}");
+            }
         }
 
         [HttpDelete("DeleteCustomWorkingTime")]

@@ -32,5 +32,18 @@ namespace CalendarWebsite.Server.services
         {
             return await _personalRepository.GetByIdAsync(id);
         }
+
+        public async Task<string> GetNameById(long id)
+        {
+            var result = await _personalRepository.FindOneSelect(
+                predicate: each => each.Id == id,
+                selector: each => new
+                {
+                    Name = each.FullName
+                },
+                disableTracking: true
+            );
+            return result.Name;
+        }
     }
 }

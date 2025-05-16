@@ -18,7 +18,18 @@ namespace CalendarWebsite.Server.Services
                 x => x.Id,
                 orderBy: null
             );
-            return result ;
+            return result;
+        }
+        
+        public async Task<string> GetWorkweekTitleById(long id)
+        {
+            var result = await _workWeekRepository.FindOneSelect(
+                predicate: x => x.Id == id,
+                selector: x => x.Title,
+                orderBy: null
+            );
+            Console.WriteLine(result);
+            return result ?? string.Empty;
         }
     }
 }

@@ -4,7 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
 import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
-import { CheckinData, UserInfo } from '../utils/type';
+import { CheckinData, UserInfo, WorkScheduleDetail, WorkSchedule } from '../utils/type';
 import { useTranslation } from 'react-i18next';
 import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
 import dayjs from 'dayjs';
@@ -15,6 +15,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
+import { getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
+
 
 export default function CalendarComponent() {
     const [loading, setLoading] = useState(false);
@@ -30,19 +32,19 @@ export default function CalendarComponent() {
     const lang = localStorage.getItem('language') === 'vi' ? 'vi' : 'en';
 
     const getWorkDays = async (staffId: string, month: number, year: number) => {
-        console.log(`[getWorkDays] Called for staff: ${staffId}, month: ${month}, year: ${year}`);
+        // console.log(`[getWorkDays] Called for staff: ${staffId}, month: ${month}, year: ${year}`);
 
         if (staffId === '') {
             setWorkDays(0);
-            console.warn("[getWorkDays] Called with empty staffId. Setting workDays to 0.");
+            // console.warn("[getWorkDays] Called with empty staffId. Setting workDays to 0.");
             return;
         }
 
         const valueBeforeDash = staffId.split('-')[0].trim();
         try {
-            console.log(`[getWorkDays] Fetching record data for month: ${month}, year: ${year}, idPart: ${valueBeforeDash}`);
+            // console.log(`[getWorkDays] Fetching record data for month: ${month}, year: ${year}, idPart: ${valueBeforeDash}`);
             const data = await getRecordDataByMonth(month, year, valueBeforeDash);
-            console.log(`[getWorkDays] Data received for workDays: ${data}. Setting workDays.`);
+            // console.log(`[getWorkDays] Data received for workDays: ${data}. Setting workDays.`);
             setWorkDays(data);
         } catch (error) {
             console.error('[getWorkDays] Error fetching work days:', error);
@@ -50,10 +52,9 @@ export default function CalendarComponent() {
         }
     };
 
-    const fetchWorkSchedule = async (nameFromSelection?: string): Promise<void> => {
+    const fetchWorkSchedule = async (nameFromSelection?: string, personalProfileId?: number): Promise<void> => {
         const staffIdToFetch = nameFromSelection !== undefined ? nameFromSelection : selectedName?.emailAndName;
-        console.log(`[fetchWorkSchedule] Called. nameFromSelection: ${nameFromSelection}, selectedName: ${selectedName}, Determined staffIdToFetch: ${staffIdToFetch}`);
-
+        const personalProfileIdToFetch = personalProfileId !== undefined ? personalProfileId : selectedName?.personalProfileId;
         if (!staffIdToFetch) {
             if (nameFromSelection !== undefined) {
                 toast.error(t('toastMessages.pleaseEnterName'), {
@@ -82,15 +83,26 @@ export default function CalendarComponent() {
             const currentViewDate = calendarApi.view.currentStart;
             const month = currentViewDate.getMonth() + 1;
             const year = currentViewDate.getFullYear();
-            console.log(`[fetchWorkSchedule] Calendar view: month ${month}, year ${year}. Fetching for staff: ${staffIdToFetch}`);
-
             const valueBeforeDash = staffIdToFetch.split('-')[0].trim();
             const valueAfterDash = staffIdToFetch.split('-')[1]?.trim();
 
             try {
                 const data = await getCheckinDataByUserId(month, year, valueBeforeDash, valueAfterDash);
-                console.log(`[fetchWorkSchedule] Raw event data received for ${staffIdToFetch}, month ${month}:`, data.length, "items");
-
+                const workScheduleDetails: WorkScheduleDetail[] = [];
+                if (personalProfileIdToFetch !== undefined) {
+                    const workScheduleResponse = await getCustomWorkingTimeByPersonalProfileId(personalProfileIdToFetch);
+                    workScheduleResponse.forEach((item: WorkSchedule) => {
+                        workScheduleDetails.push({
+                            workweekTitle: item.workweekTitle,
+                            morningStart: item.morningStart,
+                            morningEnd: item.morningEnd,
+                            afternoonStart: item.afternoonStart,
+                            afternoonEnd: item.afternoonEnd
+                        });
+                    });
+                    
+                }
+                console.log('workScheduleDetails', workScheduleDetails);
                 if (data.length === 0) {
                     const toastMessage = nameFromSelection !== undefined
                         ? t('toastMessages.employeeScheduleNotFound')
@@ -112,10 +124,12 @@ export default function CalendarComponent() {
                     setLoading(false);
                     return;
                 }
+                
+                
 
                 const eventList: EventInput[] = [];
                 data.forEach((item: CheckinData) => {
-                    const userEvents = generateUserEvent(item, t);
+                    const userEvents = generateUserEvent(item, workScheduleDetails, t);
                     eventList.push(...userEvents);
                 });
 
@@ -153,7 +167,7 @@ export default function CalendarComponent() {
                 });
             }
         } else {
-            console.error('[fetchWorkSchedule] Calendar API is not available.');
+            // console.error('[fetchWorkSchedule] Calendar API is not available.');
             setLoading(false);
             setWorkDays(0);
         }
@@ -299,7 +313,7 @@ export default function CalendarComponent() {
         if (value) {
             console.log("name", value);
             setSelectedName(value);
-            fetchWorkSchedule(value.emailAndName);
+            fetchWorkSchedule(value.emailAndName, value.personalProfileId);
         } else {
             setSelectedName(undefined);
             setEvents([]);

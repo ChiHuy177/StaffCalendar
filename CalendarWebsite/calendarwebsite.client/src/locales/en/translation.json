@@ -68,7 +68,9 @@
         "filter": "Filter",
         "density": "Density",
         "pageSize": "Page size",
-        "noRows": "No rows"
+        "noRows": "No rows",
+        "no": "No",
+        "name": "Name"
     },
     "logo": "/logovntt-en.png",
     "loadingData": "Loading data",
@@ -103,5 +105,22 @@
     "unsort": "Unsort",
     "sortAsc": "Sort ascending",
     "sortDesc": "Sort descending",
-    "sort": "Sort"
+    "sort": "Sort",
+    
+    "addNewWorkSchedule": "Add New Work Schedule",
+    "workweekTitle": "Work Schedule Title",
+    "selectEmployee": "Select Employee",
+    "generalInformation": "General Information",
+    "morningShift": "Morning Shift",
+    "afternoonShift": "Afternoon Shift",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "save": "Save",
+    "cancel": "Cancel",
+    "none": "None",
+    
+    "errorRequired": "This field is required",
+    "errorBothTimesRequired": "Both start and end times are required",
+    "errorEndTimeMustBeAfterStart": "End time must be after start time",
+    "errorAtLeastOneShiftRequired": "At least one shift is required"
 }
