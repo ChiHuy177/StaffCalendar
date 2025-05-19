@@ -39,7 +39,9 @@ if (process.env.NODE_ENV === 'development') {
     }
 }
 
-const target = 'https://calendarwebsite-my2z.onrender.com'; // URL backend từ Render
+const target = process.env.NODE_ENV === 'development' ? 
+process.env.VITE_API_URL : 'https://calendarwebsite-my2z.onrender.com'; // URL backend từ Render
+
 // https://vitejs.dev/config/
 export default defineConfig({
     base: '/',
