@@ -99,6 +99,7 @@ export interface WorkSchedule {
     id: number;
     workweekTitle: string;
     personalProfileId: number;
+    fullName: string;
     morningStart: number | null;
     morningEnd: number | null;
     afternoonStart: number | null;

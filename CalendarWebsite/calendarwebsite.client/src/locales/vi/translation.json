@@ -14,8 +14,8 @@
     "darkMode": "Chế độ tối",
     "home": "Trang chủ",
     "toastMessages.errorFetchingUsernames": "Không thể tìm thấy máy chủ, xin thử lại sau ít phút.",
-    "canNotFind":"Không tìm thấy lịch làm việc của nhân viên",
-    "holidays":"Nghỉ lễ",
+    "canNotFind": "Không tìm thấy lịch làm việc của nhân viên",
+    "holidays": "Nghỉ lễ",
     "Absent": "Vắng mặt",
     "staff": "Nhân viên",
     "time": "Thời gian",
@@ -103,7 +103,6 @@
     "sortAsc": "Sắp xếp tăng dần",
     "sortDesc": "Sắp xếp giảm dần",
     "sort": "Sắp xếp",
-    
     "addNewWorkSchedule": "Thêm lịch làm việc mới",
     "workweekTitle": "Tên lịch làm việc",
     "selectEmployee": "Chọn nhân viên",
@@ -115,9 +114,27 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "none": "Không có",
-    
     "errorRequired": "Trường này là bắt buộc",
     "errorBothTimesRequired": "Cần nhập cả giờ bắt đầu và kết thúc",
     "errorEndTimeMustBeAfterStart": "Giờ kết thúc phải sau giờ bắt đầu",
-    "errorAtLeastOneShiftRequired": "Cần có ít nhất một ca làm việc"
+    "errorAtLeastOneShiftRequired": "Cần có ít nhất một ca làm việc",
+    "editWorkSchedule": "Chỉnh sửa lịch làm việc",
+    "employee": "Nhân viên",
+    "employeeCannotBeChanged": "Không thể thay đổi nhân viên trong lịch làm việc đã tạo",
+    "notSet": "Chưa được thiết lập",
+    "deleteWorkScheduleConfirmation": "Bạn có chắc chắn muốn xóa lịch làm việc này không?",
+    "deleteConfirmation": "Có, xóa lịch",
+    "deleteReject": "Không, giữ lại",
+    "deleteSuccess": "Đã xóa lịch làm việc thành công",
+    "deleteError": "Có lỗi xảy ra khi xóa lịch làm việc",
+    
+    "date": {
+        "monday": "Thứ 2",
+        "tuesday": "Thứ 3",
+        "wednesday": "Thứ 4",
+        "thursday": "Thứ 5",
+        "friday": "Thứ 6",
+        "saturday": "Thứ 7",
+        "sunday": "Chủ nhật"
+    }
 }

@@ -22,10 +22,8 @@ namespace CalendarWebsite.Server.Repositories
         {
             try
             {
-                Console.WriteLine($"Đang thêm entity: {JsonConvert.SerializeObject(entity)}");
                 await _dbSet.AddAsync(entity);
                 await _context.SaveChangesAsync();
-                Console.WriteLine("Thêm entity thành công");
             }
             catch (Exception ex)
             {
@@ -190,8 +188,43 @@ namespace CalendarWebsite.Server.Repositories
 
         public virtual async Task UpdateAsync(T entity)
         {
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync(); ;
+            try
+            {
+                // Tìm khóa chính của entity
+                var keyProperties = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties;
+                var keyValues = new List<object>();
+                
+                foreach (var property in keyProperties)
+                {
+                    var value = entity.GetType().GetProperty(property.Name).GetValue(entity);
+                    keyValues.Add(value);
+                }
+                
+                // Tìm entity hiện tại trong context (nếu có)
+                var existingEntity = _dbSet.Find(keyValues.ToArray());
+                
+                if (existingEntity != null)
+                {
+                    // Tách entity hiện tại
+                    _context.Entry(existingEntity).State = EntityState.Detached;
+                }
+                
+                // Đánh dấu entity mới là Modified
+                _dbSet.Attach(entity);
+                _context.Entry(entity).State = EntityState.Modified;
+                
+                // Lưu thay đổi
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi cập nhật entity: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                throw;
+            }
         }
 
         public virtual async Task<int> CountAsync(

@@ -4,7 +4,6 @@
     "staffCalendar": "Staff Calendar",
     "staffCheckinTableByDay": "Staff Checkin Table By Day",
     "staffCheckinTableByDept": "Staff Checkin Table By Department",
-    
     "nav": {
         "home": "Staff checkin calendar",
         "staffTable": "Staff checkin table",
@@ -12,14 +11,14 @@
         "byDept": "Staff checkin table by department",
         "customWorkWeek": "Custom Work Week"
     },
-    "lightMode":"Light mode",
-    "darkMode":"Dark mode",
-    "home":"Home",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "home": "Home",
     "toastMessages.errorFetchingUsernames": "Error fetching usernames. Please try again later.",
-    "absentReason":"",
-    "canNotFind":"Cannot find the works of this staff",
-    "holidays":"Holiday",
-    "Absent":"Absent",
+    "absentReason": "",
+    "canNotFind": "Cannot find the works of this staff",
+    "holidays": "Holiday",
+    "Absent": "Absent",
     "workingDays": "Total working days",
     "selectName": "Select staff name",
     "selectMonth": "Select month",
@@ -30,7 +29,7 @@
     "selectStaffHelper": "Select a staff member to view attendance information",
     "dateRangeHelper": "Select a date range to view",
     "refresh": "Refresh data",
-    "In time": "Checkin time",  
+    "In time": "Checkin time",
     "Out time": "Checkout time",
     "InLate": "Check in late",
     "OutEarly": "Check out early",
@@ -63,7 +62,7 @@
     },
     "today": "Today",
     "month": "Month",
-    "dataGrid" :{
+    "dataGrid": {
         "columns": "Columns",
         "filter": "Filter",
         "density": "Density",
@@ -106,7 +105,6 @@
     "sortAsc": "Sort ascending",
     "sortDesc": "Sort descending",
     "sort": "Sort",
-    
     "addNewWorkSchedule": "Add New Work Schedule",
     "workweekTitle": "Work Schedule Title",
     "selectEmployee": "Select Employee",
@@ -118,9 +116,27 @@
     "save": "Save",
     "cancel": "Cancel",
     "none": "None",
-    
     "errorRequired": "This field is required",
     "errorBothTimesRequired": "Both start and end times are required",
     "errorEndTimeMustBeAfterStart": "End time must be after start time",
-    "errorAtLeastOneShiftRequired": "At least one shift is required"
+    "errorAtLeastOneShiftRequired": "At least one shift is required",
+    "editWorkSchedule": "Edit work schedule",
+    "employee": "Employee",
+    "employeeCannotBeChanged": "Employee cannot be changed in existing work schedule",
+    "notSet": "Not set",
+    "deleteWorkScheduleConfirmation": "Are you sure you want to delete this work schedule?",
+    "deleteConfirmation": "Yes, delete it",
+    "deleteReject": "No, keep it",
+    "deleteSuccess": "Work schedule has been deleted successfully",
+    "deleteError": "An error occurred while deleting the work schedule",
+
+    "date": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  }
 }

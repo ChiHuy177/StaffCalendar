@@ -62,26 +62,26 @@ namespace CalendarWebsite.Server.Controllers
 
                 Console.WriteLine("Đang thêm CustomWorkingTime. Dữ liệu nhận được:");
                 Console.WriteLine(JsonConvert.SerializeObject(customWorkingTime));
-                
+
                 // Kiểm tra workweekId và personalProfileId có tồn tại
                 Console.WriteLine($"WorkweekId: {customWorkingTime.WorkweekId}, PersonalProfileId: {customWorkingTime.PersonalProfileId}");
-                
+
                 // Cập nhật thời gian hiện tại cho CreatedTime và LastModified
                 if (customWorkingTime.CreatedTime != null && customWorkingTime.CreatedTime.Value.Year > 2024)
                 {
                     customWorkingTime.CreatedTime = DateTime.Now;
                     Console.WriteLine("Đã cập nhật CreatedTime thành thời gian hiện tại");
                 }
-                
+
                 if (customWorkingTime.LastModified != null && customWorkingTime.LastModified.Value.Year > 2024)
                 {
                     customWorkingTime.LastModified = DateTime.Now;
                     Console.WriteLine("Đã cập nhật LastModified thành thời gian hiện tại");
                 }
-                
+
                 Console.WriteLine("Dữ liệu sau khi xử lý:");
                 Console.WriteLine(JsonConvert.SerializeObject(customWorkingTime));
-                
+
                 await _customWorkingTimeService.AddCustomWorkingTime(customWorkingTime);
                 Console.WriteLine("Thêm CustomWorkingTime thành công");
                 return Ok();
@@ -107,6 +107,38 @@ namespace CalendarWebsite.Server.Controllers
             return Ok();
         }
 
+        [HttpPut("UpdateCustomWorkingTime")]
+        public async Task<IActionResult> UpdateCustomWorkingTime([FromBody] CustomWorkingTime customWorkingTime)
+        {
+            if (customWorkingTime == null)
+                return BadRequest("CustomWorkingTime is required");
+            
+            if (customWorkingTime.Id <= 0)
+                return BadRequest("CustomWorkingTime Id is invalid");
+            
+            if (customWorkingTime.WorkweekId <= 0)
+                return BadRequest("WorkweekId is invalid");
+            
+            if (customWorkingTime.PersonalProfileId <= 0)
+                return BadRequest("PersonalProfileId is invalid");
 
+            try
+            {
+                // Cập nhật thời gian sửa đổi
+                customWorkingTime.LastModified = DateTime.Now;
+                
+                await _customWorkingTimeService.UpdateCustomWorkingTime(customWorkingTime);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi cập nhật CustomWorkingTime: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                return StatusCode(500, $"Lỗi nội bộ: {ex.Message}");
+            }
+        }
     }
 }

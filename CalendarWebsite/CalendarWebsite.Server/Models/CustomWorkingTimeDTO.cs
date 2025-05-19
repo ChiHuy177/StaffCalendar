@@ -8,6 +8,8 @@ namespace CalendarWebsite.Server.Models
         public string? WorkweekTitle { get; set; }
         public long PersonalProfileId { get; set; }
 
+        public string? FullName { get; set; } 
+
         public double? MorningStart { get; set; }
         public double? MorningEnd { get; set; }
         public double? AfternoonStart { get; set; }

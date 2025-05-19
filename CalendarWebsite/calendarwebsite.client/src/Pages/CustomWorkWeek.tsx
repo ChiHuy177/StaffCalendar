@@ -29,10 +29,10 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
-import { createCustomWorkingTime, getAllCustomWorkingTimes } from '../apis/CustomWorkingTimeApi';
+import { createCustomWorkingTime, getAllCustomWorkingTimes, updateCustomWorkingTime, softDeleteCustomWorkingTime } from '../apis/CustomWorkingTimeApi';
 import { UserInfo, WorkSchedule, WorkScheduleApiData } from '../utils/type';
-import { getNameByPersonalProfileId } from '../apis/PersonalProfilesApi';
 import { getAllUserName } from '../apis/CheckinDataApi';
+import Swal from 'sweetalert2'
 
 // Extend WorkSchedule to include the custom fields we need
 interface ExtendedWorkSchedule extends WorkSchedule {
@@ -100,21 +100,11 @@ export default function CustomWorkWeek() {
 
                 const promises = data.map(async (item: WorkSchedule, index: number) => {
 
-                    let employeeName = "Nhân viên không xác định";
-                    try {
-                        const name = await getNameByPersonalProfileId(item.personalProfileId);
-                        if (name) {
-                            employeeName = name;
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching name for profile ${item.personalProfileId}:`, error);
-                    }
-
                     return {
                         ...item,
                         stt: index + 1,
                         name: `${item.workweekTitle}`,
-                        employeeName,
+                        employeeName: item.fullName,
                         isWorkingDay: item.morningStart != null || item.afternoonStart != null // Has any shift
                     };
                 });
@@ -134,17 +124,16 @@ export default function CustomWorkWeek() {
         handleRefresh();
     }, []);
 
-    // Handlers would be connected to real functionality in a complete implementation
+
     const handleEdit = (id: number) => {
         console.log('Edit day with ID:', id);
         const workSchedule = workDays.find(day => day.id === id);
         if (workSchedule) {
             console.log('PersonalProfileId:', workSchedule.personalProfileId);
             setEditingWorkSchedule(workSchedule);
-            
-            // Tìm employee tương ứng với personalProfileId
+
             const employeeMatch = employees.find(emp => emp.personalProfileId === workSchedule.personalProfileId);
-            
+
             // Chuẩn bị dữ liệu cho form chỉnh sửa
             setNewWorkSchedule({
                 workweekTitle: workSchedule.workweekTitle,
@@ -154,7 +143,6 @@ export default function CustomWorkWeek() {
                 afternoonStart: workSchedule.afternoonStart,
                 afternoonEnd: workSchedule.afternoonEnd
             });
-            
             setOpenEditDialog(true);
         }
     };
@@ -175,7 +163,33 @@ export default function CustomWorkWeek() {
     };
 
     const handleDelete = (id: number) => {
-        console.log('Delete day with ID:', id);
+        // Tìm workSchedule cần xóa
+        const workScheduleToDelete = workDays.find(day => day.id === id);
+
+        if (!workScheduleToDelete) {
+            console.error(`Không tìm thấy lịch làm việc với ID: ${id}`);
+            return;
+        }
+
+        Swal.fire({
+            title: t('deleteWorkScheduleConfirmation'),
+            showDenyButton: true,
+            confirmButtonText: t('deleteConfirmation'),
+            denyButtonText: t('deleteReject')
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await softDeleteCustomWorkingTime(id, (workScheduleToDelete));
+
+                    handleRefresh();
+
+                    Swal.fire(t('deleteSuccess'), "", "success");
+                } catch (error) {
+                    console.error('Lỗi khi xóa lịch làm việc:', error);
+                    Swal.fire(t('deleteError'), "", "error");
+                }
+            }
+        });
     };
 
     const handleAddWorkDay = () => {
@@ -272,17 +286,17 @@ export default function CustomWorkWeek() {
                 console.log('New work schedule to be saved:', formData);
                 const currentDate = new Date();
 
-                const apiData : WorkScheduleApiData = {
+                const apiData: WorkScheduleApiData = {
                     workweekId: formData.workweekId, // ID sẽ được tạo bởi API nếu là bản ghi mới, hoặc truyền ID hiện có nếu cập nhật
                     personalProfileId: formData.personalProfileId || 0,
                     morningStart: formData.morningStart,
                     morningEnd: formData.morningEnd,
                     afternoonStart: formData.afternoonStart,
                     afternoonEnd: formData.afternoonEnd,
-                    createdBy: "Chí Huy", 
+                    createdBy: "Chí Huy",
                     createdTime: currentDate,
                     lastModified: currentDate,
-                    modifiedBy: "Chí Huy", 
+                    modifiedBy: "Chí Huy",
                     isDeleted: false
                 }
                 // Ở đây sẽ thêm xử lý API sau
@@ -306,11 +320,11 @@ export default function CustomWorkWeek() {
                 // Lấy dữ liệu từ form
                 const formData = getFormData();
                 console.log('Updated work schedule to be saved:', formData);
-                // const currentDate = new Date();
+                const currentDate = new Date();
 
                 // Tạo đối tượng dữ liệu cho API cập nhật
-                /* Biến apiData này sẽ được sử dụng khi API cập nhật được triển khai
-                const apiData: WorkScheduleApiData = {
+                const apiData: WorkScheduleApiData & { id: number } = {
+                    id: editingWorkSchedule.id,
                     workweekId: formData.workweekId,
                     personalProfileId: formData.personalProfileId || 0,
                     morningStart: formData.morningStart,
@@ -323,19 +337,14 @@ export default function CustomWorkWeek() {
                     modifiedBy: "Chí Huy",
                     isDeleted: false
                 }
-                */
+                console.log('API data for update:', apiData);
 
-                // TODO: Thêm gọi API cập nhật workSchedule ở đây
-                // await updateCustomWorkingTime(editingWorkSchedule.id, apiData);
+                await updateCustomWorkingTime(apiData);
 
-                // Cập nhật danh sách sau khi lưu thành công
                 handleRefresh();
-
-                // Đóng dialog
                 handleCloseEditDialog();
             } catch (error) {
                 console.error("Error updating work schedule:", error);
-                // Hiển thị thông báo lỗi nếu cần
             }
         }
     };
@@ -737,13 +746,13 @@ export default function CustomWorkWeek() {
                                         borderRadius: '8px'
                                     }}
                                 >
-                                    <MenuItem value="Monday">Thứ 2</MenuItem>
-                                    <MenuItem value="Tuesday">Thứ 3</MenuItem>
-                                    <MenuItem value="Wednesday">Thứ 4</MenuItem>
-                                    <MenuItem value="Thursday">Thứ 5</MenuItem>
-                                    <MenuItem value="Friday">Thứ 6</MenuItem>
-                                    <MenuItem value="Saturday">Thứ 7</MenuItem>
-                                    <MenuItem value="Sunday">Chủ nhật</MenuItem>
+                                    <MenuItem value="Monday">{t('date.monday')}</MenuItem>
+                                    <MenuItem value="Tuesday">{t('date.tuesday')}</MenuItem>
+                                    <MenuItem value="Wednesday">{t('date.wednesday')}</MenuItem>
+                                    <MenuItem value="Thursday">{t('date.thursday')}</MenuItem>
+                                    <MenuItem value="Friday">{t('date.friday')}</MenuItem>
+                                    <MenuItem value="Saturday">{t('date.saturday')}</MenuItem>
+                                    <MenuItem value="Sunday">{t('date.sunday')}</MenuItem>
                                 </Select>
                                 {!!errors.workweekTitle && (
                                     <FormHelperText error>{errors.workweekTitle}</FormHelperText>
@@ -802,6 +811,9 @@ export default function CustomWorkWeek() {
                                             sx={{
                                                 borderRadius: '8px'
                                             }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsMorning.find(option => option.value === value)?.label || value;
+                                            }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
                                             {timeOptionsMorning.map((option) => (
@@ -821,6 +833,9 @@ export default function CustomWorkWeek() {
                                             label={t('endTime')}
                                             sx={{
                                                 borderRadius: '8px'
+                                            }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsMorning.find(option => option.value === value)?.label || value;
                                             }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
@@ -858,6 +873,9 @@ export default function CustomWorkWeek() {
                                             sx={{
                                                 borderRadius: '8px'
                                             }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsAfternoon.find(option => option.value === value)?.label || value;
+                                            }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
                                             {timeOptionsAfternoon.map((option) => (
@@ -877,6 +895,9 @@ export default function CustomWorkWeek() {
                                             label={t('endTime')}
                                             sx={{
                                                 borderRadius: '8px'
+                                            }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsAfternoon.find(option => option.value === value)?.label || value;
                                             }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
@@ -993,37 +1014,23 @@ export default function CustomWorkWeek() {
                                 )}
                             </FormControl>
 
-                            <Autocomplete
-                                options={employees}
-                                getOptionLabel={(option) => option.emailAndName}
-                                value={newWorkSchedule.employeeName}
-                                onChange={(_, newValue) => {
-                                    setNewWorkSchedule({
-                                        ...newWorkSchedule,
-                                        employeeName: newValue
-                                    });
-
-                                    // Clear error if exists
-                                    if (errors.personalProfileId) {
-                                        setErrors({
-                                            ...errors,
-                                            personalProfileId: undefined
-                                        });
+                            <TextField
+                                fullWidth
+                                label={t('employee')}
+                                value={newWorkSchedule.employeeName?.emailAndName || ''}
+                                InputProps={{
+                                    readOnly: true,
+                                    sx: {
+                                        borderRadius: '8px',
+                                        bgcolor: 'action.disabledBackground',
+                                        '& .MuiInputBase-input.Mui-disabled': {
+                                            WebkitTextFillColor: 'rgba(0, 0, 0, 0.6)',
+                                        }
                                     }
                                 }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label={t('selectEmployee')}
-                                        error={!!errors.personalProfileId}
-                                        helperText={errors.personalProfileId}
-                                        required
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            sx: { borderRadius: '8px' }
-                                        }}
-                                    />
-                                )}
+                                variant="outlined"
+                                disabled
+                                helperText={t('employeeCannotBeChanged')}
                             />
                         </Box>
 
@@ -1045,6 +1052,9 @@ export default function CustomWorkWeek() {
                                             sx={{
                                                 borderRadius: '8px'
                                             }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsMorning.find(option => option.value === value)?.label || value;
+                                            }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
                                             {timeOptionsMorning.map((option) => (
@@ -1064,6 +1074,9 @@ export default function CustomWorkWeek() {
                                             label={t('endTime')}
                                             sx={{
                                                 borderRadius: '8px'
+                                            }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsMorning.find(option => option.value === value)?.label || value;
                                             }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
@@ -1101,6 +1114,9 @@ export default function CustomWorkWeek() {
                                             sx={{
                                                 borderRadius: '8px'
                                             }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsAfternoon.find(option => option.value === value)?.label || value;
+                                            }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>
                                             {timeOptionsAfternoon.map((option) => (
@@ -1120,6 +1136,9 @@ export default function CustomWorkWeek() {
                                             label={t('endTime')}
                                             sx={{
                                                 borderRadius: '8px'
+                                            }}
+                                            renderValue={(value: string | number) => {
+                                                return !value && value !== 0 ? <em>{t('notSet')}</em> : timeOptionsAfternoon.find(option => option.value === value)?.label || value;
                                             }}
                                         >
                                             <MenuItem value=""><em>{t('none')}</em></MenuItem>

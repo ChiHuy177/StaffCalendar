@@ -8,7 +8,7 @@ namespace CalendarWebsite.Server.Interfaces.ServiceInterfaces
             (long personalProfileId);
         public Task<IEnumerable<CustomWorkingTimeDTO>> GetAllCustomWorkingTimeByPersonalProfileIdDTO(long personalProfileId);
 
-
+        public Task UpdateCustomWorkingTime(CustomWorkingTime customWorkingTime);
 
         public Task AddCustomWorkingTime(CustomWorkingTime customWorkingTime);
 
@@ -17,5 +17,7 @@ namespace CalendarWebsite.Server.Interfaces.ServiceInterfaces
         public Task<IEnumerable<CustomWorkingTime>> GetAllCustomWorkingTime();
 
         public Task<IEnumerable<CustomWorkingTimeDTO>> GetAllCustomWorkingTimeDTO();
+
+        
     }
 }
