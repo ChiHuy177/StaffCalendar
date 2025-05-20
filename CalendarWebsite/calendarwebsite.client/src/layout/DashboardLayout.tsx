@@ -55,7 +55,7 @@ export default function DashboardLayout() {
 
     // Close sidebar on mobile when navigating to a new page
     useEffect(() => {
-        console.log("Navigation effect: path changed or mobile status changed");
+        // console.log("Navigation effect: path changed or mobile status changed");
         setIsSidebarOpen(false);
     }, [location.pathname, isMobile]);
 
@@ -87,7 +87,7 @@ export default function DashboardLayout() {
 
     // Log mỗi khi isSidebarOpen thay đổi
     useEffect(() => {
-        console.log("isSidebarOpen changed to:", isSidebarOpen);
+        // console.log("isSidebarOpen changed to:", isSidebarOpen);
     }, [isSidebarOpen]);
 
     const navigationItems = useMemo(
@@ -100,7 +100,7 @@ export default function DashboardLayout() {
     );
 
     const toggleSidebar = () => {
-        console.log("toggleSidebar called, current state:", isSidebarOpen);
+        // console.log("toggleSidebar called, current state:", isSidebarOpen);
         setIsSidebarOpen(prev => !prev);
     };
 
@@ -339,7 +339,7 @@ export default function DashboardLayout() {
                                         component={Link}
                                         to={item.path}
                                         onClick={() => {
-                                            console.log("Clicked on menu item:", item.path);
+                                            // console.log("Clicked on menu item:", item.path);
                                             toggleSidebar();
                                         }}
                                         className={`mx-2 mb-1 rounded-lg transition-all duration-300 ${item.isActive

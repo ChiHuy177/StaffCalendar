@@ -19,7 +19,8 @@ import {
     Select,
     MenuItem,
     FormHelperText,
-    Divider
+    Divider,
+    CircularProgress
 } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
@@ -74,16 +75,27 @@ export default function CustomWorkWeek() {
         morningTime?: string;
         afternoonTime?: string;
     }>({});
+    const [loading, setLoading] = useState(false);
 
     // Fetch employees for autocomplete
     useEffect(() => {
         async function fetchEmployees() {
             try {
+                setLoading(true);
                 const data = await getAllUserName();
-
-                setEmployees(data);
+                
+                // Kiểm tra dữ liệu trả về từ API
+                if (!data || !Array.isArray(data)) {
+                    console.error("API getAllUserName không trả về mảng dữ liệu hợp lệ:", data);
+                    setEmployees([]);  // Gán mảng rỗng thay vì undefined
+                } else {
+                    setEmployees(data);
+                }
             } catch (error) {
                 console.error("Error fetching employees:", error);
+                setEmployees([]);  // Gán mảng rỗng khi có lỗi
+            } finally {
+                setLoading(false);
             }
         }
 
@@ -95,11 +107,17 @@ export default function CustomWorkWeek() {
         console.log('Refresh work day configurations');
         async function fetchCustomWorkingDays() {
             try {
+                setLoading(true);
                 const data = await getAllCustomWorkingTimes();
 
+                // Kiểm tra dữ liệu trả về từ API
+                if (!data || !Array.isArray(data)) {
+                    console.error("API getAllCustomWorkingTimes không trả về mảng dữ liệu hợp lệ:", data);
+                    setWorkDays([]);
+                    return;
+                }
 
                 const promises = data.map(async (item: WorkSchedule, index: number) => {
-
                     return {
                         ...item,
                         stt: index + 1,
@@ -114,6 +132,9 @@ export default function CustomWorkWeek() {
                 setWorkDays(extendedData);
             } catch (error) {
                 console.error("Error in fetchCustomWorkingDays:", error);
+                setWorkDays([]); // Gán mảng rỗng khi có lỗi
+            } finally {
+                setLoading(false);
             }
         }
 
@@ -132,7 +153,10 @@ export default function CustomWorkWeek() {
             console.log('PersonalProfileId:', workSchedule.personalProfileId);
             setEditingWorkSchedule(workSchedule);
 
-            const employeeMatch = employees.find(emp => emp.personalProfileId === workSchedule.personalProfileId);
+            // Kiểm tra employees trước khi tìm kiếm
+            const employeeMatch = Array.isArray(employees) ? 
+                employees.find(emp => emp.personalProfileId === workSchedule.personalProfileId) : 
+                null;
 
             // Chuẩn bị dữ liệu cho form chỉnh sửa
             setNewWorkSchedule({
@@ -417,7 +441,8 @@ export default function CustomWorkWeek() {
                 <Button
                     onClick={handleRefresh}
                     className="mb-6 ml-2 cursor-pointer px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
-                    startIcon={<RefreshIcon />}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
+                    disabled={loading}
                 >
                     {t('refresh')}
                 </Button>
@@ -671,31 +696,56 @@ export default function CustomWorkWeek() {
                             }
                         }}
                     >
-                        <DataGrid
-                            rows={workDays}
-                            columns={columns}
-                            pageSizeOptions={[5, 10, 25]}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: { pageSize: 10, page: 0 },
-                                },
-                            }}
-                            disableRowSelectionOnClick
-                            autoHeight
-                            slots={{
-                                toolbar: CustomToolbar,
-                            }}
-                            localeText={
-                                i18n.language === 'vi'
-                                    ? viVNGrid.components.MuiDataGrid.defaultProps.localeText
-                                    : undefined
-                            }
-                            sx={{
-                                '& .grid-cell-center': {
-                                    textAlign: 'center',
+                        {loading ? (
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                minHeight: '400px',
+                                gap: 2,
+                                p: 2
+                            }}>
+                                <CircularProgress size={40} sx={{ color: 'primary.main' }} />
+                                <Typography color="text.secondary" sx={{
+                                    fontSize: '1rem',
+                                    fontWeight: 500,
+                                    animation: 'pulse 1.5s ease-in-out infinite',
+                                    '@keyframes pulse': {
+                                        '0%': { opacity: 0.6 },
+                                        '50%': { opacity: 1 },
+                                        '100%': { opacity: 0.6 }
+                                    }
+                                }}>
+                                    {t('loadingData')}...
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <DataGrid
+                                rows={workDays}
+                                columns={columns}
+                                pageSizeOptions={[5, 10, 25]}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: { pageSize: 10, page: 0 },
+                                    },
+                                }}
+                                disableRowSelectionOnClick
+                                autoHeight
+                                slots={{
+                                    toolbar: CustomToolbar,
+                                }}
+                                localeText={
+                                    i18n.language === 'vi'
+                                        ? viVNGrid.components.MuiDataGrid.defaultProps.localeText
+                                        : undefined
                                 }
-                            }}
-                        />
+                                sx={{
+                                    '& .grid-cell-center': {
+                                        textAlign: 'center',
+                                    }
+                                }}
+                            />
+                        )}
                     </Paper>
                 </Stack>
             </Container>
@@ -760,9 +810,10 @@ export default function CustomWorkWeek() {
                             </FormControl>
 
                             <Autocomplete
-                                options={employees}
-                                getOptionLabel={(option) => option.emailAndName}
+                                options={employees || []}
+                                getOptionLabel={(option) => option?.emailAndName || ''}
                                 value={newWorkSchedule.employeeName}
+                                loading={loading}
                                 onChange={(_, newValue) => {
                                     setNewWorkSchedule({
                                         ...newWorkSchedule,
@@ -782,14 +833,20 @@ export default function CustomWorkWeek() {
                                         {...params}
                                         label={t('selectEmployee')}
                                         error={!!errors.personalProfileId}
-                                        helperText={errors.personalProfileId}
-                                        required
+                                        // helperText={errors.personalProfileId || (employees?.length === 0 ? t('noEmployeesAvailable') : '')}                     required
                                         InputProps={{
                                             ...params.InputProps,
-                                            sx: { borderRadius: '8px' }
+                                            sx: { borderRadius: '8px' },
+                                            endAdornment: (
+                                                <>
+                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                    {params.InputProps.endAdornment}
+                                                </>
+                                            ),
                                         }}
                                     />
                                 )}
+                                // noOptionsText={t('noEmployeesAvailable')}
                             />
                         </Box>
 

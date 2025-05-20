@@ -69,7 +69,7 @@ export default function CalendarComponent() {
                     transition: Bounce,
                 });
             }
-            console.log("[fetchWorkSchedule] No staffIdToFetch. Clearing events and workDays.");
+            // console.log("[fetchWorkSchedule] No staffIdToFetch. Clearing events and workDays.");
             setEvents([]);
             setWorkDays(0);
             setLoading(false);
@@ -102,7 +102,7 @@ export default function CalendarComponent() {
                     });
                     
                 }
-                console.log('workScheduleDetails', workScheduleDetails);
+                // console.log('workScheduleDetails', workScheduleDetails);
                 if (data.length === 0) {
                     const toastMessage = nameFromSelection !== undefined
                         ? t('toastMessages.employeeScheduleNotFound')
@@ -118,7 +118,7 @@ export default function CalendarComponent() {
                         theme: "colored",
                         transition: Bounce,
                     });
-                    console.log("[fetchWorkSchedule] No event data found. Clearing events and workDays.");
+                    // console.log("[fetchWorkSchedule] No event data found. Clearing events and workDays.");
                     setEvents([]);
                     setWorkDays(0);
                     setLoading(false);
@@ -151,7 +151,7 @@ export default function CalendarComponent() {
                     staffIdToFetch,
                     t
                 );
-                console.log(`[fetchWorkSchedule] Processed events for ${staffIdToFetch}, month ${month}. Count: ${updatedEventList.length}. Setting events.`);
+                // console.log(`[fetchWorkSchedule] Processed events for ${staffIdToFetch}, month ${month}. Count: ${updatedEventList.length}. Setting events.`);
                 setEvents(updatedEventList);
                 getWorkDays(staffIdToFetch, month, year);
                 setLoading(false);
@@ -311,7 +311,7 @@ export default function CalendarComponent() {
 
     const handleNameChange = (_event: React.SyntheticEvent, value: UserInfo | null) => {
         if (value) {
-            console.log("name", value);
+            // console.log("name", value);
             setSelectedName(value);
             fetchWorkSchedule(value.emailAndName, value.personalProfileId);
         } else {
@@ -557,8 +557,8 @@ export default function CalendarComponent() {
                         aspectRatio={1.2}
                         contentHeight="auto"
                         height="auto"
-                        datesSet={(viewInfo) => {
-                            console.log(`[FullCalendar datesSet] View changed. Current start: ${viewInfo.view.currentStart.toISOString()}`);
+                        datesSet={() => {
+                            // console.log(`[FullCalendar datesSet] View changed. Current start: ${viewInfo.view.currentStart.toISOString()}`);
                             fetchWorkSchedule();
                         }}
                         dayMaxEventRows={true}
