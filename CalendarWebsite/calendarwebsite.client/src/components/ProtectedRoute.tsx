@@ -9,8 +9,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const token = localStorage.getItem('token');
     
     if (!token) {
-        // Sử dụng biến môi trường cho URL đăng nhập
-        const loginUrl = import.meta.env.VITE_AUTH_URL;
+        // Luôn sử dụng localhost cho authentication
+        const loginUrl = 'https://localhost:44356/api/auth/login';
         window.location.href = loginUrl;
         return null;
     }
