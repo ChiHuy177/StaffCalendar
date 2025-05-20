@@ -154,7 +154,7 @@ export default function CalendarComponent() {
                 // console.log(`[fetchWorkSchedule] Processed events for ${staffIdToFetch}, month ${month}. Count: ${updatedEventList.length}. Setting events.`);
                 setEvents(updatedEventList);
                 getWorkDays(staffIdToFetch, month, year);
-                setLoading(false);
+                setLoading(false);   
 
             } catch (error) {
                 console.error('[fetchWorkSchedule] Error fetching work schedule:', error);

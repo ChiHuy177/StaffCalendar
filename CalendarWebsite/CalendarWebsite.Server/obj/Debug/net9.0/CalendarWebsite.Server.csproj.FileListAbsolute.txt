@@ -883,3 +883,5 @@ D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\obj\Debug\net9.0\
 D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\obj\Debug\net9.0\Calendar.98EF8F2D.Up2Date
 D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\obj\Debug\net9.0\CalendarWebsite.Server.genruntimeconfig.cache
 D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\obj\Debug\net9.0\ref\CalendarWebsite.Server.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll

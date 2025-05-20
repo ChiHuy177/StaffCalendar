@@ -9,7 +9,10 @@ using CalendarWebsite.Server.repositories;
 using CalendarWebsite.Server.Repositories;
 using CalendarWebsite.Server.services;
 using CalendarWebsite.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 namespace CalendarWebsite.Server
@@ -21,6 +24,69 @@ namespace CalendarWebsite.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(option =>
+            {
+                option.Authority = builder.Configuration["IdentityServerConfig:Authority"];
+                option.Audience = builder.Configuration["IdentityServerConfig:ClientId"];
+                option.RequireHttpsMetadata = builder.Configuration.GetValue<bool>("IdentityServerConfig:RequireHttpsMetadata");
+                option.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                };
+                option.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    }
+                };
+            })
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
+                options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
+                options.ClientSecret = builder.Configuration["IdentityServerConfig:ClientSecret"];
+                options.ResponseType = builder.Configuration["IdentityServerConfig:ResponseType"] ?? string.Empty;
+                options.SaveTokens = builder.Configuration.GetValue<bool>("IdentityServerConfig:SaveTokens");
+                options.GetClaimsFromUserInfoEndpoint = builder.Configuration.GetValue<bool>("IdentityServerConfig:GetClaimsFromUserInfoEndpoint");
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.Scope.Add("email");
+                options.CallbackPath = "/signin-oidc";
+                options.RequireHttpsMetadata = builder.Configuration.GetValue<bool>("IdentityServerConfig:RequireHttpsMetadata");
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($"OIDC Authentication failed: {context.Exception.Message}");
+                        context.Response.StatusCode = 401;
+                        context.Response.WriteAsync($"Authentication failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("Token validated successfully");
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -38,7 +104,7 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<ICustomWorkingTimeRepository, CustomWorkingTimeRepository>();
 
             //register service
-            
+
             builder.Services.AddScoped<ICheckInDataService, APICheckInService>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<IPersonalProfileService, PersonalProfileService>();
@@ -83,7 +149,8 @@ namespace CalendarWebsite.Server
 
             app.UseHttpsRedirection();
 
-
+            app.UseAuthentication();
+            //app.UseAuthorization();
             app.UseAuthorization();
 
 
