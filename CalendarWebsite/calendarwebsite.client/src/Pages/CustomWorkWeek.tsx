@@ -833,20 +833,19 @@ export default function CustomWorkWeek() {
                                         {...params}
                                         label={t('selectEmployee')}
                                         error={!!errors.personalProfileId}
-                                        // helperText={errors.personalProfileId || (employees?.length === 0 ? t('noEmployeesAvailable') : '')}                     required
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            sx: { borderRadius: '8px' },
-                                            endAdornment: (
-                                                <>
-                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                    {params.InputProps.endAdornment}
-                                                </>
-                                            ),
+                                        slotProps={{
+                                            input: {
+                                                sx: { borderRadius: '8px' },
+                                                endAdornment: (
+                                                    <>
+                                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                        {params.InputProps?.endAdornment}
+                                                    </>
+                                                )
+                                            }
                                         }}
                                     />
                                 )}
-                                // noOptionsText={t('noEmployeesAvailable')}
                             />
                         </Box>
 

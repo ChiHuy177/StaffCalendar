@@ -39,10 +39,12 @@
     <PackageJsonDependenciesI18nextBrowserLanguagedetector Condition="$(PackageJsonDependenciesI18nextBrowserLanguagedetector) == ''">^8.0.5</PackageJsonDependenciesI18nextBrowserLanguagedetector>
     <PackageJsonDependenciesI18nextHttpBackend Condition="$(PackageJsonDependenciesI18nextHttpBackend) == ''">^3.0.2</PackageJsonDependenciesI18nextHttpBackend>
     <PackageJsonDependenciesLocize Condition="$(PackageJsonDependenciesLocize) == ''">^4.0.14</PackageJsonDependenciesLocize>
+    <PackageJsonDependenciesOidcClientTs Condition="$(PackageJsonDependenciesOidcClientTs) == ''">^3.2.1</PackageJsonDependenciesOidcClientTs>
     <PackageJsonDependenciesPreact Condition="$(PackageJsonDependenciesPreact) == ''">^10.26.5</PackageJsonDependenciesPreact>
     <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.1.0</PackageJsonDependenciesReact>
     <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^19.1.0</PackageJsonDependenciesReactDom>
     <PackageJsonDependenciesReactI18next Condition="$(PackageJsonDependenciesReactI18next) == ''">^15.4.1</PackageJsonDependenciesReactI18next>
+    <PackageJsonDependenciesReactIcons Condition="$(PackageJsonDependenciesReactIcons) == ''">^5.5.0</PackageJsonDependenciesReactIcons>
     <PackageJsonDependenciesReactLoadingSkeleton Condition="$(PackageJsonDependenciesReactLoadingSkeleton) == ''">^3.5.0</PackageJsonDependenciesReactLoadingSkeleton>
     <PackageJsonDependenciesReactRouterDom Condition="$(PackageJsonDependenciesReactRouterDom) == ''">^7.5.0</PackageJsonDependenciesReactRouterDom>
     <PackageJsonDependenciesReactTinyPopover Condition="$(PackageJsonDependenciesReactTinyPopover) == ''">^8.1.6</PackageJsonDependenciesReactTinyPopover>

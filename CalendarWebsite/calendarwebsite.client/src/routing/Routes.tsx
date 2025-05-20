@@ -5,10 +5,7 @@ import DashboardLayout from "../layout/DashboardLayout";
 import CheckInByDayTable from "../Pages/CheckInByDayTable";
 import CheckInTableByDepartment from "../Pages/CheckInTableByDepartment";
 import CustomWorkWeek from "../Pages/CustomWorkWeek";
-
-
-
-
+import ProtectedRoute from "../components/ProtectedRoute";
 
 const router = createBrowserRouter(
     [
@@ -16,11 +13,26 @@ const router = createBrowserRouter(
             path: '/',
             element: <DashboardLayout />,
             children: [
-                { index: true, element: <CalendarComponent /> },
-                { path: 'table', element: <CheckinTablePage /> },
-                {path: 'checkinbyday', element: <CheckInByDayTable />},
-                {path: 'checkintablebydepartment', element: <CheckInTableByDepartment />},
-                {path: 'customworkweek', element: <CustomWorkWeek />},
+                { 
+                    index: true, 
+                    element: <ProtectedRoute><CalendarComponent /></ProtectedRoute> 
+                },
+                { 
+                    path: 'table', 
+                    element: <ProtectedRoute><CheckinTablePage /></ProtectedRoute> 
+                },
+                { 
+                    path: 'checkinbyday', 
+                    element: <ProtectedRoute><CheckInByDayTable /></ProtectedRoute> 
+                },
+                { 
+                    path: 'checkintablebydepartment', 
+                    element: <ProtectedRoute><CheckInTableByDepartment /></ProtectedRoute> 
+                },
+                { 
+                    path: 'customworkweek', 
+                    element: <ProtectedRoute><CustomWorkWeek /></ProtectedRoute> 
+                },
             ],
         },
     ]
