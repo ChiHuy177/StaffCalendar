@@ -45,7 +45,7 @@ namespace CalendarWebsite.Server.Controllers
         [HttpGet("callback")]
         public async Task<IActionResult> Callback()
         {
-
+            
             var token = await HttpContext.GetTokenAsync("access_token");
             Console.WriteLine($"Received token: {token}");
             if (string.IsNullOrEmpty(token))
@@ -78,43 +78,80 @@ namespace CalendarWebsite.Server.Controllers
         {
             try
             {
-                var idToken = await HttpContext.GetTokenAsync("id_token");
-                Console.WriteLine($"Received id_token: {idToken}");
-                var properties = new AuthenticationProperties
+                Console.WriteLine("Đang thực hiện logout...");
+
+                // Xóa tất cả cookie với các domain khác nhau
+                var cookieOptions = new CookieOptions
                 {
-                    RedirectUri = "https://staff-calendar-5efr.vercel.app/",
-                    Items =
-                    {
-                        { "id_token", idToken }
-                    }
+                    Expires = DateTime.Now.AddDays(-1),
+                    Path = "/",
+                    Secure = true,
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.None
                 };
-                await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, properties);
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-                HttpContext.Response.Headers.Remove("Authorization");
-
+                // Xóa cookie cho domain hiện tại
                 foreach (var cookie in HttpContext.Request.Cookies)
                 {
-                    HttpContext.Response.Cookies.Delete(cookie.Key);
+                    HttpContext.Response.Cookies.Delete(cookie.Key, cookieOptions);
                 }
 
-                Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\"");
-
-                return Ok(new
+                // Xóa cookie cho domain vercel.app
+                cookieOptions.Domain = ".vercel.app";
+                foreach (var cookie in HttpContext.Request.Cookies)
                 {
-                    logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri=https://staff-calendar-5efr.vercel.app/"
-                });
+                    HttpContext.Response.Cookies.Delete(cookie.Key, cookieOptions);
+                }
+
+                // Xóa cookie cho domain onrender.com
+                cookieOptions.Domain = ".onrender.com";
+                foreach (var cookie in HttpContext.Request.Cookies)
+                {
+                    HttpContext.Response.Cookies.Delete(cookie.Key, cookieOptions);
+                }
+
+                // Xóa header Authorization
+                HttpContext.Response.Headers.Remove("Authorization");
+
+                // Thêm header để xóa dữ liệu site
+                Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
+
+                // Lấy id_token nếu có
+                var idToken = await HttpContext.GetTokenAsync("id_token");
+                Console.WriteLine($"Received id_token: {idToken}");
+
+                if (!string.IsNullOrEmpty(idToken))
+                {
+                    // Đăng xuất khỏi OpenID Connect nếu có token
+                    var properties = new AuthenticationProperties
+                    {
+                        RedirectUri = "https://staff-calendar-5efr.vercel.app/",
+                        Items =
+                        {
+                            { "id_token", idToken }
+                        }
+                    };
+
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, properties);
+
+                    return Ok(new
+                    {
+                        logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri=https://staff-calendar-5efr.vercel.app/"
+                    });
+                }
+                else
+                {
+                    // Nếu không có token, chỉ cần xóa cookie và chuyển hướng về trang chủ
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    return Ok(new { logoutUrl = "https://staff-calendar-5efr.vercel.app/" });
+                }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Lỗi khi đăng xuất: {ex.Message}");
                 return BadRequest(ex.Message);
             }
-
-
-
-
-
-
         }
     }
 }

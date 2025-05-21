@@ -8,6 +8,18 @@ const LogoutButton = () => {
 
     const handleLogout = async () => {
         try {
+            // Xóa token và dữ liệu local trước
+            localStorage.clear();
+            sessionStorage.clear();
+
+            // Xóa tất cả cookie
+            document.cookie.split(";").forEach(function (c) {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/;domain=.vercel.app");
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/;domain=.onrender.com");
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+
+            // Gọi API logout
             const response = await axios.get('https://staffcalendarserver-may.onrender.com/api/auth/logout', {
                 withCredentials: true,
                 headers: {
@@ -16,13 +28,8 @@ const LogoutButton = () => {
                 }
             });
 
-            localStorage.clear();
-            sessionStorage.clear();
-
-            document.cookie.split(";").forEach(function (c) {
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-            });
             if (response.data && response.data.logoutUrl) {
+                // Chuyển hướng đến trang logout của Identity Server
                 window.location.href = response.data.logoutUrl;
             } else {
                 window.location.href = '/';
@@ -30,6 +37,7 @@ const LogoutButton = () => {
 
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);
+            // Vẫn xóa token và chuyển hướng về trang chủ nếu có lỗi
             localStorage.removeItem('token');
             window.location.href = '/';
         }
