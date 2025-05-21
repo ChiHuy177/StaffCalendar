@@ -100,16 +100,6 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
-                if (string.IsNullOrEmpty(clientUrl))
-                {
-                    clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
-                }
-                if (string.IsNullOrEmpty(clientUrl))
-                {
-                    throw new InvalidOperationException("ClientUrl is not configured in either Production or Development settings");
-                }
-
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
                 options.ClientSecret = builder.Configuration["IdentityServerConfig:ClientSecret"];
@@ -122,55 +112,29 @@ namespace CalendarWebsite.Server
                 options.CallbackPath = "/signin-oidc";
                 options.RequireHttpsMetadata = builder.Configuration.GetValue<bool>("IdentityServerConfig:RequireHttpsMetadata");
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
-                options.SignedOutRedirectUri = $"{clientUrl}";
+                options.SignedOutRedirectUri = builder.Configuration["AppSettings:ClientUrl"];
                 options.UseTokenLifetime = true;
-                options.SkipUnrecognizedRequests = true;
-                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.NonceCookie.SameSite = SameSiteMode.None;
-                options.CorrelationCookie.SameSite = SameSiteMode.None;
 
                 options.Events = new OpenIdConnectEvents
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
-                        if (string.IsNullOrEmpty(clientUrl))
-                        {
-                            throw new InvalidOperationException("ClientUrl is not configured properly");
-                        }
-
-                        // Đảm bảo rằng redirect URI trỏ đến server API và luôn sử dụng HTTPS
                         var redirectUri = $"https://{context.Request.Host}/signin-oidc";
                         context.ProtocolMessage.RedirectUri = redirectUri;
-
-                        Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
-                        Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
                         return Task.CompletedTask;
                     },
                     OnTokenValidated = context =>
                     {
-                        Console.WriteLine("Token validated successfully");
-                        Console.WriteLine($"Token type: {context.TokenEndpointResponse?.TokenType}");
-                        Console.WriteLine($"Access token: {context.TokenEndpointResponse?.AccessToken}");
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = context =>
                     {
-                        Console.WriteLine($"OIDC Authentication failed: {context.Exception.Message}");
                         context.Response.StatusCode = 401;
                         context.Response.WriteAsync($"Authentication failed: {context.Exception.Message}");
-                        return Task.CompletedTask;
-                    },
-                    OnSignedOutCallbackRedirect = context =>
-                    {
-                        context.Response.Redirect($"{clientUrl}");
-                        context.HandleResponse();
                         return Task.CompletedTask;
                     }
                 };
             });
-
-
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -203,22 +167,10 @@ namespace CalendarWebsite.Server
                 options.AddDefaultPolicy(
                     policy =>
                     {
-
-                        policy.WithOrigins(
-                            "https://localhost:50857",
-                            "https://localhost:50858",
-                            "https://prismatic-cactus-d90033.netlify.app",
-                            "https://calendar-frontend-54y9.onrender.com",
-                            "https://calendarwebsite-2.onrender.com",
-                            "https://staffcalendar.vercel.app",
-                            "https://staff-calendar-5efr.vercel.app",
-                            "https://staffcalendarserver-may.onrender.com",
-                            "http://staffcalendarserver-may.onrender.com",
-                            "https://identity.vntts.vn"
-                        ).AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-
+                        policy.SetIsOriginAllowed(origin => true)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
 
