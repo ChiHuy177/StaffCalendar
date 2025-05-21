@@ -26,7 +26,7 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import LogoutIcon from '@mui/icons-material/Logout';
+// import LogoutIcon from '@mui/icons-material/Logout';
 import { Link, Outlet, useLocation } from "react-router-dom";
 import LanguageSwitcherButton from "../components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
