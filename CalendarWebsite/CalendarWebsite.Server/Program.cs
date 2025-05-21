@@ -39,40 +39,21 @@ namespace CalendarWebsite.Server
                 options.Cookie.SameSite = SameSiteMode.None;
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.SlidingExpiration = true;
-                options.Cookie.Domain = ".vercel.app";
                 options.Events = new CookieAuthenticationEvents
                 {
                     OnSigningOut = async context =>
                     {
-                        // Xóa tất cả cookie authentication
-                        var cookieNames = new[] { "StaffCalendar.Auth", "StaffCalendar.AuthC1", "StaffCalendar.AuthC2" };
-                        var cookieOptions = new CookieOptions
+                        // Xóa tất cả cookie khi đăng xuất
+                        foreach (var cookie in context.HttpContext.Request.Cookies)
                         {
-                            Expires = DateTime.Now.AddDays(-1),
-                            Path = "/",
-                            Secure = true,
-                            HttpOnly = true,
-                            SameSite = SameSiteMode.None,
-                            Domain = ".vercel.app"
-                        };
-
-                        foreach (var cookieName in cookieNames)
-                        {
-                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
-                        }
-
-                        // Xóa cookie cho domain onrender.com
-                        cookieOptions.Domain = ".onrender.com";
-                        foreach (var cookieName in cookieNames)
-                        {
-                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
-                        }
-
-                        // Xóa cookie cho domain localhost
-                        cookieOptions.Domain = "localhost";
-                        foreach (var cookieName in cookieNames)
-                        {
-                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                            context.HttpContext.Response.Cookies.Delete(cookie.Key, new CookieOptions
+                            {
+                                Expires = DateTime.Now.AddDays(-1),
+                                Path = "/",
+                                Secure = true,
+                                HttpOnly = true,
+                                SameSite = SameSiteMode.None
+                            });
                         }
                     }
                 };
@@ -100,11 +81,33 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
+                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
+                // var clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
+                if (string.IsNullOrEmpty(clientUrl))
+                {
+                    clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
+                }
+                if (string.IsNullOrEmpty(clientUrl))
+                {
+                    throw new InvalidOperationException("ClientUrl is not configured in either Production or Development settings");
+                }
+
+                var serverUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ServerUrl");
+                if (string.IsNullOrEmpty(serverUrl))
+                {
+                    serverUrl = builder.Configuration.GetValue<string>("AppSettings:ServerUrl");
+                }
+                if (string.IsNullOrEmpty(serverUrl))
+                {
+                    // Fallback to determine server URL from the current host
+                    serverUrl = "https://staffcalendarserver-may.onrender.com";
+                }
+
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
                 options.ClientSecret = builder.Configuration["IdentityServerConfig:ClientSecret"];
                 options.ResponseType = builder.Configuration["IdentityServerConfig:ResponseType"] ?? string.Empty;
-                options.SaveTokens = true;
+                options.SaveTokens = builder.Configuration.GetValue<bool>("IdentityServerConfig:SaveTokens");
                 options.GetClaimsFromUserInfoEndpoint = builder.Configuration.GetValue<bool>("IdentityServerConfig:GetClaimsFromUserInfoEndpoint");
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
@@ -112,29 +115,62 @@ namespace CalendarWebsite.Server
                 options.CallbackPath = "/signin-oidc";
                 options.RequireHttpsMetadata = builder.Configuration.GetValue<bool>("IdentityServerConfig:RequireHttpsMetadata");
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
-                options.SignedOutRedirectUri = builder.Configuration["AppSettings:ClientUrl"];
+                options.SignedOutRedirectUri = $"{clientUrl}";
                 options.UseTokenLifetime = true;
+                options.SkipUnrecognizedRequests = true;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
 
                 options.Events = new OpenIdConnectEvents
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
+                        if (string.IsNullOrEmpty(clientUrl))
+                        {
+                            throw new InvalidOperationException("ClientUrl is not configured properly");
+                        }
+
+                        // Đảm bảo rằng redirect URI trỏ đến server API và luôn sử dụng HTTPS
                         var redirectUri = $"https://{context.Request.Host}/signin-oidc";
                         context.ProtocolMessage.RedirectUri = redirectUri;
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
+
+                        Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
+                        Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = context =>
                     {
+                        Console.WriteLine($"OIDC Authentication failed: {context.Exception.Message}");
                         context.Response.StatusCode = 401;
                         context.Response.WriteAsync($"Authentication failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("Token validated successfully");
+                        Console.WriteLine($"Token type: {context.TokenEndpointResponse?.TokenType}");
+                        return Task.CompletedTask;
+                    },
+                    OnSignedOutCallbackRedirect = context =>
+                    {
+                        context.Response.Redirect($"{clientUrl}");
+                        context.HandleResponse();
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProviderForSignOut = context =>
+                    {
+                        // Thêm id_token vào request
+                        var idToken = context.ProtocolMessage.IdTokenHint;
+                        if (!string.IsNullOrEmpty(idToken))
+                        {
+                            context.ProtocolMessage.IdTokenHint = idToken;
+                        }
                         return Task.CompletedTask;
                     }
                 };
             });
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -167,16 +203,27 @@ namespace CalendarWebsite.Server
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        policy.SetIsOriginAllowed(origin => true)
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
+
+                        policy.WithOrigins(
+                            "https://localhost:50857",
+                            "https://localhost:50858",
+                            "https://prismatic-cactus-d90033.netlify.app",
+                            "https://calendar-frontend-54y9.onrender.com",
+                            "https://calendarwebsite-2.onrender.com",
+                            "https://staffcalendar.vercel.app",
+                            "https://staff-calendar-5efr.vercel.app",
+                            "https://staffcalendarserver-may.onrender.com",
+                            "http://staffcalendarserver-may.onrender.com",
+                            "https://identity.vntts.vn"
+                        ).AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+
                     });
             });
 
             var app = builder.Build();
 
-            // Cấu hình middleware
             app.UseCors();
             app.UseDefaultFiles();
             app.UseStaticFiles();
