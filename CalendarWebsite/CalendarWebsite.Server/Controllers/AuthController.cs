@@ -54,7 +54,7 @@ namespace CalendarWebsite.Server.Controllers
             }
 
             // Thêm một tham số để đánh dấu đã xử lý callback
-            return Redirect($"https://localhost:50857/?token={token}&callback=processed");
+            return Redirect($"https://staff-calendar-5efr.vercel.app/?token={token}&callback=processed");
         }
 
         [HttpGet("check-token")]

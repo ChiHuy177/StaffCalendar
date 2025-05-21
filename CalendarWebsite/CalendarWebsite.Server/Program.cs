@@ -58,8 +58,8 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                //var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
-                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
+                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
+                // var clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
                 if (string.IsNullOrEmpty(clientUrl))
                 {
                     clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
@@ -69,6 +69,16 @@ namespace CalendarWebsite.Server
                     throw new InvalidOperationException("ClientUrl is not configured in either Production or Development settings");
                 }
 
+                var serverUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ServerUrl");
+                if (string.IsNullOrEmpty(serverUrl))
+                {
+                    serverUrl = builder.Configuration.GetValue<string>("AppSettings:ServerUrl");
+                }
+                if (string.IsNullOrEmpty(serverUrl))
+                {
+                    // Fallback to determine server URL from the current host
+                    serverUrl = "https://staffcalendarserver-may.onrender.com";
+                }
 
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
