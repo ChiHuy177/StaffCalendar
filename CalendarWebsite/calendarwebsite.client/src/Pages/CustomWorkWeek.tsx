@@ -27,13 +27,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
-import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { createCustomWorkingTime, getAllCustomWorkingTimes, updateCustomWorkingTime, softDeleteCustomWorkingTime } from '../apis/CustomWorkingTimeApi';
 import { UserInfo, WorkSchedule, WorkScheduleApiData } from '../utils/type';
 import { getAllUserName } from '../apis/CheckinDataApi';
 import Swal from 'sweetalert2'
+import i18n from '../i18n';
 
 // Extend WorkSchedule to include the custom fields we need
 interface ExtendedWorkSchedule extends WorkSchedule {
@@ -53,6 +54,7 @@ export default function CustomWorkWeek() {
     const [openDialog, setOpenDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [employees, setEmployees] = useState<UserInfo[]>([]);
+    const [selectedEmployee, setSelectedEmployee] = useState<UserInfo | null>(null);
     const [editingWorkSchedule, setEditingWorkSchedule] = useState<ExtendedWorkSchedule | null>(null);
     const [newWorkSchedule, setNewWorkSchedule] = useState<{
         workweekTitle: string;
@@ -76,6 +78,7 @@ export default function CustomWorkWeek() {
         afternoonTime?: string;
     }>({});
     const [loading, setLoading] = useState(false);
+    const [filteredWorkDays, setFilteredWorkDays] = useState<ExtendedWorkSchedule[]>([]);
 
     // Fetch employees for autocomplete
     useEffect(() => {
@@ -144,7 +147,6 @@ export default function CustomWorkWeek() {
     useEffect(() => {
         handleRefresh();
     }, []);
-
 
     const handleEdit = (id: number) => {
         console.log('Edit day with ID:', id);
@@ -433,22 +435,106 @@ export default function CustomWorkWeek() {
     // Custom toolbar for DataGrid
     function CustomToolbar() {
         return (
-            <GridToolbarContainer>
-                <GridToolbarColumnsButton />
-                <GridToolbarFilterButton />
-                <GridToolbarDensitySelector />
-                <Box sx={{ flexGrow: 1 }} />
-                <Button
-                    onClick={handleRefresh}
-                    className="mb-6 ml-2 cursor-pointer px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
-                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
-                    disabled={loading}
-                >
-                    {t('refresh')}
-                </Button>
+            <GridToolbarContainer sx={{ gap: 2, p: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                    <Autocomplete
+                        options={employees}
+                        getOptionLabel={(option) => option?.emailAndName || ''}
+                        value={selectedEmployee}
+                        onChange={(_, newValue) => {
+                            setSelectedEmployee(newValue);
+                        }}
+                        loading={loading}
+                        sx={{
+                            width: 300,
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '8px',
+                                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'white',
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+                            },
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label={t('searchEmployee')}
+                                variant="outlined"
+                                size="small"
+                                InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <>
+                                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                            {params.InputProps.endAdornment}
+                                        </>
+                                    ),
+                                }}
+                            />
+                        )}
+                    />
+                    <Button
+                        variant="contained"
+                        onClick={handleSearch}
+                        startIcon={<SearchIcon />}
+                        sx={{
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            px: 3,
+                            background: 'linear-gradient(45deg, #1976d2 0%, #304ffe 100%)',
+                            '&:hover': {
+                                background: 'linear-gradient(45deg, #1565c0 0%, #283593 100%)',
+                            }
+                        }}
+                    >
+                        {t('find')}
+                    </Button>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <GridToolbarColumnsButton 
+                        slotProps={{
+                            tooltip: { title: t('dataGrid.columns') }
+                        }}
+                    />
+                    <GridToolbarFilterButton 
+                        slotProps={{
+                            tooltip: { title: t('dataGrid.filter') }
+                        }}
+                    />
+                    <GridToolbarDensitySelector 
+                        slotProps={{
+                            tooltip: { title: t('dataGrid.density') }
+                        }}
+                    />
+                    <Button
+                        onClick={handleRefresh}
+                        className="mb-6 ml-2 cursor-pointer px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
+                        startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
+                        disabled={loading}
+                    >
+                        {t('refresh')}
+                    </Button>
+                </Box>
             </GridToolbarContainer>
         );
     }
+
+    // Thêm hàm xử lý tìm kiếm
+    const handleSearch = () => {
+        if (selectedEmployee) {
+            const filtered = workDays.filter(day => 
+                day.employeeName === selectedEmployee.emailAndName
+            );
+            setFilteredWorkDays(filtered);
+        } else {
+            setFilteredWorkDays(workDays);
+        }
+    };
+
+    // Cập nhật useEffect để reset filteredWorkDays khi workDays thay đổi
+    useEffect(() => {
+        setFilteredWorkDays(workDays);
+    }, [workDays]);
 
     // Define columns for DataGrid - rerender when language changes
     const columns: GridColDef[] = [
@@ -627,125 +713,67 @@ export default function CustomWorkWeek() {
                     </Box>
 
                     {/* Data Grid Section */}
-                    <Paper
-                        elevation={3}
-                        sx={{
+                    <Paper 
+                        elevation={3} 
+                        sx={{ 
                             p: 2,
                             borderRadius: 2,
-                            background: 'rgba(255, 255, 255, 0.95)',
-                            backdropFilter: 'blur(10px)',
-                            height: 'calc(100vh - 300px)',
-                            minHeight: 400,
-                            position: 'relative',
-                            zIndex: 1,
-                            '& .MuiDataGrid-root': {
+                            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'white'
+                        }}
+                    >
+                        <DataGrid
+                            rows={filteredWorkDays}
+                            columns={columns}
+                            autoHeight
+                            disableRowSelectionOnClick
+                            localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
+                            slots={{
+                                toolbar: CustomToolbar
+                            }}
+                            sx={{
                                 border: 'none',
                                 '& .MuiDataGrid-cell': {
-                                    borderBottom: isDarkMode
-                                        ? '1px solid rgba(255, 255, 255, 0.08)'
-                                        : '1px solid rgba(0, 0, 0, 0.08)'
-                                },
-                                '& .MuiDataGrid-columnHeaders': {
-                                    backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.8)' : '#f5f5f5',
-                                    borderBottom: isDarkMode
-                                        ? '2px solid rgba(255, 255, 255, 0.1)'
-                                        : '2px solid rgba(0, 0, 0, 0.1)'
-                                },
-                                '& .data-grid-header': {
-                                    fontWeight: 'bold',
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
-                                },
-                                '& .MuiDataGrid-columnSeparator': {
-                                    display: 'none'
-                                },
-                                '& .MuiDataGrid-menuIcon': {
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : undefined
-                                },
-                                '& .MuiDataGrid-toolbarContainer': {
-                                    padding: 2,
-                                    paddingBottom: 0,
-                                    color: isDarkMode ? 'white' : undefined
+                                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                    padding: '12px 16px',
                                 },
                                 '& .MuiDataGrid-row': {
                                     '&:nth-of-type(odd)': {
-                                        backgroundColor: isDarkMode
-                                            ? 'rgba(15, 23, 42, 0.3)'
-                                            : '#fafafa'
+                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
                                     },
                                     '&:hover': {
-                                        backgroundColor: isDarkMode
-                                            ? 'rgba(30, 64, 175, 0.15)'
-                                            : '#e3f2fd'
-                                    }
+                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
+                                        transition: 'background-color 0.2s',
+                                    },
                                 },
-                                '& .MuiDataGrid-overlay': {
-                                    backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.8)' : undefined
+                                '& .data-grid-header': {
+                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f5',
+                                    color: isDarkMode ? 'white' : '#1a1a1a',
+                                    fontWeight: 'bold',
+                                    fontSize: '0.875rem',
+                                    padding: '12px 16px',
+                                },
+                                '& .MuiDataGrid-columnHeaders': {
+                                    borderBottom: `2px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
                                 },
                                 '& .MuiDataGrid-footerContainer': {
-                                    borderTop: isDarkMode
-                                        ? '1px solid rgba(255, 255, 255, 0.12)'
-                                        : undefined,
-                                    backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.8)' : undefined
+                                    borderTop: `2px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
                                 },
-                                '& .MuiTablePagination-root': {
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : undefined
+                                '& .MuiDataGrid-toolbarContainer': {
+                                    padding: '8px 16px',
+                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5',
+                                    borderRadius: '4px 4px 0 0',
                                 },
-                                '& .MuiDataGrid-selectedRowCount': {
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : undefined
-                                }
-                            }
-                        }}
-                    >
-                        {loading ? (
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                minHeight: '400px',
-                                gap: 2,
-                                p: 2
-                            }}>
-                                <CircularProgress size={40} sx={{ color: 'primary.main' }} />
-                                <Typography color="text.secondary" sx={{
-                                    fontSize: '1rem',
-                                    fontWeight: 500,
-                                    animation: 'pulse 1.5s ease-in-out infinite',
-                                    '@keyframes pulse': {
-                                        '0%': { opacity: 0.6 },
-                                        '50%': { opacity: 1 },
-                                        '100%': { opacity: 0.6 }
-                                    }
-                                }}>
-                                    {t('loadingData')}...
-                                </Typography>
-                            </Box>
-                        ) : (
-                            <DataGrid
-                                rows={workDays}
-                                columns={columns}
-                                pageSizeOptions={[5, 10, 25]}
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: { pageSize: 10, page: 0 },
+                                '& .MuiButton-root': {
+                                    textTransform: 'none',
+                                },
+                                '& .MuiIconButton-root': {
+                                    padding: '8px',
+                                    '&:hover': {
+                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
                                     },
-                                }}
-                                disableRowSelectionOnClick
-                                autoHeight
-                                slots={{
-                                    toolbar: CustomToolbar,
-                                }}
-                                localeText={
-                                    i18n.language === 'vi'
-                                        ? viVNGrid.components.MuiDataGrid.defaultProps.localeText
-                                        : undefined
-                                }
-                                sx={{
-                                    '& .grid-cell-center': {
-                                        textAlign: 'center',
-                                    }
-                                }}
-                            />
-                        )}
+                                },
+                            }}
+                        />
                     </Paper>
                 </Stack>
             </Container>
@@ -1057,13 +1085,13 @@ export default function CustomWorkWeek() {
                                         borderRadius: '8px'
                                     }}
                                 >
-                                    <MenuItem value="Monday">Thứ 2</MenuItem>
-                                    <MenuItem value="Tuesday">Thứ 3</MenuItem>
-                                    <MenuItem value="Wednesday">Thứ 4</MenuItem>
-                                    <MenuItem value="Thursday">Thứ 5</MenuItem>
-                                    <MenuItem value="Friday">Thứ 6</MenuItem>
-                                    <MenuItem value="Saturday">Thứ 7</MenuItem>
-                                    <MenuItem value="Sunday">Chủ nhật</MenuItem>
+                                    <MenuItem value="Monday">{t('date.monday')}</MenuItem>
+                                    <MenuItem value="Tuesday">{t('date.tuesday')}</MenuItem>
+                                    <MenuItem value="Wednesday">{t('date.wednesday')}</MenuItem>
+                                    <MenuItem value="Thursday">{t('date.thursday')}</MenuItem>
+                                    <MenuItem value="Friday">{t('date.friday')}</MenuItem>
+                                    <MenuItem value="Saturday">{t('date.saturday')}</MenuItem>
+                                    <MenuItem value="Sunday">{t('date.sunday')}</MenuItem>
                                 </Select>
                                 {!!errors.workweekTitle && (
                                     <FormHelperText error>{errors.workweekTitle}</FormHelperText>

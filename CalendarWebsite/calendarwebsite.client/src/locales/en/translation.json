@@ -69,7 +69,30 @@
         "pageSize": "Page size",
         "noRows": "No rows",
         "no": "No",
-        "name": "Name"
+        "name": "Name",
+        "showColumns": "Show columns",
+        "hideColumns": "Hide columns",
+        "filterPanel": "Filter panel",
+        "filterMode": "Filter mode",
+        "filterOperator": "Filter operator",
+        "filterValue": "Filter value",
+        "filterColumns": "Filter columns",
+        "filterAll": "Filter all",
+        "filterNone": "Filter none",
+        "filterSelected": "Filter selected",
+        "filterClear": "Clear filter",
+        "filterApply": "Apply filter",
+        "densityCompact": "Compact",
+        "densityStandard": "Standard",
+        "densityComfortable": "Comfortable",
+        "pagination": {
+            "labelRowsPerPage": "Rows per page:",
+            "labelDisplayedRows": "{{from}}-{{to}} of {{count}}",
+            "firstPage": "First page",
+            "lastPage": "Last page",
+            "nextPage": "Next page",
+            "previousPage": "Previous page"
+        }
     },
     "logo": "/logovntt-en.png",
     "loadingData": "Loading data",
@@ -129,14 +152,15 @@
     "deleteReject": "No, keep it",
     "deleteSuccess": "Work schedule has been deleted successfully",
     "deleteError": "An error occurred while deleting the work schedule",
-
     "date": {
-    "monday": "Monday",
-    "tuesday": "Tuesday",
-    "wednesday": "Wednesday",
-    "thursday": "Thursday",
-    "friday": "Friday",
-    "saturday": "Saturday",
-    "sunday": "Sunday"
-  }
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+    },
+    "searchEmployee": "Search employee",
+    "find": "Find"
 }

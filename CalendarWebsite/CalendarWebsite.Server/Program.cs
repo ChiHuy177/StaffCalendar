@@ -1,4 +1,3 @@
-
 using CalendarWebsite.Server.Data;
 using CalendarWebsite.Server.interfaces;
 using CalendarWebsite.Server.interfaces.repositoryInterfaces;
@@ -9,6 +8,7 @@ using CalendarWebsite.Server.repositories;
 using CalendarWebsite.Server.Repositories;
 using CalendarWebsite.Server.services;
 using CalendarWebsite.Server.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +27,13 @@ namespace CalendarWebsite.Server
 
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "StaffCalendar.Auth";
             })
             .AddJwtBearer(option =>
             {
@@ -51,7 +56,7 @@ namespace CalendarWebsite.Server
                     }
                 };
             })
-            .AddOpenIdConnect(options =>
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
@@ -64,11 +69,19 @@ namespace CalendarWebsite.Server
                 options.Scope.Add("email");
                 options.CallbackPath = "/signin-oidc";
                 options.RequireHttpsMetadata = builder.Configuration.GetValue<bool>("IdentityServerConfig:RequireHttpsMetadata");
+                options.SignedOutCallbackPath = "/signout-callback-oidc";
+                options.SignedOutRedirectUri = "https://localhost:50857/";
+                options.UseTokenLifetime = true;
+                options.SkipUnrecognizedRequests = true;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
                 options.Events = new OpenIdConnectEvents
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
                         Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
+                        Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = context =>
@@ -81,6 +94,23 @@ namespace CalendarWebsite.Server
                     OnTokenValidated = context =>
                     {
                         Console.WriteLine("Token validated successfully");
+                        Console.WriteLine($"Token type: {context.TokenEndpointResponse?.TokenType}");
+                        return Task.CompletedTask;
+                    },
+                    OnSignedOutCallbackRedirect = context =>
+                    {
+                        context.Response.Redirect("https://localhost:50857/");
+                        context.HandleResponse();
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProviderForSignOut = context =>
+                    {
+                        // Thêm id_token vào request
+                        var idToken = context.ProtocolMessage.IdTokenHint;
+                        if (!string.IsNullOrEmpty(idToken))
+                        {
+                            context.ProtocolMessage.IdTokenHint = idToken;
+                        }
                         return Task.CompletedTask;
                     }
                 };
@@ -119,17 +149,20 @@ namespace CalendarWebsite.Server
                 options.AddDefaultPolicy(
                     policy =>
                     {
-
-                        policy.WithOrigins(
-                        "https://localhost:50857",
-                        "https://localhost:50858",
-                        "https://prismatic-cactus-d90033.netlify.app",
-                        "https://calendar-frontend-54y9.onrender.com",
-                        "https://calendarwebsite-2.onrender.com",
-                        "https://staffcalendar.vercel.app",
-                        "https://staff-calendar-5efr.vercel.app"
-                        ).AllowAnyHeader().AllowAnyMethod();
-
+                        
+                            policy.WithOrigins(
+                                "https://localhost:50857",
+                                "https://localhost:50858",
+                                "https://prismatic-cactus-d90033.netlify.app",
+                                "https://calendar-frontend-54y9.onrender.com",
+                                "https://calendarwebsite-2.onrender.com",
+                                "https://staffcalendar.vercel.app",
+                                "https://staff-calendar-5efr.vercel.app",
+                                "https://identity.vntts.vn"
+                            ).AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                        
                     });
             });
 
