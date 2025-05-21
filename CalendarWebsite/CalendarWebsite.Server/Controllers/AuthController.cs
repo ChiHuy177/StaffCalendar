@@ -146,7 +146,7 @@ namespace CalendarWebsite.Server.Controllers
                     Path = "/",
                     Secure = true,
                     HttpOnly = true,
-                    SameSite = SameSiteMode.Lax
+                    SameSite = SameSiteMode.None
                 };
 
                 // Xóa các cookie authentication cụ thể
@@ -176,9 +176,9 @@ namespace CalendarWebsite.Server.Controllers
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
-                // Tạo URL đăng xuất của Identity Server với state parameter và thêm các tham số cho Safari
+                // Tạo URL đăng xuất của Identity Server với state parameter
                 var state = Guid.NewGuid().ToString();
-                var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}&ui_locales=vi";
+                var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}";
 
                 return Ok(new { logoutUrl });
             }

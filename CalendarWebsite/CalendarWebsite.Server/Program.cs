@@ -36,7 +36,7 @@ namespace CalendarWebsite.Server
                 options.Cookie.Name = "StaffCalendar.Auth";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SameSite = SameSiteMode.None;
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.SlidingExpiration = true;
                 options.Cookie.Domain = ".vercel.app";
@@ -52,7 +52,7 @@ namespace CalendarWebsite.Server
                             Path = "/",
                             Secure = true,
                             HttpOnly = true,
-                            SameSite = SameSiteMode.Lax,
+                            SameSite = SameSiteMode.None,
                             Domain = ".vercel.app"
                         };
 
@@ -127,6 +127,8 @@ namespace CalendarWebsite.Server
                 options.SkipUnrecognizedRequests = true;
                 options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.NonceCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
 
                 options.Events = new OpenIdConnectEvents
                 {
