@@ -58,8 +58,8 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
-
+                //var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
+                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
                 if (string.IsNullOrEmpty(clientUrl))
                 {
                     clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
@@ -97,8 +97,8 @@ namespace CalendarWebsite.Server
                             throw new InvalidOperationException("ClientUrl is not configured properly");
                         }
 
-                        // Set the Redirect URI with full URL
-                        var redirectUri = $"{clientUrl.TrimEnd('/')}/signin-oidc";
+                        // Đảm bảo rằng redirect URI trỏ đến server API chứ không phải client
+                        var redirectUri = $"{context.Request.Scheme}://{context.Request.Host}/signin-oidc";
                         context.ProtocolMessage.RedirectUri = redirectUri;
 
                         Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
@@ -179,6 +179,8 @@ namespace CalendarWebsite.Server
                             "https://calendarwebsite-2.onrender.com",
                             "https://staffcalendar.vercel.app",
                             "https://staff-calendar-5efr.vercel.app",
+                            "https://staffcalendarserver-may.onrender.com",
+                            "http://staffcalendarserver-may.onrender.com",
                             "https://identity.vntts.vn"
                         ).AllowAnyHeader()
                         .AllowAnyMethod()
