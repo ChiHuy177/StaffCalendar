@@ -117,30 +117,39 @@ namespace CalendarWebsite.Server.Controllers
                     Path = "/",
                     Secure = true,
                     HttpOnly = true,
-                    SameSite = SameSiteMode.None
+                    SameSite = SameSiteMode.Lax
                 };
 
-                // Xóa tất cả cookie với các domain khác nhau
-                foreach (var cookie in HttpContext.Request.Cookies)
+                // Xóa các cookie authentication cụ thể
+                var cookieNames = new[] { "StaffCalendar.Auth", "StaffCalendar.AuthC1", "StaffCalendar.AuthC2" };
+
+                // Xóa cookie cho domain vercel.app
+                cookieOptions.Domain = ".vercel.app";
+                foreach (var cookieName in cookieNames)
                 {
-                    // Xóa cookie cho domain hiện tại
-                    HttpContext.Response.Cookies.Delete(cookie.Key, cookieOptions);
+                    HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                }
 
-                    // Xóa cookie cho domain vercel.app
-                    cookieOptions.Domain = ".vercel.app";
-                    HttpContext.Response.Cookies.Delete(cookie.Key, cookieOptions);
+                // Xóa cookie cho domain onrender.com
+                cookieOptions.Domain = ".onrender.com";
+                foreach (var cookieName in cookieNames)
+                {
+                    HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                }
 
-                    // Xóa cookie cho domain onrender.com
-                    cookieOptions.Domain = ".onrender.com";
-                    HttpContext.Response.Cookies.Delete(cookie.Key, cookieOptions);
+                // Xóa cookie cho domain localhost
+                cookieOptions.Domain = "localhost";
+                foreach (var cookieName in cookieNames)
+                {
+                    HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
                 }
 
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
-                // Tạo URL đăng xuất của Identity Server với state parameter
+                // Tạo URL đăng xuất của Identity Server với state parameter và thêm các tham số cho Safari
                 var state = Guid.NewGuid().ToString();
-                var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}";
+                var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}&ui_locales=vi";
 
                 return Ok(new { logoutUrl });
             }

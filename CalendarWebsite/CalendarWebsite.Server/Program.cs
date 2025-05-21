@@ -36,24 +36,43 @@ namespace CalendarWebsite.Server
                 options.Cookie.Name = "StaffCalendar.Auth";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SameSite = SameSiteMode.Lax;
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.SlidingExpiration = true;
+                options.Cookie.Domain = ".vercel.app";
                 options.Events = new CookieAuthenticationEvents
                 {
                     OnSigningOut = async context =>
                     {
-                        // Xóa tất cả cookie khi đăng xuất
-                        foreach (var cookie in context.HttpContext.Request.Cookies)
+                        // Xóa tất cả cookie authentication
+                        var cookieNames = new[] { "StaffCalendar.Auth", "StaffCalendar.AuthC1", "StaffCalendar.AuthC2" };
+                        var cookieOptions = new CookieOptions
                         {
-                            context.HttpContext.Response.Cookies.Delete(cookie.Key, new CookieOptions
-                            {
-                                Expires = DateTime.Now.AddDays(-1),
-                                Path = "/",
-                                Secure = true,
-                                HttpOnly = true,
-                                SameSite = SameSiteMode.None
-                            });
+                            Expires = DateTime.Now.AddDays(-1),
+                            Path = "/",
+                            Secure = true,
+                            HttpOnly = true,
+                            SameSite = SameSiteMode.Lax,
+                            Domain = ".vercel.app"
+                        };
+
+                        foreach (var cookieName in cookieNames)
+                        {
+                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                        }
+
+                        // Xóa cookie cho domain onrender.com
+                        cookieOptions.Domain = ".onrender.com";
+                        foreach (var cookieName in cookieNames)
+                        {
+                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                        }
+
+                        // Xóa cookie cho domain localhost
+                        cookieOptions.Domain = "localhost";
+                        foreach (var cookieName in cookieNames)
+                        {
+                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
                         }
                     }
                 };

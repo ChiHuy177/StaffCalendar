@@ -16,16 +16,25 @@ const LogoutButton = () => {
             localStorage.removeItem('token');
             sessionStorage.clear();
 
-            // Xóa tất cả cookie
+            // Xóa tất cả cookie với các options phù hợp cho Safari
             const cookies = document.cookie.split(";");
+            const cookieOptions = {
+                expires: new Date(0).toUTCString(),
+                path: '/',
+                secure: true,
+                sameSite: 'Lax' as const
+            };
+
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i];
                 const eqPos = cookie.indexOf("=");
-                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=localhost";
-                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.vercel.app";
-                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.onrender.com";
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                
+                // Xóa cookie cho các domain khác nhau
+                document.cookie = `${name}=; ${Object.entries(cookieOptions).map(([key, value]) => `${key}=${value}`).join('; ')}`;
+                document.cookie = `${name}=; ${Object.entries({...cookieOptions, domain: 'localhost'}).map(([key, value]) => `${key}=${value}`).join('; ')}`;
+                document.cookie = `${name}=; ${Object.entries({...cookieOptions, domain: '.vercel.app'}).map(([key, value]) => `${key}=${value}`).join('; ')}`;
+                document.cookie = `${name}=; ${Object.entries({...cookieOptions, domain: '.onrender.com'}).map(([key, value]) => `${key}=${value}`).join('; ')}`;
             }
 
             // Gọi API logout
@@ -44,7 +53,6 @@ const LogoutButton = () => {
             }
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);
-            // Vẫn xóa token và chuyển hướng về trang chủ nếu có lỗi
             localStorage.removeItem('token');
             window.location.href = '/';
         }
