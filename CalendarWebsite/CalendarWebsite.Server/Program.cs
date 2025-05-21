@@ -58,7 +58,10 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                var clientUrl = builder.Configuration["AppSettings:ClientUrl"];
+                var clientUrl = builder.Environment.IsDevelopment()
+                    ? builder.Configuration["AppSettings:ClientUrl"]
+                    : builder.Configuration["AppSettings:Production:ClientUrl"];
+
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
                 options.ClientSecret = builder.Configuration["IdentityServerConfig:ClientSecret"];
@@ -150,20 +153,20 @@ namespace CalendarWebsite.Server
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        
-                            policy.WithOrigins(
-                                "https://localhost:50857",
-                                "https://localhost:50858",
-                                "https://prismatic-cactus-d90033.netlify.app",
-                                "https://calendar-frontend-54y9.onrender.com",
-                                "https://calendarwebsite-2.onrender.com",
-                                "https://staffcalendar.vercel.app",
-                                "https://staff-calendar-5efr.vercel.app",
-                                "https://identity.vntts.vn"
-                            ).AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .AllowCredentials();
-                        
+
+                        policy.WithOrigins(
+                            "https://localhost:50857",
+                            "https://localhost:50858",
+                            "https://prismatic-cactus-d90033.netlify.app",
+                            "https://calendar-frontend-54y9.onrender.com",
+                            "https://calendarwebsite-2.onrender.com",
+                            "https://staffcalendar.vercel.app",
+                            "https://staff-calendar-5efr.vercel.app",
+                            "https://identity.vntts.vn"
+                        ).AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+
                     });
             });
 
