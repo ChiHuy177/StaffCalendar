@@ -34,6 +34,29 @@ namespace CalendarWebsite.Server
             .AddCookie(options =>
             {
                 options.Cookie.Name = "StaffCalendar.Auth";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.SlidingExpiration = true;
+                options.Events = new CookieAuthenticationEvents
+                {
+                    OnSigningOut = async context =>
+                    {
+                        // Xóa tất cả cookie khi đăng xuất
+                        foreach (var cookie in context.HttpContext.Request.Cookies)
+                        {
+                            context.HttpContext.Response.Cookies.Delete(cookie.Key, new CookieOptions
+                            {
+                                Expires = DateTime.Now.AddDays(-1),
+                                Path = "/",
+                                Secure = true,
+                                HttpOnly = true,
+                                SameSite = SameSiteMode.None
+                            });
+                        }
+                    }
+                };
             })
             .AddJwtBearer(option =>
             {

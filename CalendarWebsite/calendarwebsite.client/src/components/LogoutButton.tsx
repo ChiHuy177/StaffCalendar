@@ -1,40 +1,47 @@
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-
 import axios from 'axios';
+import { getApiUrl } from '../config/api';
 
 const LogoutButton = () => {
-
-
     const handleLogout = async () => {
         try {
-            // Xóa token và dữ liệu local trước
-            localStorage.clear();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            // Xóa dữ liệu local trước
+            localStorage.removeItem('token');
             sessionStorage.clear();
 
             // Xóa tất cả cookie
-            document.cookie.split(";").forEach(function (c) {
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/;domain=.vercel.app");
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/;domain=.onrender.com");
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-            });
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=localhost";
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.vercel.app";
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.onrender.com";
+            }
 
             // Gọi API logout
-            const response = await axios.get('https://staffcalendarserver-may.onrender.com/api/auth/logout', {
-                withCredentials: true,
+            const response = await axios.get(getApiUrl('/api/auth/logout'), {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                    'Authorization': `Bearer ${token}`
+                },
+                withCredentials: true
             });
 
+            // Chuyển hướng đến trang đăng xuất của Identity Server
             if (response.data && response.data.logoutUrl) {
-                // Chuyển hướng đến trang logout của Identity Server
                 window.location.href = response.data.logoutUrl;
             } else {
                 window.location.href = '/';
             }
-
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);
             // Vẫn xóa token và chuyển hướng về trang chủ nếu có lỗi
