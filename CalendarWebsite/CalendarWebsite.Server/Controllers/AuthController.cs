@@ -63,16 +63,45 @@ namespace CalendarWebsite.Server.Controllers
         [HttpGet("callback")]
         public async Task<IActionResult> Callback()
         {
-            
-            var token = await HttpContext.GetTokenAsync("access_token");
-            Console.WriteLine($"Received token: {token}");
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                return BadRequest("No token received");
-            }
+                // Lấy token từ nhiều nguồn khác nhau
+                var token = await HttpContext.GetTokenAsync("access_token");
+                if (string.IsNullOrEmpty(token))
+                {
+                    // Thử lấy từ query string
+                    token = HttpContext.Request.Query["token"].ToString();
+                }
+                if (string.IsNullOrEmpty(token))
+                {
+                    // Thử lấy từ form data
+                    var form = await HttpContext.Request.ReadFormAsync();
+                    token = form["token"].ToString();
+                }
+                if (string.IsNullOrEmpty(token))
+                {
+                    // Thử lấy từ header
+                    token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                }
 
-            // Thêm một tham số để đánh dấu đã xử lý callback
-            return Redirect($"https://staff-calendar-5efr.vercel.app/?token={token}&callback=processed");
+                Console.WriteLine($"Received token: {token}");
+                if (string.IsNullOrEmpty(token))
+                {
+                    Console.WriteLine("No token found in any source");
+                    return BadRequest("No token received");
+                }
+
+                // Lấy client URL từ cấu hình
+                var clientUrl = GetClientUrl();
+
+                // Thêm một tham số để đánh dấu đã xử lý callback
+                return Redirect($"{clientUrl}/?token={token}&callback=processed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in callback: {ex.Message}");
+                return BadRequest($"Error processing callback: {ex.Message}");
+            }
         }
 
         [HttpGet("check-token")]

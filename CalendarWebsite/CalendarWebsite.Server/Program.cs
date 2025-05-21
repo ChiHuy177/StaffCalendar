@@ -101,7 +101,6 @@ namespace CalendarWebsite.Server
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
-                // var clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
                 if (string.IsNullOrEmpty(clientUrl))
                 {
                     clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
@@ -111,22 +110,11 @@ namespace CalendarWebsite.Server
                     throw new InvalidOperationException("ClientUrl is not configured in either Production or Development settings");
                 }
 
-                var serverUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ServerUrl");
-                if (string.IsNullOrEmpty(serverUrl))
-                {
-                    serverUrl = builder.Configuration.GetValue<string>("AppSettings:ServerUrl");
-                }
-                if (string.IsNullOrEmpty(serverUrl))
-                {
-                    // Fallback to determine server URL from the current host
-                    serverUrl = "https://staffcalendarserver-may.onrender.com";
-                }
-
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
                 options.ClientSecret = builder.Configuration["IdentityServerConfig:ClientSecret"];
                 options.ResponseType = builder.Configuration["IdentityServerConfig:ResponseType"] ?? string.Empty;
-                options.SaveTokens = builder.Configuration.GetValue<bool>("IdentityServerConfig:SaveTokens");
+                options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = builder.Configuration.GetValue<bool>("IdentityServerConfig:GetClaimsFromUserInfoEndpoint");
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
@@ -157,6 +145,13 @@ namespace CalendarWebsite.Server
                         Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
                         return Task.CompletedTask;
                     },
+                    OnTokenValidated = context =>
+                    {
+                        Console.WriteLine("Token validated successfully");
+                        Console.WriteLine($"Token type: {context.TokenEndpointResponse?.TokenType}");
+                        Console.WriteLine($"Access token: {context.TokenEndpointResponse?.AccessToken}");
+                        return Task.CompletedTask;
+                    },
                     OnAuthenticationFailed = context =>
                     {
                         Console.WriteLine($"OIDC Authentication failed: {context.Exception.Message}");
@@ -164,26 +159,10 @@ namespace CalendarWebsite.Server
                         context.Response.WriteAsync($"Authentication failed: {context.Exception.Message}");
                         return Task.CompletedTask;
                     },
-                    OnTokenValidated = context =>
-                    {
-                        Console.WriteLine("Token validated successfully");
-                        Console.WriteLine($"Token type: {context.TokenEndpointResponse?.TokenType}");
-                        return Task.CompletedTask;
-                    },
                     OnSignedOutCallbackRedirect = context =>
                     {
                         context.Response.Redirect($"{clientUrl}");
                         context.HandleResponse();
-                        return Task.CompletedTask;
-                    },
-                    OnRedirectToIdentityProviderForSignOut = context =>
-                    {
-                        // Thêm id_token vào request
-                        var idToken = context.ProtocolMessage.IdTokenHint;
-                        if (!string.IsNullOrEmpty(idToken))
-                        {
-                            context.ProtocolMessage.IdTokenHint = idToken;
-                        }
                         return Task.CompletedTask;
                     }
                 };
@@ -243,6 +222,7 @@ namespace CalendarWebsite.Server
 
             var app = builder.Build();
 
+            // Cấu hình middleware
             app.UseCors();
             app.UseDefaultFiles();
             app.UseStaticFiles();
