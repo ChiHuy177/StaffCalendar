@@ -82,7 +82,7 @@ namespace CalendarWebsite.Server.Controllers
                 Console.WriteLine($"Received id_token: {idToken}");
                 var properties = new AuthenticationProperties
                 {
-                    RedirectUri = "https://www.google.com/",
+                    RedirectUri = "https://staff-calendar-5efr.vercel.app/",
                     Items =
                     {
                         { "id_token", idToken }
@@ -102,7 +102,7 @@ namespace CalendarWebsite.Server.Controllers
 
                 return Ok(new
                 {
-                    logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri=https://localhost:50857/"
+                    logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri=https://staff-calendar-5efr.vercel.app/"
                 });
             }
             catch (Exception ex)

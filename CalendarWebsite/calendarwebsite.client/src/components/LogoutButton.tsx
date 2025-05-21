@@ -8,7 +8,7 @@ const LogoutButton = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await axios.get('https://localhost:44356/api/auth/logout', {
+            const response = await axios.get('https://staffcalendarserver-may.onrender.com/api/auth/logout', {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
