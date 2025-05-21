@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 interface ProtectedRouteProps {
     children: React.ReactNode;
 }
-
+const baseUrl = import.meta.env.VITE_AUTH_URL;
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
@@ -21,11 +21,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     // Kiểm tra token trong localStorage
     const storedToken = localStorage.getItem('token');
-    
+
     
     if (!storedToken) {
         if (!callback) {
-            const loginUrl = 'https://localhost:44356/api/auth/login';
+            const loginUrl = baseUrl;
             window.location.href = loginUrl;
             return null;
         }
