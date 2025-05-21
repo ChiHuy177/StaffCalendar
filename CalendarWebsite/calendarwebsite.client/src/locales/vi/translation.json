@@ -63,11 +63,34 @@
     "dataGrid": {
         "columns": "Cột",
         "filter": "Bộ lọc",
-        "density": "Mật độ",
-        "pageSize": "Kích thước trang",
+        "density": "Độ giãn",
+        "pageSize": "Số hàng mỗi trang",
         "noRows": "Không có dữ liệu",
-        "no": "Số thứ tự",
-        "name": "Tên"
+        "no": "STT",
+        "name": "Tên",
+        "showColumns": "Hiện cột",
+        "hideColumns": "Ẩn cột",
+        "filterPanel": "Bảng lọc",
+        "filterMode": "Chế độ lọc",
+        "filterOperator": "Toán tử lọc",
+        "filterValue": "Giá trị lọc",
+        "filterColumns": "Lọc cột",
+        "filterAll": "Lọc tất cả",
+        "filterNone": "Không lọc",
+        "filterSelected": "Lọc đã chọn",
+        "filterClear": "Xóa bộ lọc",
+        "filterApply": "Áp dụng bộ lọc",
+        "densityCompact": "Thu gọn",
+        "densityStandard": "Tiêu chuẩn",
+        "densityComfortable": "Thoải mái",
+        "pagination": {
+            "labelRowsPerPage": "Số hàng mỗi trang:",
+            "labelDisplayedRows": "{{from}}-{{to}} của {{count}}",
+            "firstPage": "Trang đầu",
+            "lastPage": "Trang cuối",
+            "nextPage": "Trang sau",
+            "previousPage": "Trang trước"
+        }
     },
     "logo": "/logovntt.png",
     "loadingData": "Đang tải dữ liệu",
@@ -127,7 +150,8 @@
     "deleteReject": "Không, giữ lại",
     "deleteSuccess": "Đã xóa lịch làm việc thành công",
     "deleteError": "Có lỗi xảy ra khi xóa lịch làm việc",
-    
+    "searchEmployee": "Tìm kiếm nhân viên",
+    "find": "Tìm kiếm",
     "date": {
         "monday": "Thứ 2",
         "tuesday": "Thứ 3",
