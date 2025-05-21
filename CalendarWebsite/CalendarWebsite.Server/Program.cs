@@ -84,8 +84,10 @@ namespace CalendarWebsite.Server
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
+                        context.ProtocolMessage.RedirectUri = $"{clientUrl}/signin-oidc";
+
                         Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
-                        Console.WriteLine($"Redirect URI: {clientUrl}/signin-oidc");
+                        Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = context =>
@@ -103,7 +105,7 @@ namespace CalendarWebsite.Server
                     },
                     OnSignedOutCallbackRedirect = context =>
                     {
-                        context.Response.Redirect("https://localhost:50857/");
+                        context.Response.Redirect($"{clientUrl}");
                         context.HandleResponse();
                         return Task.CompletedTask;
                     },
