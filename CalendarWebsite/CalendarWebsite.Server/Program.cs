@@ -84,7 +84,14 @@ namespace CalendarWebsite.Server
                 {
                     OnRedirectToIdentityProvider = context =>
                     {
-                        context.ProtocolMessage.RedirectUri = $"{clientUrl}/signin-oidc";
+                        if (string.IsNullOrEmpty(clientUrl))
+                        {
+                            throw new InvalidOperationException("ClientUrl is not configured properly");
+                        }
+
+                        // Set the Redirect URI with full URL
+                        var redirectUri = $"{clientUrl.TrimEnd('/')}/signin-oidc";
+                        context.ProtocolMessage.RedirectUri = redirectUri;
 
                         Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
                         Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
