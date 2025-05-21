@@ -58,6 +58,7 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
+                var clientUrl = builder.Configuration["AppSettings:ClientUrl"];
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
                 options.ClientSecret = builder.Configuration["IdentityServerConfig:ClientSecret"];
@@ -70,7 +71,7 @@ namespace CalendarWebsite.Server
                 options.CallbackPath = "/signin-oidc";
                 options.RequireHttpsMetadata = builder.Configuration.GetValue<bool>("IdentityServerConfig:RequireHttpsMetadata");
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
-                options.SignedOutRedirectUri = "https://localhost:50857/";
+                options.SignedOutRedirectUri = $"{clientUrl}";
                 options.UseTokenLifetime = true;
                 options.SkipUnrecognizedRequests = true;
                 options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -81,7 +82,7 @@ namespace CalendarWebsite.Server
                     OnRedirectToIdentityProvider = context =>
                     {
                         Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
-                        Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
+                        Console.WriteLine($"Redirect URI: {clientUrl}/signin-oidc");
                         return Task.CompletedTask;
                     },
                     OnAuthenticationFailed = context =>
