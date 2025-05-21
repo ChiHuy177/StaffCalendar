@@ -58,9 +58,17 @@ namespace CalendarWebsite.Server
             })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                var clientUrl = builder.Environment.IsDevelopment()
-                    ? builder.Configuration["AppSettings:ClientUrl"]
-                    : builder.Configuration["AppSettings:Production:ClientUrl"];
+                var clientUrl = builder.Configuration.GetValue<string>("AppSettings:Production:ClientUrl");
+
+                if (string.IsNullOrEmpty(clientUrl))
+                {
+                    clientUrl = builder.Configuration.GetValue<string>("AppSettings:ClientUrl");
+                }
+                if (string.IsNullOrEmpty(clientUrl))
+                {
+                    throw new InvalidOperationException("ClientUrl is not configured in either Production or Development settings");
+                }
+
 
                 options.Authority = builder.Configuration["IdentityServerConfig:Authority"];
                 options.ClientId = builder.Configuration["IdentityServerConfig:ClientId"];
