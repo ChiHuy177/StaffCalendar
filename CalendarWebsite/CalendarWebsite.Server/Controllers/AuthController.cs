@@ -104,11 +104,13 @@ namespace CalendarWebsite.Server.Controllers
             try
             {
                 // Lấy id_token từ cookie
+                Console.WriteLine("Logout process started");
                 var idToken = await HttpContext.GetTokenAsync("id_token");
                 if (string.IsNullOrEmpty(idToken))
                 {
                     return BadRequest(new { message = "Không tìm thấy id_token" });
                 }
+                Console.WriteLine($"idToken: {idToken}");
 
                 // Lấy client URL từ cấu hình
                 var clientUrl = GetClientUrl();
@@ -130,26 +132,21 @@ namespace CalendarWebsite.Server.Controllers
                 // Xóa các cookie authentication cụ thể
                 var cookieNames = new[] { "StaffCalendar.Auth", "StaffCalendar.AuthC1", "StaffCalendar.AuthC2" };
 
-                // Xóa cookie cho domain vercel.app
-                cookieOptions.Domain = ".vercel.app";
-                foreach (var cookieName in cookieNames)
+                var domain = HttpContext.Request.Host.Host;
+                if (!domain.Equals("localhost", StringComparison.OrdinalIgnoreCase))
                 {
-                    HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                    cookieOptions.Domain = $".{domain}";
                 }
 
-                // Xóa cookie cho domain onrender.com
-                cookieOptions.Domain = ".onrender.com";
                 foreach (var cookieName in cookieNames)
                 {
-                    HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                    if (HttpContext.Request.Cookies.ContainsKey(cookieName))
+                    {
+                        HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
+                    }
                 }
 
-                // Xóa cookie cho domain localhost
-                cookieOptions.Domain = "localhost";
-                foreach (var cookieName in cookieNames)
-                {
-                    HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
-                }
+
 
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");

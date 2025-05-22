@@ -25,6 +25,13 @@ namespace CalendarWebsite.Server
 
             // Add services to the container.
 
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.AddDebug();
+            });
+            builder.Services.AddSingleton<ILogger>(sp => sp.GetRequiredService<ILogger<Program>>());
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -41,20 +48,23 @@ namespace CalendarWebsite.Server
                 options.SlidingExpiration = true;
                 options.Events = new CookieAuthenticationEvents
                 {
-                    OnSigningOut = async context =>
+                    OnSigningOut = context =>
                     {
-                        // Xóa tất cả cookie khi đăng xuất
-                        foreach (var cookie in context.HttpContext.Request.Cookies)
+                        var cookieNames = new[] { "StaffCalendar.Auth", "StaffCalendar.AuthC1", "StaffCalendar.AuthC2" };
+                        var cookieOptions = new CookieOptions
                         {
-                            context.HttpContext.Response.Cookies.Delete(cookie.Key, new CookieOptions
-                            {
-                                Expires = DateTime.Now.AddDays(-1),
-                                Path = "/",
-                                Secure = true,
-                                HttpOnly = true,
-                                SameSite = SameSiteMode.None
-                            });
+                            Expires = DateTime.Now.AddDays(-1),
+                            Path = "/",
+                            Secure = true,
+                            HttpOnly = true,
+                            SameSite = SameSiteMode.None,
+                            Domain = context.HttpContext.Request.Host.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase) ? null : $".{context.HttpContext.Request.Host.Host}"
+                        };
+                        foreach (var cookieName in cookieNames)
+                        {
+                            context.HttpContext.Response.Cookies.Delete(cookieName, cookieOptions);
                         }
+                        return Task.CompletedTask;
                     }
                 };
             })
@@ -74,7 +84,10 @@ namespace CalendarWebsite.Server
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger>();
+                        logger.LogError("OIDC Authentication failed: {Message}", context.Exception.Message);
+                        context.Response.StatusCode = 401;
+                        context.Response.WriteAsync($"Authentication failed: {context.Exception.Message}");
                         return Task.CompletedTask;
                     }
                 };
