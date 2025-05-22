@@ -98,24 +98,11 @@ namespace CalendarWebsite.Server.Controllers
         }
 
         [HttpGet("logout")]
-        // [Authorize]
         public async Task<IActionResult> Logout()
         {
             try
             {
-                // Lấy id_token từ cookie
-                Console.WriteLine("Logout process started");
-                var idToken = await HttpContext.GetTokenAsync("id_token");
-                if (string.IsNullOrEmpty(idToken))
-                {
-                    return BadRequest(new { message = "Không tìm thấy id_token" });
-                }
-                Console.WriteLine($"idToken: {idToken}");
-
-                // Lấy client URL từ cấu hình
-                var clientUrl = GetClientUrl();
-
-                // Xóa cookie authentication trước
+                // Xóa cookie authentication ngay lập tức
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
 
@@ -129,8 +116,15 @@ namespace CalendarWebsite.Server.Controllers
                     SameSite = SameSiteMode.None
                 };
 
-                // Xóa các cookie authentication cụ thể
-                var cookieNames = new[] { "StaffCalendar.Auth", "StaffCalendar.AuthC1", "StaffCalendar.AuthC2" };
+                // Xóa tất cả các cookie liên quan đến authentication
+                var cookieNames = new[] { 
+                    "StaffCalendar.Auth", 
+                    "StaffCalendar.AuthC1", 
+                    "StaffCalendar.AuthC2",
+                    ".AspNetCore.Cookies",
+                    ".AspNetCore.OpenIdConnect.Nonce",
+                    ".AspNetCore.OpenIdConnect.Correlation"
+                };
 
                 var domain = HttpContext.Request.Host.Host;
                 if (!domain.Equals("localhost", StringComparison.OrdinalIgnoreCase))
@@ -149,14 +143,12 @@ namespace CalendarWebsite.Server.Controllers
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Append("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
-                // Tạo URL đăng xuất của Identity Server với state parameter
-                var state = Guid.NewGuid().ToString();
-                var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}";
-
-                return Ok(new { logoutUrl });
+                // Trả về success ngay lập tức
+                return Ok(new { success = true });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error in logout: {ex.Message}");
                 return BadRequest(new { message = "Lỗi khi đăng xuất: " + ex.Message });
             }
         }
