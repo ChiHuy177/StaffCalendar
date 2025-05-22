@@ -98,7 +98,7 @@ namespace CalendarWebsite.Server.Controllers
         }
 
         [HttpGet("logout")]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> Logout()
         {
             try
@@ -146,10 +146,8 @@ namespace CalendarWebsite.Server.Controllers
                     }
                 }
 
-
-
                 // Thêm header để xóa dữ liệu site
-                Response.Headers.Add("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
+                Response.Headers.Append("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
                 // Tạo URL đăng xuất của Identity Server với state parameter
                 var state = Guid.NewGuid().ToString();
