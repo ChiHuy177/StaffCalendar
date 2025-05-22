@@ -7,23 +7,24 @@ const LogoutButton = () => {
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+            const response = await axios.get(getApiUrl('/api/auth/logout'), {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                withCredentials: true
+            });
             
-            // Xóa token và redirect ngay lập tức
+            // Xóa token và redirect ngay lập tức với tham số logout
             localStorage.removeItem('token');
-            window.location.href = '/';
 
-            // Xử lý cleanup ở background
-            if (token) {
-                try {
-                    await axios.get(getApiUrl('/api/auth/logout'), {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        },
-                        withCredentials: true
-                    });
-                } catch (error) {
-                    console.error('Lỗi khi cleanup:', error);
-                }
+            if (response.data && response.data.logoutUrl) {
+                window.location.href = response.data.logoutUrl;
+            } else {
+                window.location.href = '/';
             }
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);

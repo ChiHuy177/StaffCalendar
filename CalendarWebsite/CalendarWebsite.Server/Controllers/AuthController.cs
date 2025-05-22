@@ -102,6 +102,10 @@ namespace CalendarWebsite.Server.Controllers
         {
             try
             {
+                var idToken = await HttpContext.GetTokenAsync("id_token");
+                
+                // Lấy client URL từ cấu hình
+                var clientUrl = GetClientUrl();
                 // Xóa cookie authentication ngay lập tức
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
@@ -143,8 +147,10 @@ namespace CalendarWebsite.Server.Controllers
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Append("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
-                // Trả về success ngay lập tức
-                return Ok(new { success = true });
+                var state = Guid.NewGuid().ToString();
+                var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}";
+
+                return Ok(new { logoutUrl });
             }
             catch (Exception ex)
             {
