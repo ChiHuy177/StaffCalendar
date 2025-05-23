@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { formatTime, User, UserInfo } from '../utils/type';
 import { formatDate } from '@fullcalendar/core/index.js';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
@@ -11,17 +11,19 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
-import { getAllUserName, getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
+import { getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
+import { useUser } from '../contexts/AuthUserContext';
 
 export default function CheckinTablePage() {
     const [rows, setRows] = useState([]);
-    const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
+    const {nameOfUsers, loadingUsername} = useUser();
+    // const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
     const [selectedName, setSelectedName] = useState<UserInfo>();
     const [selectedMonth, setSelectedMonth] = useState(() => (new Date().getMonth() + 1).toString());
     const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear().toString());
     const [loading, setLoading] = useState(false);
     const [exportLoading, setExportLoading] = useState(false);
-    const [loadingNames, setLoadingNames] = useState(true);
+    // const [loadingNames, setLoadingNames] = useState(true);
     const [rowCount, setRowCount] = useState(0);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const theme = useTheme();
@@ -128,36 +130,36 @@ export default function CheckinTablePage() {
     }
 
 
-    useEffect(() => {
-        async function fetchAllUserName() {
-            try {
-                setLoadingNames(true);
-                const data = await getAllUserName();
-                if (!data) {
-                    setNameOfUsers([]);
-                    toast.error(t('toastMessages.errorFetchingUsernames'), {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
-                } else {
-                    setNameOfUsers(data);
-                }
-            } catch (error) {
-                console.error('Error fetching user names:', error);
-                setNameOfUsers([]);
-            } finally {
-                setLoadingNames(false);
-            }
-        }
-        fetchAllUserName();
-    }, [t]);
+    // useEffect(() => {
+    //     async function fetchAllUserName() {
+    //         try {
+    //             setLoadingNames(true);
+    //             const data = await getAllUserName();
+    //             if (!data) {
+    //                 setNameOfUsers([]);
+    //                 toast.error(t('toastMessages.errorFetchingUsernames'), {
+    //                     position: "top-center",
+    //                     autoClose: 5000,
+    //                     hideProgressBar: false,
+    //                     closeOnClick: false,
+    //                     pauseOnHover: true,
+    //                     draggable: true,
+    //                     progress: undefined,
+    //                     theme: "light",
+    //                     transition: Bounce,
+    //                 });
+    //             } else {
+    //                 setNameOfUsers(data);
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching user names:', error);
+    //             setNameOfUsers([]);
+    //         } finally {
+    //             setLoadingNames(false);
+    //         }
+    //     }
+    //     fetchAllUserName();
+    // }, [t]);
 
     function handleSearch() {
         if (selectedName?.emailAndName === '' || selectedMonth === '' || selectedYear === '') {
@@ -477,7 +479,7 @@ export default function CheckinTablePage() {
                         <Stack spacing={3}>
                             {/* Name Autocomplete */}
                             <Box sx={{ position: 'relative', overflow: 'visible' }}>
-                                {loadingNames ? (
+                                {loadingUsername ? (
                                     <Box sx={{
                                         position: 'relative',
                                         width: '100%',

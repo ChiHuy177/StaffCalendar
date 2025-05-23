@@ -16,7 +16,7 @@ namespace CalendarWebsite.Server.services
         public async Task<IEnumerable<Department>> GetAllDepartment()
         {
             return await _departmentRepository.FindList(
-                predicate: d => d.Id < 41,
+                predicate: e => true,
                 disableTracking: true
             );
         }
