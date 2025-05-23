@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using CalendarWebsite.Server.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace CalendarWebsite.Server.Controllers
 {
@@ -14,10 +17,12 @@ namespace CalendarWebsite.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, ILogger<AuthController> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         private string GetClientUrl()
@@ -34,9 +39,19 @@ namespace CalendarWebsite.Server.Controllers
         [Authorize]
         public IActionResult GetUser()
         {
-            var claims = User.Claims.Select(c => new { c.Type, c.Value });
-            return Ok(claims);
+            try
+            {
+                var user = AuthUser.FromClaims(User.Claims);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting user info: {ex.Message}");
+
+                return BadRequest(ex.Message);
+            }
         }
+
         [HttpGet("public")]
         public IActionResult GetPublic()
         {
@@ -48,6 +63,7 @@ namespace CalendarWebsite.Server.Controllers
         {
             try
             {
+                _logger.LogInformation("Login endpoint called");
                 var properties = new AuthenticationProperties
                 {
                     RedirectUri = "/api/auth/callback",
@@ -66,18 +82,35 @@ namespace CalendarWebsite.Server.Controllers
             try
             {
                 var token = await HttpContext.GetTokenAsync("access_token");
-                Console.WriteLine($"Received token: {token}");
+                _logger.LogInformation($"Received token: {token}");
                 if (string.IsNullOrEmpty(token))
                 {
                     return BadRequest("No token received");
                 }
 
-                // Thêm một tham số để đánh dấu đã xử lý callback
-                return Redirect($"https://staff-calendar-5efr.vercel.app/?token={token}&callback=processed");
+                var environment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+                var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+
+                _logger.LogInformation($"Current Environment: {environment.EnvironmentName}");
+                _logger.LogInformation($"Development ClientUrl: {configuration.GetValue<string>("AppSettings:ClientUrl")}");
+                _logger.LogInformation($"Production ClientUrl: {configuration.GetValue<string>("AppSettings:Production:ClientUrl")}");
+
+                var clientUrl = environment.IsDevelopment()
+                    ? configuration.GetValue<string>("AppSettings:ClientUrl")
+                    : configuration.GetValue<string>("AppSettings:Production:ClientUrl");
+
+                _logger.LogInformation($"Selected ClientUrl: {clientUrl}");
+
+                if (string.IsNullOrEmpty(clientUrl))
+                {
+                    throw new InvalidOperationException($"ClientUrl is not configured in {(environment.IsDevelopment() ? "Development" : "Production")} settings");
+                }
+
+                return Redirect($"{clientUrl}/?token={token}&callback=processed");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in callback: {ex.Message}");
+                _logger.LogError($"Error in callback: {ex.Message}");
                 return BadRequest($"Error processing callback: {ex.Message}");
             }
         }
@@ -102,8 +135,9 @@ namespace CalendarWebsite.Server.Controllers
         {
             try
             {
+                _logger.LogInformation("Logout endpoint called");
                 var idToken = await HttpContext.GetTokenAsync("id_token");
-                
+
                 // Lấy client URL từ cấu hình
                 var clientUrl = GetClientUrl();
                 // Xóa cookie authentication ngay lập tức
@@ -121,9 +155,9 @@ namespace CalendarWebsite.Server.Controllers
                 };
 
                 // Xóa tất cả các cookie liên quan đến authentication
-                var cookieNames = new[] { 
-                    "StaffCalendar.Auth", 
-                    "StaffCalendar.AuthC1", 
+                var cookieNames = new[] {
+                    "StaffCalendar.Auth",
+                    "StaffCalendar.AuthC1",
                     "StaffCalendar.AuthC2",
                     ".AspNetCore.Cookies",
                     ".AspNetCore.OpenIdConnect.Nonce",

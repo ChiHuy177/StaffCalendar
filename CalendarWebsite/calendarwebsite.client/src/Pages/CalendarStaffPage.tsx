@@ -118,7 +118,6 @@ export default function CalendarComponent() {
                         theme: "colored",
                         transition: Bounce,
                     });
-                    // console.log("[fetchWorkSchedule] No event data found. Clearing events and workDays.");
                     setEvents([]);
                     setWorkDays(0);
                     setLoading(false);

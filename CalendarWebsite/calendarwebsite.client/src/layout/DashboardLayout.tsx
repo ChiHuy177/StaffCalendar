@@ -34,12 +34,14 @@ import { navigationConfig, NavItemConfig } from "../routing/navItem";
 import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
 import LogoutButton from '../components/LogoutButton';
+import { useUser } from "../contexts/AuthUserContext";
 
 const drawerWidth = 260;
 
 export default function DashboardLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
+    const {user} = useUser();
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation();
     const location = useLocation();
@@ -91,6 +93,8 @@ export default function DashboardLayout() {
     useEffect(() => {
         // console.log("isSidebarOpen changed to:", isSidebarOpen);
     }, [isSidebarOpen]);
+
+    
 
     const navigationItems = useMemo(
         () => navigationConfig.map((item: NavItemConfig) => ({
@@ -328,8 +332,8 @@ export default function DashboardLayout() {
                                 <AccountCircleIcon />
                             </Avatar>
                             <Box ml={2}>
-                                <Typography variant="subtitle1" className="font-medium">Admin User</Typography>
-                                <Typography variant="body2" className="text-gray-300">Administrator</Typography>
+                                <Typography variant="subtitle1" className="font-medium">{user === null ? "Undefined user" : user.fullName}</Typography>
+                                <Typography variant="body2" className="text-gray-300">{user === null ? "Undefined email" : user.email}</Typography>
                             </Box>
                         </Box>
 
