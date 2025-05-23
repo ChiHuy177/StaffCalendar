@@ -17,6 +17,11 @@ export type User = {
     fullName: string;
     data: string;
 }
+export type AuthUser = {
+    id: string;
+    fullName: string;
+    email: string;
+}
 export type CheckinEvent = {
     id: number,
     title: string,
