@@ -1,10 +1,13 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AuthUser } from "../utils/type";
+import { AuthUser, UserInfo } from "../utils/type";
 import axios from "axios";
+import { getAllUserName } from "../apis/CheckinDataApi";
 
 interface AuthUserContextType {
     user: AuthUser | null;
+    nameOfUsers: UserInfo[]; 
+    loadingUsername: boolean;
     loading: boolean;
     error: string | null;
 }
@@ -13,7 +16,9 @@ const UserContext = createContext<AuthUserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
+    const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loadingUsername, setLoadingUsername] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -52,17 +57,35 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             }
         }
         fetchUser();
+        async function fetchNameOfUsers() {
+            try{
+                const userNameData = await getAllUserName();
+                userNameData.push({
+                    emailAndName: "huync@becawifi.vn - Nguyễn Chí Huy",
+                    personalProfileId: '-1',
+                })
+                setNameOfUsers(userNameData);
+                setLoadingUsername(false);
+            }
+            catch(err){
+                console.error('Error fetching usernames:', err);
+                setLoadingUsername(false);
+            }
+                
+        }
+        fetchNameOfUsers();
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, loading, error }}>
+        <UserContext.Provider value={{ user, nameOfUsers, loadingUsername, loading, error }}>
             {children}
         </UserContext.Provider>
     )
 }
-export function useUser(){
+// eslint-disable-next-line react-refresh/only-export-components
+export function useUser() {
     const context = useContext(UserContext);
-    if(context === undefined){
+    if (context === undefined) {
         throw new Error("useUser must be used within a UserProvider")
     }
     return context;

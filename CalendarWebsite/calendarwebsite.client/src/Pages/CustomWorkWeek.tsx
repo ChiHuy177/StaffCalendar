@@ -33,9 +33,9 @@ import { useTranslation } from 'react-i18next';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { createCustomWorkingTime, updateCustomWorkingTime, softDeleteCustomWorkingTime, getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
 import { UserInfo, WorkSchedule, WorkScheduleApiData } from '../utils/type';
-import { getAllUserName } from '../apis/CheckinDataApi';
 import Swal from 'sweetalert2'
 import i18n from '../i18n';
+import { useUser } from '../contexts/AuthUserContext';
 
 // Extend WorkSchedule to include the custom fields we need
 interface ExtendedWorkSchedule extends WorkSchedule {
@@ -48,13 +48,14 @@ interface ExtendedWorkSchedule extends WorkSchedule {
 
 
 export default function CustomWorkWeek() {
+    const {nameOfUsers} = useUser();
     const { t } = useTranslation();
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === 'dark';
     const [workDays, setWorkDays] = useState<ExtendedWorkSchedule[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
-    const [employees, setEmployees] = useState<UserInfo[]>([]);
+    // const [employees, setEmployees] = useState<UserInfo[]>([]);
     const [selectedEmployee, setSelectedEmployee] = useState<UserInfo | null>(null);
     const [editingWorkSchedule, setEditingWorkSchedule] = useState<ExtendedWorkSchedule | null>(null);
     const [newWorkSchedule, setNewWorkSchedule] = useState<{
@@ -82,29 +83,29 @@ export default function CustomWorkWeek() {
     const [filteredWorkDays, setFilteredWorkDays] = useState<ExtendedWorkSchedule[]>([]);
 
     // Fetch employees for autocomplete
-    useEffect(() => {
-        async function fetchEmployees() {
-            try {
-                setLoading(true);
-                const data = await getAllUserName();
+    // useEffect(() => {
+    //     async function fetchEmployees() {
+    //         try {
+    //             setLoading(true);
+    //             const data = await getAllUserName();
                 
-                // Kiểm tra dữ liệu trả về từ API
-                if (!data || !Array.isArray(data)) {
-                    console.error("API getAllUserName không trả về mảng dữ liệu hợp lệ:", data);
-                    setEmployees([]);  // Gán mảng rỗng thay vì undefined
-                } else {
-                    setEmployees(data);
-                }
-            } catch (error) {
-                console.error("Error fetching employees:", error);
-                setEmployees([]);  // Gán mảng rỗng khi có lỗi
-            } finally {
-                setLoading(false);
-            }
-        }
+    //             // Kiểm tra dữ liệu trả về từ API
+    //             if (!data || !Array.isArray(data)) {
+    //                 console.error("API getAllUserName không trả về mảng dữ liệu hợp lệ:", data);
+    //                 setEmployees([]);  // Gán mảng rỗng thay vì undefined
+    //             } else {
+    //                 setEmployees(data);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching employees:", error);
+    //             setEmployees([]);  // Gán mảng rỗng khi có lỗi
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
 
-        fetchEmployees();
-    }, []);
+    //     fetchEmployees();
+    // }, []);
 
 
     const handleRefresh = (personalProfileId?: number) => {
@@ -160,8 +161,8 @@ export default function CustomWorkWeek() {
             setEditingWorkSchedule(workSchedule);
 
             // Kiểm tra employees trước khi tìm kiếm
-            const employeeMatch = Array.isArray(employees) ? 
-                employees.find(emp => emp.personalProfileId === workSchedule.personalProfileId) : 
+            const employeeMatch = Array.isArray(nameOfUsers) ? 
+                nameOfUsers.find(user => user.personalProfileId === workSchedule.personalProfileId) : 
                 null;
 
             // Chuẩn bị dữ liệu cho form chỉnh sửa
@@ -702,7 +703,7 @@ export default function CustomWorkWeek() {
                                 ) : (
                                     <Autocomplete
                                         disablePortal
-                                        options={employees}
+                                        options={nameOfUsers}
                                         getOptionLabel={(option) => option?.emailAndName || ''}
                                         value={selectedEmployee}
                                         onChange={(_event, value) => setSelectedEmployee(value)}
@@ -916,7 +917,7 @@ export default function CustomWorkWeek() {
                             </FormControl>
 
                             <Autocomplete
-                                options={employees || []}
+                                options={nameOfUsers || []}
                                 getOptionLabel={(option) => option?.emailAndName || ''}
                                 value={newWorkSchedule.employeeName}
                                 loading={loading}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {  useRef, useState } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
@@ -6,7 +6,7 @@ import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
 import { CheckinData, UserInfo, WorkScheduleDetail, WorkSchedule } from '../utils/type';
 import { useTranslation } from 'react-i18next';
-import { getAllUserName, getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
+import { getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
 import dayjs from 'dayjs';
 import { holidays } from '../utils/holidays';
 import { addAbsenceAndHolidayEvents, generateUserEvent } from '../utils/calendarCalculate';
@@ -16,13 +16,15 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
+import { useUser } from '../contexts/AuthUserContext';
 
 
 export default function CalendarComponent() {
+    const {nameOfUsers, loadingUsername} = useUser();
     const [loading, setLoading] = useState(false);
-    const [loadingUsername, setLoadingUsername] = useState(true);
+    // const [loadingUsername, setLoadingUsername] = useState(false);
     const [events, setEvents] = useState<EventInput[]>([]);
-    const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
+    // const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
     const [selectedName, setSelectedName] = useState<UserInfo>();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
@@ -277,36 +279,36 @@ export default function CalendarComponent() {
         );
     };
 
-    useEffect(() => {
-        async function fetchAllUserName() {
-            try {
-                setLoadingUsername(true);
-                const data = await getAllUserName();
-                data.push({
-                    emailAndName: "huync@becawifi.vn - Nguyễn Chí Huy",
-                    personalProfileId: '-1',
-                })
-                setNameOfUsers(data);
-            } catch (error) {
-                console.error('Error fetching usernames:', error);
-                toast.error(t('toastMessages.errorFetchingUsernames'), {
-                    position: 'top-center',
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: 'light',
-                    transition: Bounce,
-                });
-            } finally {
-                setLoadingUsername(false);
-            }
-        }
-        fetchAllUserName();
-        fetchWorkSchedule();
-    }, []);
+    // useEffect(() => {
+    //     async function fetchAllUserName() {
+    //         try {
+    //             setLoadingUsername(true);
+    //             const data = await getAllUserName();
+    //             data.push({
+    //                 emailAndName: "huync@becawifi.vn - Nguyễn Chí Huy",
+    //                 personalProfileId: '-1',
+    //             })
+    //             setNameOfUsers(data);
+    //         } catch (error) {
+    //             console.error('Error fetching usernames:', error);
+    //             toast.error(t('toastMessages.errorFetchingUsernames'), {
+    //                 position: 'top-center',
+    //                 autoClose: 5000,
+    //                 hideProgressBar: false,
+    //                 closeOnClick: true,
+    //                 pauseOnHover: true,
+    //                 draggable: true,
+    //                 progress: undefined,
+    //                 theme: 'light',
+    //                 transition: Bounce,
+    //             });
+    //         } finally {
+    //             setLoadingUsername(false);
+    //         }
+    //     }
+    //     fetchAllUserName();
+    //     fetchWorkSchedule();
+    // }, []);
 
     const handleNameChange = (_event: React.SyntheticEvent, value: UserInfo | null) => {
         if (value) {

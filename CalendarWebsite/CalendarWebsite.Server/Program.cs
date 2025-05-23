@@ -213,7 +213,6 @@ namespace CalendarWebsite.Server
                 options.AddDefaultPolicy(
                     policy =>
                     {
-
                         policy.WithOrigins(
                             "https://localhost:50857",
                             "https://localhost:50858",
@@ -224,17 +223,20 @@ namespace CalendarWebsite.Server
                             "https://staff-calendar-5efr.vercel.app",
                             "https://staffcalendarserver-may.onrender.com",
                             "http://staffcalendarserver-may.onrender.com",
-                            "https://identity.vntts.vn"
-                        ).AllowAnyHeader()
+                            "https://identity.vntts.vn",
+                            "https://localhost:44356"
+                        )
+                        .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
-
                     });
             });
 
             var app = builder.Build();
 
+            // Đặt UseCors trước UseAuthentication và UseAuthorization
             app.UseCors();
+            app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.MapStaticAssets();
@@ -246,12 +248,8 @@ namespace CalendarWebsite.Server
                 app.MapOpenApi();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseAuthentication();
-            //app.UseAuthorization();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
