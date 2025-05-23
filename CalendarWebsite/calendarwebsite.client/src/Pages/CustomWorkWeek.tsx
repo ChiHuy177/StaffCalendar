@@ -20,7 +20,8 @@ import {
     MenuItem,
     FormHelperText,
     Divider,
-    CircularProgress
+    CircularProgress,
+    Card
 } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
@@ -30,7 +31,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
-import { createCustomWorkingTime, getAllCustomWorkingTimes, updateCustomWorkingTime, softDeleteCustomWorkingTime } from '../apis/CustomWorkingTimeApi';
+import { createCustomWorkingTime, updateCustomWorkingTime, softDeleteCustomWorkingTime, getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
 import { UserInfo, WorkSchedule, WorkScheduleApiData } from '../utils/type';
 import { getAllUserName } from '../apis/CheckinDataApi';
 import Swal from 'sweetalert2'
@@ -106,12 +107,15 @@ export default function CustomWorkWeek() {
     }, []);
 
 
-    const handleRefresh = () => {
-        console.log('Refresh work day configurations');
-        async function fetchCustomWorkingDays() {
+    const handleRefresh = (personalProfileId?: number) => {
+        // console.log('Refresh work day configurations');
+        async function fetchCustomWorkingDays(personalProfileId?: number) {
             try {
+                if(!personalProfileId){
+                    return;
+                }
                 setLoading(true);
-                const data = await getAllCustomWorkingTimes();
+                const data = await getCustomWorkingTimeByPersonalProfileId(personalProfileId);
 
                 // Kiểm tra dữ liệu trả về từ API
                 if (!data || !Array.isArray(data)) {
@@ -141,11 +145,11 @@ export default function CustomWorkWeek() {
             }
         }
 
-        fetchCustomWorkingDays();
+        fetchCustomWorkingDays(personalProfileId);
     };
 
     useEffect(() => {
-        handleRefresh();
+        // handleRefresh();
     }, []);
 
     const handleEdit = (id: number) => {
@@ -207,7 +211,7 @@ export default function CustomWorkWeek() {
                 try {
                     await softDeleteCustomWorkingTime(id, (workScheduleToDelete));
 
-                    handleRefresh();
+                    handleRefresh(selectedEmployee?.personalProfileId);
 
                     Swal.fire(t('deleteSuccess'), "", "success");
                 } catch (error) {
@@ -436,61 +440,7 @@ export default function CustomWorkWeek() {
     function CustomToolbar() {
         return (
             <GridToolbarContainer sx={{ gap: 2, p: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
-                    <Autocomplete
-                        options={employees}
-                        getOptionLabel={(option) => option?.emailAndName || ''}
-                        value={selectedEmployee}
-                        onChange={(_, newValue) => {
-                            setSelectedEmployee(newValue);
-                        }}
-                        loading={loading}
-                        sx={{
-                            width: 300,
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: '8px',
-                                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'white',
-                            },
-                            '& .MuiInputLabel-root': {
-                                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-                            },
-                        }}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label={t('searchEmployee')}
-                                variant="outlined"
-                                size="small"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    endAdornment: (
-                                        <>
-                                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                            {params.InputProps.endAdornment}
-                                        </>
-                                    ),
-                                }}
-                            />
-                        )}
-                    />
-                    <Button
-                        variant="contained"
-                        onClick={handleSearch}
-                        startIcon={<SearchIcon />}
-                        sx={{
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            px: 3,
-                            background: 'linear-gradient(45deg, #1976d2 0%, #304ffe 100%)',
-                            '&:hover': {
-                                background: 'linear-gradient(45deg, #1565c0 0%, #283593 100%)',
-                            }
-                        }}
-                    >
-                        {t('find')}
-                    </Button>
-                </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
                     <GridToolbarColumnsButton 
                         slotProps={{
                             tooltip: { title: t('dataGrid.columns') }
@@ -507,7 +457,7 @@ export default function CustomWorkWeek() {
                         }}
                     />
                     <Button
-                        onClick={handleRefresh}
+                        onClick={() => handleRefresh(selectedEmployee?.personalProfileId)}
                         className="mb-6 ml-2 cursor-pointer px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
                         startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
                         disabled={loading}
@@ -519,17 +469,7 @@ export default function CustomWorkWeek() {
         );
     }
 
-    // Thêm hàm xử lý tìm kiếm
-    const handleSearch = () => {
-        if (selectedEmployee) {
-            const filtered = workDays.filter(day => 
-                day.employeeName === selectedEmployee.emailAndName
-            );
-            setFilteredWorkDays(filtered);
-        } else {
-            setFilteredWorkDays(workDays);
-        }
-    };
+
 
     // Cập nhật useEffect để reset filteredWorkDays khi workDays thay đổi
     useEffect(() => {
@@ -711,6 +651,144 @@ export default function CustomWorkWeek() {
                             {t('add')}
                         </Button>
                     </Box>
+
+                    {/* Search Section */}
+                    <Card
+                        elevation={3}
+                        sx={{
+                            p: 3,
+                            borderRadius: 2,
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            position: 'relative',
+                            overflow: 'visible',
+                            zIndex: 2
+                        }}
+                    >
+                        <Stack spacing={3}>
+                            {/* Name Autocomplete */}
+                            <Box sx={{ position: 'relative', overflow: 'visible' }}>
+                                {loading ? (
+                                    <Box sx={{
+                                        position: 'relative',
+                                        width: '100%',
+                                        height: '56px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: 'white',
+                                        borderRadius: '4px',
+                                        border: '1px solid rgba(0, 0, 0, 0.23)',
+                                        '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                                            borderRadius: '4px',
+                                            zIndex: 1
+                                        }
+                                    }}>
+                                        <CircularProgress
+                                            size={24}
+                                            sx={{
+                                                position: 'relative',
+                                                zIndex: 2
+                                            }}
+                                        />
+                                    </Box>
+                                ) : (
+                                    <Autocomplete
+                                        disablePortal
+                                        options={employees}
+                                        getOptionLabel={(option) => option?.emailAndName || ''}
+                                        value={selectedEmployee}
+                                        onChange={(_event, value) => setSelectedEmployee(value)}
+                                        slotProps={{
+                                            popper: {
+                                                sx: {
+                                                    zIndex: 9999
+                                                },
+                                                placement: "bottom-start",
+                                                modifiers: [
+                                                    {
+                                                        name: 'preventOverflow',
+                                                        enabled: false
+                                                    },
+                                                    {
+                                                        name: 'flip',
+                                                        enabled: false
+                                                    }
+                                                ]
+                                            },
+                                            listbox: {
+                                                sx: {
+                                                    backgroundColor: 'white',
+                                                    color: 'text.primary',
+                                                    zIndex: 9999,
+                                                    maxHeight: '300px',
+                                                    '& .MuiAutocomplete-option': {
+                                                        '&[aria-selected="true"]': {
+                                                            backgroundColor: 'primary.light',
+                                                            color: 'primary.contrastText',
+                                                            '&.Mui-focused': {
+                                                                backgroundColor: 'primary.main',
+                                                                color: 'primary.contrastText',
+                                                            }
+                                                        },
+                                                        '&:hover': {
+                                                            backgroundColor: 'action.hover',
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('selectName')}
+                                                variant="outlined"
+                                                fullWidth
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        borderRadius: 2,
+                                                        backgroundColor: 'white'
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                )}
+                            </Box>
+
+                            <Stack
+                                direction={{ xs: 'column', sm: 'row' }}
+                                spacing={2}
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                <Button
+                                    variant="contained"
+                                    onClick={() => handleRefresh(selectedEmployee?.personalProfileId)}
+                                    startIcon={<SearchIcon />}
+                                    sx={{
+                                        px: 4,
+                                        py: 1.5,
+                                        borderRadius: 2,
+                                        background: 'linear-gradient(45deg, #00B6E6 30%, #0088B3 90%)',
+                                        boxShadow: '0 3px 5px 2px rgba(0, 182, 230, .3)',
+                                        '&:hover': {
+                                            background: 'linear-gradient(45deg, #0088B3 30%, #006688 90%)',
+                                        }
+                                    }}
+                                >
+                                    {t('Find')}
+                                </Button>
+                            </Stack>
+                        </Stack>
+                    </Card>
 
                     {/* Data Grid Section */}
                     <Paper 

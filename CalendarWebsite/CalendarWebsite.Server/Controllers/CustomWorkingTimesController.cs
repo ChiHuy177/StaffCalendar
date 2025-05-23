@@ -25,7 +25,7 @@ namespace CalendarWebsite.Server.Controllers
 
 
 
-        // GET: api/CustomWorkingTimes/5
+        // GET: api/CustomWorkingTimes/GetAllCustomWorkingTimeByPersonalProfileId
         [HttpGet("GetAllCustomWorkingTimeByPersonalProfileId")]
         public async Task<ActionResult<IEnumerable<CustomWorkingTimeDTO>>> GetAllCustomWorkingTimeByPersonalProfileId(long id)
         {
@@ -38,7 +38,7 @@ namespace CalendarWebsite.Server.Controllers
 
             return Ok(customWorkingTime);
         }
-
+        // GET: api/CustomWorkingTimes/GetAllCustomWorkingTime
         [HttpGet("GetAllCustomWorkingTime")]
         public async Task<ActionResult<IEnumerable<CustomWorkingTimeDTO>>> GetAllCustomWorkingTime()
         {
@@ -112,13 +112,13 @@ namespace CalendarWebsite.Server.Controllers
         {
             if (customWorkingTime == null)
                 return BadRequest("CustomWorkingTime is required");
-            
+
             if (customWorkingTime.Id <= 0)
                 return BadRequest("CustomWorkingTime Id is invalid");
-            
+
             if (customWorkingTime.WorkweekId <= 0)
                 return BadRequest("WorkweekId is invalid");
-            
+
             if (customWorkingTime.PersonalProfileId <= 0)
                 return BadRequest("PersonalProfileId is invalid");
 
@@ -126,7 +126,7 @@ namespace CalendarWebsite.Server.Controllers
             {
                 // Cập nhật thời gian sửa đổi
                 customWorkingTime.LastModified = DateTime.Now;
-                
+
                 await _customWorkingTimeService.UpdateCustomWorkingTime(customWorkingTime);
                 return Ok();
             }
