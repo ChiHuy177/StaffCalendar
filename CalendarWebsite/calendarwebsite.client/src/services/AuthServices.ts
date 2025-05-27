@@ -42,7 +42,9 @@ export class AuthService {
             if (axios.isAxiosError(error) && error.response?.status === 401) {
                 this.redirectToLogin();
             }
+            alert("Error+ " + error );
             return null;
+            
         }
     }
 
