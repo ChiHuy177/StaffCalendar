@@ -1,4 +1,4 @@
-import React, {  useEffect, useRef, useState } from 'react';
+import React, {  useRef, useState } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
@@ -279,11 +279,6 @@ export default function CalendarComponent() {
         );
     };
 
-    useEffect(() => {
-        localStorage.setItem('testStorage', 'testValue');
-
-        alert(localStorage.getItem('testStorage'));
-    }, []);
 
     const handleNameChange = (_event: React.SyntheticEvent, value: UserInfo | null) => {
         if (value) {

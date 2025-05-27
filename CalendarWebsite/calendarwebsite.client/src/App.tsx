@@ -6,28 +6,36 @@ import { Routes } from './routing/Routes';
 
 import './i18n';
 import { UserProvider } from './contexts/AuthUserContext';
+import { TokenInitializer } from './components/TokenInitializer';
+import { useState } from 'react';
 
 
 function App() {
+    const [tokenInitialized, setTokenInitialized] = useState(false);
 
     return (
         <div>
-            <UserProvider>
-                <Routes />
-                <ToastContainer
-                    position="top-center"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick={false}
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="light"
-                    transition={Bounce}
-                />
-            </UserProvider>
+            <TokenInitializer onComplete={() => setTokenInitialized(true)} />
+            {tokenInitialized && (
+                <UserProvider>
+                    <Routes />
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick={false}
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                        transition={Bounce}
+                    />
+                </UserProvider>
+            )}
+
+
 
         </div>
 
