@@ -29,6 +29,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
                 if (!token) {
                     window.location.href = import.meta.env.VITE_AUTH_URL;
+                    alert('Không có token ' + token)
                     return;
                 }
 
