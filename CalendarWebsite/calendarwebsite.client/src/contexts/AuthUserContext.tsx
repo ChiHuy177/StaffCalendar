@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { AuthUser, UserInfo } from "../utils/type";
 import axios from "axios";
@@ -6,7 +5,7 @@ import { getAllUserName } from "../apis/CheckinDataApi";
 
 interface AuthUserContextType {
     user: AuthUser | null;
-    nameOfUsers: UserInfo[]; 
+    nameOfUsers: UserInfo[];
     loadingUsername: boolean;
     loading: boolean;
     error: string | null;
@@ -25,31 +24,59 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         async function fetchUser() {
             try {
                 const baseUrl = import.meta.env.VITE_API_URL
+
                 const token = localStorage.getItem('token');
+
                 if (!token) {
                     window.location.href = import.meta.env.VITE_AUTH_URL;
                     return;
                 }
-                const response = await axios.get(baseUrl + "api/auth/user", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        "Content-Type": 'application/json'
-                    },
-                    withCredentials: true
-                })
-                if (!response.data) {
-                    setUser(null);
-                    throw new Error('Fail to get auth user');
+
+                const apiUrl = baseUrl + "api/auth/user";
+                const userFromLocalStorageData = localStorage.getItem("user");
+                if (!userFromLocalStorageData) {
+                    try {
+                        const response = await axios.get(apiUrl, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            withCredentials: true
+                        });
+                        // console.log("response User: ", response.data);
+                        localStorage.setItem("user", JSON.stringify(response.data));
+                        if (!response.data) {
+                            setUser(null);
+                            throw new Error('Fail to get auth user');
+                        };
+                        console.log("response User data: ", response.data);
+                        const authUserData = getUserFromLocalStorage();
+                        setUser(authUserData);
+                        return;
+                    } catch (err) {
+                        console.error("Error:", err);
+                    }
+                } else {
+                    const authUserData = getUserFromLocalStorage();
+                    setUser(authUserData);
                 }
 
-                const authUserData = response.data;
-                setUser(authUserData);
+
+
+
             }
             catch (err) {
-                if (axios.isAxiosError(err) && err.response?.status === 401) {
-                    const baseUrl = import.meta.env.VITE_AUTH_URL;
-                    window.location.href = baseUrl;
-                    return;
+                console.error("Chi tiết lỗi:", err);
+                if (axios.isAxiosError(err)) {
+                    console.error("Response data:", err.response?.data);
+                    console.error("Response status:", err.response?.status);
+                    console.error("Response headers:", err.response?.headers);
+                    console.error("Request config:", err.config);
+
+                    if (err.response?.status === 401) {
+                        const baseUrl = import.meta.env.VITE_AUTH_URL;
+                        window.location.href = baseUrl;
+                        return;
+                    }
                 }
                 setError(err instanceof Error ? err.message : 'An error occurred');
             } finally {
@@ -58,7 +85,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         }
         fetchUser();
         async function fetchNameOfUsers() {
-            try{
+            try {
                 const userNameData = await getAllUserName();
                 userNameData.push({
                     emailAndName: "huync@becawifi.vn - Nguyễn Chí Huy",
@@ -67,11 +94,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                 setNameOfUsers(userNameData);
                 setLoadingUsername(false);
             }
-            catch(err){
+            catch (err) {
                 console.error('Error fetching usernames:', err);
                 setLoadingUsername(false);
             }
-                
+
         }
         fetchNameOfUsers();
     }, []);
@@ -89,4 +116,18 @@ export function useUser() {
         throw new Error("useUser must be used within a UserProvider")
     }
     return context;
+}
+
+function getUserFromLocalStorage() {
+    const userJson = localStorage.getItem("user");
+    if (!userJson) {
+        return null;
+    }
+    try {
+        const userData = JSON.parse(userJson) as AuthUser;
+        return userData;
+    } catch (err) {
+        console.error("Error parsing user data from localStorage:", err);
+        return null;
+    }
 }

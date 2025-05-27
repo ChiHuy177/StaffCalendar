@@ -10,6 +10,8 @@
         "byDept": "Bảng chấm công nhân viên theo phòng ban",
         "customWorkWeek": "Cấu hình Tuần Làm Việc"
     },
+    "profile": "Hồ sơ",
+    "logout": "Đăng xuất",
     "lightMode": "Chế độ sáng",
     "darkMode": "Chế độ tối",
     "home": "Trang chủ",
