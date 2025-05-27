@@ -11,6 +11,8 @@
         "byDept": "Staff checkin table by department",
         "customWorkWeek": "Custom Work Week"
     },
+    "profile": "Profile",
+    "logout": "Logout",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
     "home": "Home",
