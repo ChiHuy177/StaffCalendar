@@ -43,8 +43,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
         }
     }
+    
     useEffect(() => {
-
         fetchUser();
         async function fetchNameOfUsers() {
             try {

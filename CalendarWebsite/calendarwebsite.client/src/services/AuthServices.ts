@@ -28,12 +28,14 @@ export class AuthService {
 
         const baseUrl = import.meta.env.VITE_API_URL;
         try {
+            alert("lấy user từ api")
             const response = await axios.get(baseUrl + "api/auth/user", {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
                 withCredentials: true
             });
+            alert("lấy user từ api thành công + " + JSON.stringify(response.data));
             return response.data;
         } catch (error) {
             console.error("Error fetching user:", error);
