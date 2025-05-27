@@ -23,7 +23,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         async function fetchUser() {
             try {
-                const baseUrl = import.meta.env.VITE_API_URL
+                const baseUrl = import.meta.env.VITE_API_URL;
 
                 const token = localStorage.getItem('token');
 
@@ -34,7 +34,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
                 const apiUrl = baseUrl + "api/auth/user";
                 const userFromLocalStorageData = localStorage.getItem("user");
-                if (!userFromLocalStorageData) {
+                if (!userFromLocalStorageData || userFromLocalStorageData === "null") {
                     try {
                         const response = await axios.get(apiUrl, {
                             headers: {
@@ -42,8 +42,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                             },
                             withCredentials: true
                         });
-                        console.log("response User: ", response.data);
+                        console.log("response User: ", JSON.stringify(response.data));
                         localStorage.setItem("user", JSON.stringify(response.data));
+                        alert(JSON.stringify(response.data));
                         if (!response.data) {
                             setUser(null);
                             throw new Error('Fail to get auth user');
@@ -51,6 +52,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                         console.log("response User data: ", response.data);
                         const authUserData = getUserFromLocalStorage();
                         setUser(authUserData);
+                        
                         return;
                     } catch (err) {
                         console.error("Error:", err);
@@ -59,10 +61,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                     const authUserData = getUserFromLocalStorage();
                     setUser(authUserData);
                 }
-
-
-
-
             }
             catch (err) {
                 console.error("Chi tiết lỗi:", err);
