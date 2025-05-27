@@ -42,7 +42,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                             },
                             withCredentials: true
                         });
-                        // console.log("response User: ", response.data);
+                        console.log("response User: ", response.data);
                         localStorage.setItem("user", JSON.stringify(response.data));
                         if (!response.data) {
                             setUser(null);

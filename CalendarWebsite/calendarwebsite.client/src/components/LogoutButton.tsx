@@ -18,8 +18,8 @@ const LogoutButton = () => {
                 withCredentials: true
             });
             
-            // Xóa token và redirect ngay lập tức với tham số logout
-            localStorage.removeItem('token');
+            // Xóa tất cả dữ liệu trong localStorage và redirect ngay lập tức với tham số logout
+            localStorage.clear();
 
             if (response.data && response.data.logoutUrl) {
                 window.location.href = response.data.logoutUrl;
@@ -28,7 +28,7 @@ const LogoutButton = () => {
             }
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);
-            localStorage.removeItem('token');
+            localStorage.clear();
             window.location.href = '/';
         }
     };

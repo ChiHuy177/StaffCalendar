@@ -181,6 +181,7 @@ namespace CalendarWebsite.Server.Controllers
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Append("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
+                
                 var state = Guid.NewGuid().ToString();
                 var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}";
 
