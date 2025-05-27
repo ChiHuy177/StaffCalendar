@@ -1,5 +1,5 @@
 import { useUser } from '../contexts/AuthUserContext';
-import { AuthService } from '../services/authService';
+import { AuthService } from '../services/AuthServices';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
