@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
@@ -279,36 +279,11 @@ export default function CalendarComponent() {
         );
     };
 
-    // useEffect(() => {
-    //     async function fetchAllUserName() {
-    //         try {
-    //             setLoadingUsername(true);
-    //             const data = await getAllUserName();
-    //             data.push({
-    //                 emailAndName: "huync@becawifi.vn - Nguyễn Chí Huy",
-    //                 personalProfileId: '-1',
-    //             })
-    //             setNameOfUsers(data);
-    //         } catch (error) {
-    //             console.error('Error fetching usernames:', error);
-    //             toast.error(t('toastMessages.errorFetchingUsernames'), {
-    //                 position: 'top-center',
-    //                 autoClose: 5000,
-    //                 hideProgressBar: false,
-    //                 closeOnClick: true,
-    //                 pauseOnHover: true,
-    //                 draggable: true,
-    //                 progress: undefined,
-    //                 theme: 'light',
-    //                 transition: Bounce,
-    //             });
-    //         } finally {
-    //             setLoadingUsername(false);
-    //         }
-    //     }
-    //     fetchAllUserName();
-    //     fetchWorkSchedule();
-    // }, []);
+    useEffect(() => {
+        localStorage.setItem('testStorage', 'testValue');
+
+        alert(localStorage.getItem('testStorage'));
+    }, []);
 
     const handleNameChange = (_event: React.SyntheticEvent, value: UserInfo | null) => {
         if (value) {
