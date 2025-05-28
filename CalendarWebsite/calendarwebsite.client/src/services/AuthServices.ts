@@ -147,29 +147,18 @@ export class AuthService {
             // alert("Không thể kết nối đến server");
             return null;
         }
-        const baseUrl = import.meta.env.VITE_API_URL;
+
         try {
-            // alert("lấy user từ api với token là:" + token + " và baseUrl là: " + baseUrl + "api/auth/user");
-            const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-            
-            const response = await axios.get(baseUrl + "api/auth/user", {
+            const response = await axios.get("/api/auth/user", {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     "Accept": 'application/json',
                     'Cache-Control': 'no-cache',
-                    ...(isFirefox && {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Origin': window.location.origin
-                    })
+    
                 },
-                withCredentials: !isFirefox,
+                withCredentials: true,
                 timeout: 10000,
-
-                ...(isFirefox && {
-                    mode: 'cors',
-                    credentials: 'omit'
-                })
             });
             console.log("response.data: " + JSON.stringify(response.data));
             return response.data;

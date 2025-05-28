@@ -39,8 +39,8 @@ if (process.env.NODE_ENV === 'development') {
     }
 }
 
-const target = process.env.NODE_ENV === 'development' ? 
-process.env.VITE_API_URL : 'https://calendarwebsite-my2z.onrender.com'; // URL backend từ Render
+const target = process.env.NODE_ENV === 'development' ?
+    process.env.VITE_API_URL : 'https://staffcalendarserver-may.onrender.com'; // URL backend từ Render
 
 
 export default defineConfig({
@@ -65,8 +65,10 @@ export default defineConfig({
 
             '^/api': {
                 target,
-                secure: false,
                 changeOrigin: true,
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api/, '')
+
             },
         },
         port: 50857,
