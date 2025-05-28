@@ -54,24 +54,34 @@ export class AuthService {
             
             console.log("iOS: Đang gọi API đặc biệt:", apiUrl);
             alert("iOS: Đang gọi API đặc biệt:" + apiUrl);
-            const response = await fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    alert(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                
+                const data = await response.json();
+                alert("iOS: Lấy dữ liệu thành công: " + JSON.stringify(data));
+                localStorage.setItem("user", JSON.stringify(data));
+                return data;
+            } catch (fetchError) {
+                alert("iOS API fetch error: " + fetchError);
+                throw fetchError;
             }
-            
-            const data = await response.json();
-            localStorage.setItem("user", JSON.stringify(data));
-            return data;
         } catch (error) {
             console.error("iOS API error:", error);
             alert("iOS API error: " + error);
+            
             // Nếu lỗi, thử giải mã token
             return this.getIOSUserData();
         }

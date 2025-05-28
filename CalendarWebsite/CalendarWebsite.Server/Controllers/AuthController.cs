@@ -61,42 +61,26 @@ namespace CalendarWebsite.Server.Controllers
             }
 
             try {
-                var principal = ValidateToken(token);
-                if (principal == null)
+                // Giải mã token thay vì xác thực
+                var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                if (!tokenHandler.CanReadToken(token))
                 {
-                    return Unauthorized();
+                    return BadRequest("Token không hợp lệ");
                 }
                 
-                var user = AuthUser.FromClaims(principal.Claims);
+                // Đọc token mà không xác thực
+                var jwtToken = tokenHandler.ReadJwtToken(token);
+                
+                // Lấy claims từ token
+                var claims = jwtToken.Claims;
+                
+                // Tạo đối tượng user từ claims
+                var user = AuthUser.FromClaims(claims);
                 return Ok(user);
             }
             catch (Exception ex) {
-                _logger.LogError($"Error validating token: {ex.Message}");
+                _logger.LogError($"Error reading token: {ex.Message}");
                 return BadRequest(ex.Message);
-            }
-        }
-
-        private System.Security.Claims.ClaimsPrincipal ValidateToken(string token)
-        {
-            var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-            var validationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = _configuration["IdentityServerConfig:Authority"],
-                ValidAudience = _configuration["IdentityServerConfig:ClientId"]
-            };
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-                return principal;
-            }
-            catch
-            {
-                return null;
             }
         }
 
