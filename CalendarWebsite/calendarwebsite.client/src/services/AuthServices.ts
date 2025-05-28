@@ -149,7 +149,7 @@ export class AuthService {
         }
 
         try {
-            const response = await axios.get("/api/auth/user", {
+            const response = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
