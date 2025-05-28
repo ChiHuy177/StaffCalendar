@@ -158,17 +158,34 @@ export class AuthService {
                     'Cache-Control': 'no-cache'
                 },
                 withCredentials: true,
-                timeout: 10000
+                timeout: 10000,
+                validateStatus: function (status) {
+                    return status >= 200 && status < 500;
+                }
             });
-            console.log("response.data: " + JSON.stringify (response.data));
-            return response.data;   
+            console.log("response.data: " + JSON.stringify(response.data));
+            return response.data;
         } catch (error) {
             console.error("Error fetching user:", error);
-            if (axios.isAxiosError(error) && error.response?.status === 401) {
-                this.redirectToLogin();
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    this.redirectToLogin();
+                } else {
+                    // Log chi tiết lỗi để debug
+                    console.error("Axios error details:", {
+                        status: error.response?.status,
+                        statusText: error.response?.statusText,
+                        data: error.response?.data,
+                        config: {
+                            url: error.config?.url,
+                            method: error.config?.method,
+                            headers: error.config?.headers
+                        }
+                    });
+                }
             }
 
-            alert("Lỗi: " + (error instanceof Error ? error.message : "Không xác định"));
+
 
             return null;
 
