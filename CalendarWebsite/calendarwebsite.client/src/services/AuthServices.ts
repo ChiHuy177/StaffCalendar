@@ -137,73 +137,80 @@ export class AuthService {
 
     static async getNormalUserData(): Promise<AuthUser | null> {
         const token = this.getStoredToken();
-        if (!token) {
-            return null;
-        }
-        const connected = await this.checkConnection();
-
-        if (!connected) {
-            return null;
-        }
-
-        try {
-            // Lần gọi đầu tiên - chấp nhận cả 204 và 200
-            const response = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    "Accept": 'application/json',
-                    'Cache-Control': 'no-cache'
-                },
-                withCredentials: true,
-                timeout: 10000,
-                validateStatus: function (status) {
-                    return status === 200 || status === 204;
-                }
-            });
-
-            // Nếu nhận được 204, đợi một chút rồi gọi lại
-            if (response.status === 204) {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Đợi 1 giây
-                
-                const retryResponse = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        "Accept": 'application/json',
-                        'Cache-Control': 'no-cache'
-                    },
-                    withCredentials: true,
-                    timeout: 10000
-                });
-                
-                console.log("retry response.data: " + JSON.stringify(retryResponse.data));
-                return retryResponse.data;
-            }
-            
-            console.log("response.data: " + JSON.stringify(response.data));
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching user:", error);
-            if (axios.isAxiosError(error)) {
-                if (error.response?.status === 401) {
-                    this.redirectToLogin();
-                } else {
-                    console.error("Axios error details:", {
-                        status: error.response?.status,
-                        statusText: error.response?.statusText,
-                        data: error.response?.data,
-                        config: {
-                            url: error.config?.url,
-                            method: error.config?.method,
-                            headers: error.config?.headers
-                        }
-                    });
-                }
-            }
-            return null;
-        }
+        const data = await this.getUserInfoFromIdentityServer(token);
+        console.log("data: " + JSON.stringify(data));
+        return data;
     }
+
+    // static async getNormalUserData(): Promise<AuthUser | null> {
+    //     const token = this.getStoredToken();
+    //     if (!token) {
+    //         return null;
+    //     }
+    //     const connected = await this.checkConnection();
+
+    //     if (!connected) {
+    //         return null;
+    //     }
+
+    //     try {
+    //         // Lần gọi đầu tiên - chấp nhận cả 204 và 200
+    //         const response = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json',
+    //                 "Accept": 'application/json',
+    //                 'Cache-Control': 'no-cache'
+    //             },
+    //             withCredentials: true,
+    //             timeout: 10000,
+    //             validateStatus: function (status) {
+    //                 return status === 200 || status === 204;
+    //             }
+    //         });
+
+    //         // Nếu nhận được 204, đợi một chút rồi gọi lại
+    //         if (response.status === 204) {
+    //             await new Promise(resolve => setTimeout(resolve, 1000)); // Đợi 1 giây
+                
+    //             const retryResponse = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`,
+    //                     'Content-Type': 'application/json',
+    //                     "Accept": 'application/json',
+    //                     'Cache-Control': 'no-cache'
+    //                 },
+    //                 withCredentials: true,
+    //                 timeout: 10000
+    //             });
+                
+    //             console.log("retry response.data: " + JSON.stringify(retryResponse.data));
+    //             return retryResponse.data;
+    //         }
+            
+    //         console.log("response.data: " + JSON.stringify(response.data));
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Error fetching user:", error);
+    //         if (axios.isAxiosError(error)) {
+    //             if (error.response?.status === 401) {
+    //                 this.redirectToLogin();
+    //             } else {
+    //                 console.error("Axios error details:", {
+    //                     status: error.response?.status,
+    //                     statusText: error.response?.statusText,
+    //                     data: error.response?.data,
+    //                     config: {
+    //                         url: error.config?.url,
+    //                         method: error.config?.method,
+    //                         headers: error.config?.headers
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //         return null;
+    //     }
+    // }
 
     static redirectToLogin() {
         window.location.href = import.meta.env.VITE_AUTH_URL;
@@ -220,7 +227,7 @@ export class AuthService {
         }
     }
 
-    static async getUserInfoFromIdentityServer(token: string) {
+    static async getUserInfoFromIdentityServer(token: string | null) {
         try {
             const response = await axios('https://identity.vntts.vn/connect/userinfo', {
                 method: 'GET',
