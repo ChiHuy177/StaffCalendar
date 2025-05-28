@@ -103,11 +103,13 @@ namespace CalendarWebsite.Server.Controllers
            if (isFirefox)
            {
                // Xử lý đặc biệt cho Firefox
-               var options = new OpenIdConnectOptions();
-               var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-               var authEndpoint = "https://identity.vntts.vn/connect/authorize";
+              var authEndpoint = "https://identity.vntts.vn/connect/authorize";
                
                // Tạo URL redirect trực tiếp thay vì sử dụng Challenge
+               
+               var nonce = Guid.NewGuid().ToString();
+               var state = Guid.NewGuid().ToString();
+               
                var callbackUrl = $"{Request.Scheme}://{Request.Host}/api/auth/callback";
                var queryParams = new Dictionary<string, string>
                {
@@ -115,7 +117,9 @@ namespace CalendarWebsite.Server.Controllers
                    ["redirect_uri"] = callbackUrl,
                    ["response_type"] = "code id_token",
                    ["scope"] = "openid profile email",
-                   ["response_mode"] = "form_post"
+                   ["response_mode"] = "form_post",
+                   ["nonce"] = nonce,
+                   ["state"] = state
                };
                
                var redirectUrl = QueryHelpers.AddQueryString(authEndpoint, queryParams);
