@@ -137,39 +137,50 @@ export class AuthService {
 
     static async getNormalUserData(): Promise<AuthUser | null> {
         const token = this.getStoredToken();
-        // alert("token ở getCurrentUser: " + token);
         if (!token) {
             return null;
         }
         const connected = await this.checkConnection();
 
         if (!connected) {
-            // alert("Không thể kết nối đến server");
             return null;
         }
-        const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
         try {
+            // Lần gọi đầu tiên - chấp nhận cả 204 và 200
             const response = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     "Accept": 'application/json',
-                    'Cache-Control': 'no-cache',
-                    ...(isFirefox && {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Origin': window.location.origin
-                    })
+                    'Cache-Control': 'no-cache'
                 },
                 withCredentials: true,
                 timeout: 10000,
-                ...(isFirefox && {
-                    maxRedirects: 0, // Không cho phép redirect
-                    validateStatus: function (status) {
-                        return status === 200; // Chỉ chấp nhận status 200
-                    }
-                })
+                validateStatus: function (status) {
+                    return status === 200 || status === 204;
+                }
             });
+
+            // Nếu nhận được 204, đợi một chút rồi gọi lại
+            if (response.status === 204) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Đợi 1 giây
+                
+                const retryResponse = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        "Accept": 'application/json',
+                        'Cache-Control': 'no-cache'
+                    },
+                    withCredentials: true,
+                    timeout: 10000
+                });
+                
+                console.log("retry response.data: " + JSON.stringify(retryResponse.data));
+                return retryResponse.data;
+            }
+            
             console.log("response.data: " + JSON.stringify(response.data));
             return response.data;
         } catch (error) {
@@ -177,25 +188,6 @@ export class AuthService {
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === 401) {
                     this.redirectToLogin();
-                } else if (error.response?.status === 204 || error.response?.status === 302) {
-                    // Nếu là Firefox và nhận được 204 hoặc 302, thử gọi lại API
-                    if (isFirefox) {
-                        try {
-                            const retryResponse = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
-                                headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                    'Content-Type': 'application/json',
-                                    "Accept": 'application/json',
-                                    'Cache-Control': 'no-cache'
-                                },
-                                withCredentials: true,
-                                timeout: 10000
-                            });
-                            return retryResponse.data;
-                        } catch (retryError) {
-                            console.error("Retry error:", retryError);
-                        }
-                    }
                 } else {
                     console.error("Axios error details:", {
                         status: error.response?.status,
@@ -209,11 +201,7 @@ export class AuthService {
                     });
                 }
             }
-
-
-
             return null;
-
         }
     }
 
