@@ -147,6 +147,7 @@ export class AuthService {
             // alert("Không thể kết nối đến server");
             return null;
         }
+        const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
         try {
             const response = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
@@ -155,10 +156,19 @@ export class AuthService {
                     'Content-Type': 'application/json',
                     "Accept": 'application/json',
                     'Cache-Control': 'no-cache',
-    
+                    ...(isFirefox && {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Origin': window.location.origin
+                    })
                 },
                 withCredentials: true,
                 timeout: 10000,
+                ...(isFirefox && {
+                    maxRedirects: 0, // Không cho phép redirect
+                    validateStatus: function (status) {
+                        return status === 200; // Chỉ chấp nhận status 200
+                    }
+                })
             });
             console.log("response.data: " + JSON.stringify(response.data));
             return response.data;
@@ -167,8 +177,26 @@ export class AuthService {
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === 401) {
                     this.redirectToLogin();
+                } else if (error.response?.status === 204 || error.response?.status === 302) {
+                    // Nếu là Firefox và nhận được 204 hoặc 302, thử gọi lại API
+                    if (isFirefox) {
+                        try {
+                            const retryResponse = await axios.get("https://staffcalendarserver-may.onrender.com/api/auth/user", {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                    "Accept": 'application/json',
+                                    'Cache-Control': 'no-cache'
+                                },
+                                withCredentials: true,
+                                timeout: 10000
+                            });
+                            return retryResponse.data;
+                        } catch (retryError) {
+                            console.error("Retry error:", retryError);
+                        }
+                    }
                 } else {
-                    // Log chi tiết lỗi để debug
                     console.error("Axios error details:", {
                         status: error.response?.status,
                         statusText: error.response?.statusText,
