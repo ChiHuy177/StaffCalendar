@@ -38,7 +38,7 @@ export class AuthService {
                     'Content-Type': 'application/json',
                     "Accept": 'application/json'
                 },
-                withCredentials: false,
+                withCredentials: true,
                 timeout: 10000
             });
             alert("lấy user từ api thành công + " + JSON.stringify(response.data));
