@@ -162,7 +162,7 @@ export class AuthService {
             const response = await fetch(baseUrl + "api/auth/user", {
                 method: 'GET',
                 headers: {
-                    'Authorization': `${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                     'Cache-Control': 'no-cache'
@@ -171,7 +171,7 @@ export class AuthService {
                 mode: 'cors' // Thêm mode CORS
             });
             const data = await response.json();
-            // alert("lấy user từ api thành công + " + JSON.stringify(data));
+            alert("lấy user từ api thành công + " + JSON.stringify(data));
             return data;
         } catch (error) {
             console.error("Error fetching user:", error);
