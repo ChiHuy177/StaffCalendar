@@ -20,6 +20,7 @@ const LogoutButton = () => {
             
             // Xóa tất cả dữ liệu trong localStorage và redirect ngay lập tức với tham số logout
             localStorage.clear();
+            alert("Đã xóa tất cả dữ liệu trong localStorage");
 
             if (response.data && response.data.logoutUrl) {
                 window.location.href = response.data.logoutUrl;

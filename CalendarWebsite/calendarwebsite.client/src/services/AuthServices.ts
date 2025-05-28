@@ -9,6 +9,8 @@ export class AuthService {
 
         if (token && callback === 'processed') {
             localStorage.setItem('token', token);
+            alert("Đang lưu token");
+            alert("Token được lưu: " + token);
             window.history.replaceState({}, document.title, window.location.pathname);
             return token;
         }
@@ -22,6 +24,7 @@ export class AuthService {
 
     static async getCurrentUser(): Promise<AuthUser | null> {
         const token = this.getStoredToken();
+        alert("token: " + token);
         if (!token) {
             return null;
         }
