@@ -150,22 +150,18 @@ export class AuthService {
         const baseUrl = import.meta.env.VITE_API_URL;
         try {
             // alert("lấy user từ api với token là:" + token + " và baseUrl là: " + baseUrl + "api/auth/user");
+            const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            
             const response = await axios.get(baseUrl + "api/auth/user", {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     "Accept": 'application/json',
                     'Cache-Control': 'no-cache',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
                 
                 },
-                withCredentials: true,
+                withCredentials: !isFirefox,
                 timeout: 10000,
-                validateStatus: function (status) {
-                    return status >= 200 && status < 500;
-                }
             });
             console.log("response.data: " + JSON.stringify(response.data));
             return response.data;
