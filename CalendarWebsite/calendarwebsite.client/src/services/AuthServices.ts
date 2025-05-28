@@ -24,17 +24,19 @@ export class AuthService {
 
     static async getCurrentUser(): Promise<AuthUser | null> {
         const token = this.getStoredToken();
-        alert("token: " + token);
+        alert("token ở getCurrentUser: " + token);
         if (!token) {
             return null;
         }
 
         const baseUrl = import.meta.env.VITE_API_URL;
         try {
-            alert("lấy user từ api")
+            alert("lấy user từ api với token là:" + token);
             const response = await axios.get(baseUrl + "api/auth/user", {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    "Accept": 'application/json'
                 },
                 withCredentials: true
             });
@@ -45,7 +47,7 @@ export class AuthService {
             if (axios.isAxiosError(error) && error.response?.status === 401) {
                 this.redirectToLogin();
             }
-            alert("Error+ " + error );
+            alert("Lỗi khi lấy user từ api: " + error );
             return null;
             
         }
