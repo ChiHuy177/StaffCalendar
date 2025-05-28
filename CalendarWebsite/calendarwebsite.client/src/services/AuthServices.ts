@@ -37,6 +37,7 @@ export class AuthService {
             // Kiểm tra cache trước
             const cachedUser = localStorage.getItem("user");
             if (cachedUser) {
+                alert('Lấy từ localstorage + ' + cachedUser);
                 return JSON.parse(cachedUser);
             }
             
