@@ -110,7 +110,7 @@ namespace CalendarWebsite.Server.Controllers
                var nonce = Guid.NewGuid().ToString();
                var state = Guid.NewGuid().ToString();
                
-               var callbackUrl = $"{Request.Scheme}://{Request.Host}/api/auth/callback";
+               var callbackUrl = "https://staffcalendarserver-may.onrender.com/api/auth/callback";
                var queryParams = new Dictionary<string, string>
                {
                    ["client_id"] = "wf",
