@@ -31,14 +31,15 @@ export class AuthService {
 
         const baseUrl = import.meta.env.VITE_API_URL;
         try {
-            alert("lấy user từ api với token là:" + token);
+            alert("lấy user từ api với token là:" + token + " và baseUrl là: " + baseUrl+ "api/auth/user");
             const response = await axios.get(baseUrl + "api/auth/user", {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     "Accept": 'application/json'
                 },
-                withCredentials: true
+                // withCredentials: true
+                timeout: 10000
             });
             alert("lấy user từ api thành công + " + JSON.stringify(response.data));
             return response.data;
@@ -47,9 +48,15 @@ export class AuthService {
             if (axios.isAxiosError(error) && error.response?.status === 401) {
                 this.redirectToLogin();
             }
-            alert("Lỗi khi lấy user từ api: " + error );
+
+            if (axios.isAxiosError(error)) {
+                alert("Error type: " + error.name +
+                    "\nMessage: " + error.message +
+                    "\nStatus: " + (error.response?.status || 'N/A') +
+                    "\nURL: " + baseUrl + "api/auth/user");
+            }
             return null;
-            
+
         }
     }
 
