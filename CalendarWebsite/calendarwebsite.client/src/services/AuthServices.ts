@@ -57,8 +57,9 @@ export class AuthService {
                 credentials: 'include',
                 mode: 'cors' // Thêm mode CORS
             });
-            alert("lấy user từ api thành công + " + JSON.stringify(await response.json()));
-            return await response.json();
+            const data = await response.json();
+            alert("lấy user từ api thành công + " + JSON.stringify(data));
+            return data;
         } catch (error) {
             console.error("Error fetching user:", error);
             if (axios.isAxiosError(error) && error.response?.status === 401) {
