@@ -53,7 +53,7 @@ export class AuthService {
                 : `${baseUrl}/api/auth/ios-user?token=${encodeURIComponent(token)}`;
             
             console.log("iOS: Đang gọi API đặc biệt:", apiUrl);
-            
+            alert("iOS: Đang gọi API đặc biệt:" + apiUrl);
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -71,7 +71,7 @@ export class AuthService {
             return data;
         } catch (error) {
             console.error("iOS API error:", error);
-            
+            alert("iOS API error: " + error);
             // Nếu lỗi, thử giải mã token
             return this.getIOSUserData();
         }
