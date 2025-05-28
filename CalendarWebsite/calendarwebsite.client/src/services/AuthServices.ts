@@ -36,30 +36,36 @@ export class AuthService {
         }
         const baseUrl = import.meta.env.VITE_API_URL;
         try {
-            alert("lấy user từ api với token là:" + token + " và baseUrl là: " + baseUrl+ "api/auth/user");
-            const response = await axios.get(baseUrl + "api/auth/user", {
+            alert("lấy user từ api với token là:" + token + " và baseUrl là: " + baseUrl + "api/auth/user");
+            // const response = await axios.get(baseUrl + "api/auth/user", {
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`,
+            //         'Content-Type': 'application/json',
+            //         "Accept": 'application/json'
+            //     },
+            //     withCredentials: true,
+            //     timeout: 10000
+            // });
+            const response = await fetch(baseUrl + "api/auth/user", {
+                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    "Accept": 'application/json'
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
                 },
-                withCredentials: true,
-                timeout: 10000
+                credentials: 'include',
+                mode: 'cors' // Thêm mode CORS
             });
-            alert("lấy user từ api thành công + " + JSON.stringify(response.data));
-            return response.data;
+            alert("lấy user từ api thành công + " + JSON.stringify(await response.json()));
+            return await response.json();
         } catch (error) {
             console.error("Error fetching user:", error);
             if (axios.isAxiosError(error) && error.response?.status === 401) {
                 this.redirectToLogin();
             }
 
-            if (axios.isAxiosError(error)) {
-                alert("Error type: " + error.name +
-                    "\nMessage: " + error.message +
-                    "\nStatus: " + (error.response?.status || 'N/A') +
-                    "\nURL: " + baseUrl + "api/auth/user");
-            }
+            alert("Lỗi: " + (error instanceof Error ? error.message : "Không xác định"));
             return null;
 
         }
@@ -69,7 +75,7 @@ export class AuthService {
         window.location.href = import.meta.env.VITE_AUTH_URL;
     }
 
-    static async checkConnection(): Promise<boolean>{
+    static async checkConnection(): Promise<boolean> {
         try {
             const baseUrl = import.meta.env.VITE_API_URL;
             await axios.get(baseUrl + "api/auth/public");
