@@ -52,6 +52,54 @@ namespace CalendarWebsite.Server.Controllers
             }
         }
 
+        [HttpGet("ios-user")]
+        public IActionResult GetIOSUser([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized();
+            }
+
+            try {
+                var principal = ValidateToken(token);
+                if (principal == null)
+                {
+                    return Unauthorized();
+                }
+                
+                var user = AuthUser.FromClaims(principal.Claims);
+                return Ok(user);
+            }
+            catch (Exception ex) {
+                _logger.LogError($"Error validating token: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private System.Security.Claims.ClaimsPrincipal ValidateToken(string token)
+        {
+            var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var validationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _configuration["IdentityServerConfig:Authority"],
+                ValidAudience = _configuration["IdentityServerConfig:ClientId"]
+            };
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         [HttpGet("public")]
         public IActionResult GetPublic()
         {
@@ -181,7 +229,7 @@ namespace CalendarWebsite.Server.Controllers
                 // Thêm header để xóa dữ liệu site
                 Response.Headers.Append("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
 
-                
+
                 var state = Guid.NewGuid().ToString();
                 var logoutUrl = $"https://identity.vntts.vn/connect/endsession?id_token_hint={idToken}&post_logout_redirect_uri={clientUrl}&state={state}";
 
