@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace CalendarWebsite.Server.Controllers
 {
@@ -93,19 +94,42 @@ namespace CalendarWebsite.Server.Controllers
         [HttpGet("login")]
         public IActionResult Login()
         {
-            try
-            {
-                _logger.LogInformation("Login endpoint called");
-                var properties = new AuthenticationProperties
-                {
-                    RedirectUri = "/api/auth/callback",
-                };
-                return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+             _logger.LogInformation("Login endpoint called");
+           
+           // Kiểm tra trình duyệt Firefox từ User-Agent
+           var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+           bool isFirefox = userAgent.Contains("Firefox");
+           
+           if (isFirefox)
+           {
+               // Xử lý đặc biệt cho Firefox
+               var options = new OpenIdConnectOptions();
+               var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+               var authEndpoint = "https://identity.vntts.vn/connect/authorize";
+               
+               // Tạo URL redirect trực tiếp thay vì sử dụng Challenge
+               var callbackUrl = $"{Request.Scheme}://{Request.Host}/api/auth/callback";
+               var queryParams = new Dictionary<string, string>
+               {
+                   ["client_id"] = "wf",
+                   ["redirect_uri"] = callbackUrl,
+                   ["response_type"] = "code id_token",
+                   ["scope"] = "openid profile email",
+                   ["response_mode"] = "form_post"
+               };
+               
+               var redirectUrl = QueryHelpers.AddQueryString(authEndpoint, queryParams);
+               return Redirect(redirectUrl);
+           }
+           else
+           {
+               // Giữ nguyên phương thức hiện tại cho các trình duyệt khác
+               var properties = new AuthenticationProperties
+               {
+                   RedirectUri = "/api/auth/callback",
+               };
+               return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+           }
         }
 
         [HttpGet("callback")]
