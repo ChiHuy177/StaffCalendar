@@ -61,25 +61,27 @@ namespace CalendarWebsite.Server.Controllers
                 return Unauthorized();
             }
 
-            try {
+            try
+            {
                 // Giải mã token thay vì xác thực
                 var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
                 if (!tokenHandler.CanReadToken(token))
                 {
                     return BadRequest("Token không hợp lệ");
                 }
-                
+
                 // Đọc token mà không xác thực
                 var jwtToken = tokenHandler.ReadJwtToken(token);
-                
+
                 // Lấy claims từ token
                 var claims = jwtToken.Claims;
-                
+
                 // Tạo đối tượng user từ claims
                 var user = AuthUser.FromClaims(claims);
                 return Ok(user);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError($"Error reading token: {ex.Message}");
                 return BadRequest(ex.Message);
             }
@@ -94,46 +96,18 @@ namespace CalendarWebsite.Server.Controllers
         [HttpGet("login")]
         public IActionResult Login()
         {
-             _logger.LogInformation("Login endpoint called");
-           
-           // Kiểm tra trình duyệt Firefox từ User-Agent
-           var userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
-           bool isFirefox = userAgent.Contains("Firefox");
-           
-           if (isFirefox)
-           {
-               // Xử lý đặc biệt cho Firefox
-              var authEndpoint = "https://identity.vntts.vn/connect/authorize";
-               
-               // Tạo URL redirect trực tiếp thay vì sử dụng Challenge
-               
-               var nonce = Guid.NewGuid().ToString();
-               var state = Guid.NewGuid().ToString();
-               
-               var callbackUrl = "https://staffcalendarserver-may.onrender.com/api/auth/callback";
-               var queryParams = new Dictionary<string, string>
-               {
-                   ["client_id"] = "wf",
-                   ["redirect_uri"] = callbackUrl,
-                   ["response_type"] = "code id_token",
-                   ["scope"] = "openid profile email",
-                   ["response_mode"] = "form_post",
-                   ["nonce"] = nonce,
-                   ["state"] = state
-               };
-               
-               var redirectUrl = QueryHelpers.AddQueryString(authEndpoint, queryParams);
-               return Redirect(redirectUrl);
-           }
-           else
-           {
-               // Giữ nguyên phương thức hiện tại cho các trình duyệt khác
-               var properties = new AuthenticationProperties
-               {
-                   RedirectUri = "/api/auth/callback",
-               };
-               return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
-           }
+            _logger.LogInformation("Login endpoint called");
+
+
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = "/api/auth/callback",
+                AllowRefresh = true,
+                IsPersistent = true,
+            }
+            ;
+            return Challenge(properties, OpenIdConnectDefaults.AuthenticationScheme);
+
         }
 
         [HttpGet("callback")]

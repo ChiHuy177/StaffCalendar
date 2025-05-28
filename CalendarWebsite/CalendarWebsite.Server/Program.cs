@@ -144,6 +144,10 @@ namespace CalendarWebsite.Server
                         var redirectUri = $"https://{context.Request.Host}/signin-oidc";
                         context.ProtocolMessage.RedirectUri = redirectUri;
 
+                        context.ProtocolMessage.Parameters.Add("x-client-SKU", "ID_NET9_0");
+                        context.ProtocolMessage.Parameters.Add("x-client-ver", "8.0.1.0");
+
+
                         Console.WriteLine($"Redirecting to: {context.ProtocolMessage.IssuerAddress}");
                         Console.WriteLine($"Redirect URI: {context.ProtocolMessage.RedirectUri}");
                         return Task.CompletedTask;
