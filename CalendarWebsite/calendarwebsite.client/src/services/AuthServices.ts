@@ -155,7 +155,11 @@ export class AuthService {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     "Accept": 'application/json',
-                    'Cache-Control': 'no-cache'
+                    'Cache-Control': 'no-cache',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                
                 },
                 withCredentials: true,
                 timeout: 10000,
