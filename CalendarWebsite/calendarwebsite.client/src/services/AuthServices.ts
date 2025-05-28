@@ -158,10 +158,18 @@ export class AuthService {
                     'Content-Type': 'application/json',
                     "Accept": 'application/json',
                     'Cache-Control': 'no-cache',
-                
+                    ...(isFirefox && {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Origin': window.location.origin
+                    })
                 },
                 withCredentials: !isFirefox,
                 timeout: 10000,
+
+                ...(isFirefox && {
+                    mode: 'cors',
+                    credentials: 'omit'
+                })
             });
             console.log("response.data: " + JSON.stringify(response.data));
             return response.data;
