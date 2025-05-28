@@ -28,7 +28,12 @@ export class AuthService {
         if (!token) {
             return null;
         }
+        const connected = await this.checkConnection();
 
+        if (!connected) {
+            alert("Không thể kết nối đến server");
+            return null;
+        }
         const baseUrl = import.meta.env.VITE_API_URL;
         try {
             alert("lấy user từ api với token là:" + token + " và baseUrl là: " + baseUrl+ "api/auth/user");
@@ -62,5 +67,16 @@ export class AuthService {
 
     static redirectToLogin() {
         window.location.href = import.meta.env.VITE_AUTH_URL;
+    }
+
+    static async checkConnection(): Promise<boolean>{
+        try {
+            const baseUrl = import.meta.env.VITE_API_URL;
+            await axios.get(baseUrl + "api/auth/public");
+            return true;
+        } catch (error) {
+            console.error("Lỗi khi kiểm tra kết nối: " + error);
+            return false;
+        }
     }
 }
