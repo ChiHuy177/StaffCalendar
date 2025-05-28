@@ -138,8 +138,20 @@ export class AuthService {
     static async getNormalUserData(): Promise<AuthUser | null> {
         const token = this.getStoredToken();
         const data = await this.getUserInfoFromIdentityServer(token);
-        console.log("data: " + JSON.stringify(data));
-        return data;
+        if (!data) {
+            return null;
+        }
+
+        // Chuyển đổi dữ liệu từ Identity Server sang AuthUser
+        const user: AuthUser = {
+            id: data.sub || '',
+            fullName: Array.isArray(data.name) ? data.name[1] : data.name || '', // Lấy tên đầy đủ từ mảng
+            email: data.email || data['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || '',
+            // username: data.preferred_username || data.user || ''
+        };
+
+        console.log("Converted user data:", user);
+        return user;
     }
 
     // static async getNormalUserData(): Promise<AuthUser | null> {
