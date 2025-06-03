@@ -26,6 +26,12 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
 }
 
 /* cho full calendar */
+.fc-toolbar-title{
+  text-transform: uppercase;
+  font-weight: bold;
+  padding-top: 5px;
+  
+}
 /* Light mode (mặc định) */
 .light-calendar {
   background-color: white;
@@ -96,6 +102,9 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   color: #E2E8F0 !important;
 }
 
+.MuiDateRangeCalendar-root > div:first-child{
+  display: none !important;
+}
 
 @layer utilities {
   .animate-fade-in {
@@ -210,4 +219,24 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Thêm CSS để ẩn thông báo license key của MUI X */
+.MuiLicenseInfo-root,
+.MuiLicenseInfo-root *,
+[class*="MuiLicenseInfo"],
+[class*="MuiLicenseInfo"] *,
+[class*="MuiLicenseInfo-root"],
+[class*="MuiLicenseInfo-root"] * {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }

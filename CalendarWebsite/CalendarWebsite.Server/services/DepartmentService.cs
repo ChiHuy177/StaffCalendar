@@ -15,10 +15,10 @@ namespace CalendarWebsite.Server.services
 
         public async Task<IEnumerable<Department>> GetAllDepartment()
         {
-            return await _departmentRepository.FindList(
+            return (await _departmentRepository.FindList(
                 predicate: e => true,
                 disableTracking: true
-            );
+            )).DistinctBy(d => d.Title);
         }
 
         public async Task<Department> GetDepartmentById(long id)

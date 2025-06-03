@@ -277,7 +277,8 @@ export default function DashboardLayout() {
                         boxShadow: '4px 0 15px rgba(0, 0, 0, 0.2)',
                         zIndex: 1400,
                         backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden'
+                        WebkitBackfaceVisibility: 'hidden',
+                        overflowX: 'hidden'
                     }
                 }}
             >
@@ -288,9 +289,14 @@ export default function DashboardLayout() {
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
                         className="flex flex-col h-full"
+                        style={{ 
+                            height: '100vh',
+                            width: '100%',
+                            overflowX: 'hidden'
+                        }}
                     >
                         {/* Close button visible at the top for easy access */}
-                        <Box className="flex justify-end p-2">
+                        <Box className="flex justify-end p-2 flex-shrink-0" sx={{ width: '100%' }}>
                             <IconButton
                                 onClick={toggleSidebar}
                                 color="inherit"
@@ -306,7 +312,7 @@ export default function DashboardLayout() {
                         </Box>
 
                         {/* Logo section */}
-                        <Box className="flex justify-center items-center py-4 border-b border-gray-700">
+                        <Box className="flex justify-center items-center py-4 border-b border-gray-700 flex-shrink-0">
                             <motion.img
                                 src={t('logo')}
                                 alt="Logo"
@@ -318,7 +324,7 @@ export default function DashboardLayout() {
                         </Box>
 
                         {/* User section */}
-                        <Box className="flex items-center p-4 border-b border-gray-700">
+                        <Box className="flex items-center p-4 border-b border-gray-700 flex-shrink-0">
                             <Avatar
                                 sx={{
                                     width: 48,
@@ -337,18 +343,25 @@ export default function DashboardLayout() {
                         </Box>
 
                         {/* Navigation Items */}
-                        <List className="py-4 flex-grow">
+                        <List 
+                            className="py-4 flex-1 overflow-y-auto" 
+                            style={{ 
+                                minHeight: 0,
+                                width: '100%',
+                                overflowX: 'hidden'
+                            }}
+                        >
                             {navigationItems.map((item, index) => (
                                 <motion.div
                                     key={index}
                                     whileHover={{ x: 6 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                    style={{ width: '100%' }}
                                 >
                                     <ListItem
                                         component={Link}
                                         to={item.path}
                                         onClick={() => {
-                                            // console.log("Clicked on menu item:", item.path);
                                             toggleSidebar();
                                         }}
                                         className={`mx-2 mb-1 rounded-lg transition-all duration-300 ${item.isActive
@@ -358,6 +371,7 @@ export default function DashboardLayout() {
                                         sx={{
                                             py: 1.5,
                                             position: 'relative',
+                                            width: 'calc(100% - 16px)',
                                             '&::before': item.isActive ? {
                                                 content: '""',
                                                 position: 'absolute',
@@ -395,7 +409,7 @@ export default function DashboardLayout() {
                         </List>
 
                         {/* Footer */}
-                        <Box p={2} className="text-center border-t border-gray-700 mt-auto">
+                        <Box p={2} className="text-center border-t border-gray-700 flex-shrink-0">
                             <Typography variant="caption" display="block" className="text-gray-400">
                                 © 2024 Staff Calendar
                             </Typography>

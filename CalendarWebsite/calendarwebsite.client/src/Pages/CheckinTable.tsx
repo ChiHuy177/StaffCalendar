@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { DataGrid, GridColDef, GridColumnGroupingModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridColumnGroupingModel, GridColumnVisibilityModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { useState } from 'react';
 import { formatTime, User, UserInfo } from '../utils/type';
-import { formatDate } from '@fullcalendar/core/index.js';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { Autocomplete, Box, Button, Card, Container, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Skeleton, Stack, styled, TextField, Typography, useTheme, CircularProgress } from '@mui/material';
@@ -13,6 +12,7 @@ import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
 import { useUser } from '../contexts/AuthUserContext';
+import { getDateFromString } from '../utils/calendarCalculate';
 // import { useThemeContext } from '../contexts/ThemeContext';
 
 export default function CheckinTablePage() {
@@ -30,7 +30,11 @@ export default function CheckinTablePage() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
-    // const { isDarkMode } = useThemeContext();
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({
+        userId: !isMobile,
+        totalTime: !isMobile
+    })
+
 
     const columnGroupingModel: GridColumnGroupingModel = [
         {
@@ -53,11 +57,11 @@ export default function CheckinTablePage() {
         { field: 'totalTime', headerName: t('table.totalTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
 
-    const columnVisibilityModel = {
-        userId: !isMobile,
-        totalTime: !isMobile,
-        // Các cột khác không định nghĩa sẽ mặc định hiển thị
-    };
+
+    const handleColumnVisibilityModelChange = (newModel: GridColumnVisibilityModel) => {
+        setColumnVisibilityModel(newModel);
+    }
+
     const StyledGridOverlay = styled('div')(({ theme }) => ({
         display: 'flex',
         flexDirection: 'column',
@@ -278,7 +282,7 @@ export default function CheckinTablePage() {
                 return {
                     id: index + 1,
                     userId: item.userId,
-                    workingDate: formatDate(item.at),
+                    workingDate: getDateFromString(item.inAt.toString()),
                     inAt: formatTime(item.inAt.toString()),
                     outAt: formatTime(item.outAt.toString()),
                     totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
@@ -438,7 +442,7 @@ export default function CheckinTablePage() {
                 return {
                     id: rowIndex,
                     userId: item.userId,
-                    workingDate: formatDate(item.at),
+                    workingDate: getDateFromString(item.inAt.toString()),
                     inAt: formatTime(item.inAt.toString()),
                     outAt: formatTime(item.outAt.toString()),
                     totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
@@ -709,7 +713,7 @@ export default function CheckinTablePage() {
                             // background: 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(10px)',
                             height: 'calc(100vh - 300px)',
-                            minHeight: 400,
+                            minHeight: 800,
                             position: 'relative',
                             zIndex: 1
                         }}
@@ -723,6 +727,7 @@ export default function CheckinTablePage() {
                             </Box>
                         ) : (
                             <DataGrid
+                                onColumnVisibilityModelChange={handleColumnVisibilityModelChange}
                                 disableVirtualization={true}
                                 rows={rows}
                                 columns={columns}

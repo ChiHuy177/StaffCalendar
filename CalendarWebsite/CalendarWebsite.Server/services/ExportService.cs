@@ -69,7 +69,7 @@ namespace CalendarWebsite.Server.services
             return await Task.FromResult(stream.ToArray());
         }
 
-        public async Task<byte[]> ExportUserCheckInDataByDateRange(int day,int month, int year, int dayTo,int monthTo, int yearTo, IEnumerable<DataOnly_APIaCheckIn> checkinData)
+        public async Task<byte[]> ExportUserCheckInDataByDateRange(int day, int month, int year, int dayTo, int monthTo, int yearTo, IEnumerable<DataOnly_APIaCheckIn> checkinData)
         {
             using var wb = new XLWorkbook();
             var sheet = wb.AddWorksheet("Checkin Data By Day");
@@ -96,10 +96,11 @@ namespace CalendarWebsite.Server.services
             // Table headers
             sheet.Cell(6, 1).Value = "No";
             sheet.Cell(6, 2).Value = "Full Name";
-            sheet.Cell(6, 3).Value = "Check-in Time";
-            sheet.Cell(6, 4).Value = "Check-out Time";
-            sheet.Cell(6, 5).Value = "Total working time";
-            sheet.Range("A6:E6").Style.Font.Bold = true;
+            sheet.Cell(6, 3).Value = "Check-in day";
+            sheet.Cell(6, 4).Value = "Check-in Time";
+            sheet.Cell(6, 5).Value = "Check-out Time";
+            sheet.Cell(6, 6).Value = "Total working time";
+            sheet.Range("A6:F6").Style.Font.Bold = true;
 
             // Add data rows
             var checkinList = checkinData.ToList();
@@ -108,6 +109,7 @@ namespace CalendarWebsite.Server.services
                 var data = checkinList[i];
                 DateTime? checkinTime = data.InAt?.AddHours(7);
                 DateTime? checkoutTime = data.OutAt?.AddHours(7);
+                string checkinDay = checkinTime.HasValue ? checkinTime.Value.ToString("dd/MM/yyyy") : "N/A";
                 string checkinTimeFormatted = checkinTime.HasValue ? checkinTime.Value.ToString("HH:mm") : "N/A";
                 string checkoutTimeFormatted = checkoutTime.HasValue ? checkoutTime.Value.ToString("HH:mm") : "N/A";
                 string totalTime = checkinTime.HasValue && checkoutTime.HasValue
@@ -116,11 +118,12 @@ namespace CalendarWebsite.Server.services
 
                 sheet.Cell(i + 7, 1).Value = i + 1;
                 sheet.Cell(i + 7, 2).Value = data.FullName ?? "N/A";
-                sheet.Cell(i + 7, 3).Value = checkinTimeFormatted;
-                sheet.Cell(i + 7, 4).Value = checkoutTimeFormatted;
-                sheet.Cell(i + 7, 5).Value = totalTime;
+                sheet.Cell(i + 7, 3).Value = checkinDay;
+                sheet.Cell(i + 7, 4).Value = checkinTimeFormatted;
+                sheet.Cell(i + 7, 5).Value = checkoutTimeFormatted;
+                sheet.Cell(i + 7, 6).Value = totalTime;
             }
-            sheet.Columns(1, 5).AdjustToContents();
+            sheet.Columns(1, 6).AdjustToContents();
             using var stream = new MemoryStream();
             wb.SaveAs(stream);
             return await Task.FromResult(stream.ToArray());

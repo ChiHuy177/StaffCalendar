@@ -15,7 +15,7 @@ namespace CalendarWebsite.Server.services
 
         public async Task<IEnumerable<object>> GetAllName()
         {
-            var result = await _personalRepository.FindListSelect(
+            var result = (await _personalRepository.FindListSelect(
                 predicate: each => each.Email != null && each.FullName != null,
                 selector: each => new
                 {
@@ -24,7 +24,9 @@ namespace CalendarWebsite.Server.services
                 },
                 distinct: true,
                 disableTracking: true
-            );
+            )).GroupBy(x => x.EmailAndName)
+                .Select(g => g.First())
+                .ToList();
             return result;
         }
 

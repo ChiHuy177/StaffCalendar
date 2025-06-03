@@ -5,7 +5,14 @@ import dayjs from 'dayjs';
 
 
 type TranslateFunction = (key: string) => string;
-
+export const getDateFromString = (dateTimeString: string): string => {
+    const date = new Date(dateTimeString);
+    return date.toLocaleDateString('vi-VI', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+}
 export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkScheduleDetail[], t: TranslateFunction): EventInput[] => {
     const eventList: EventInput[] = [];
     if (item.attendant === 'P = Phép năm') {

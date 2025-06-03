@@ -3,9 +3,8 @@ import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Box, Button, Card, CardContent, Container, Fade, IconButton, Paper, Skeleton, Stack, styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridColumnVisibilityModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { formatTime, User } from '../utils/type';
-import { formatDate } from '@fullcalendar/core/index.js';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
@@ -20,6 +19,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { Bounce, toast } from 'react-toastify';
 import { CircularProgress } from '@mui/material';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { getDateFromString } from '../utils/calendarCalculate';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
@@ -32,6 +32,10 @@ export default function CheckInByDayTable() {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
     const { isDarkMode } = useThemeContext();
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({
+        userId: !isMobile,
+        totalTime: !isMobile
+    })
 
     async function handleExportExcelOfAllStaffByDateRange() {
         const dateRangeSelected = dateValue;
@@ -98,6 +102,10 @@ export default function CheckInByDayTable() {
         }
     }
 
+    const handleColumnVisibilityModelChange = (newModel: GridColumnVisibilityModel) => {
+        setColumnVisibilityModel(newModel);
+    }
+
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
         {
             label: t('dayRange.thisWeek'),
@@ -131,10 +139,7 @@ export default function CheckInByDayTable() {
         { label: t('dayRange.reset'), getValue: () => [null, null] },
     ];
 
-    const columnVisibilityModel = {
-        userId: !isMobile,
-        totalTime: !isMobile,
-    };
+
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: '#', flex: 0.5, headerAlign: 'center', cellClassName: 'grid-cell-center' },
@@ -189,7 +194,7 @@ export default function CheckInByDayTable() {
                         id: rowIndex,
                         userId: item.userId,
                         userFullName: item.fullName,
-                        workingDate: formatDate(item.at),
+                        workingDate: getDateFromString(item.inAt.toString()),
                         inAt: formatTime(item.inAt.toString()),
                         outAt: formatTime(item.outAt.toString()),
                         totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
@@ -474,6 +479,7 @@ export default function CheckInByDayTable() {
                                 </Box>
                             ) : (
                                 <DataGrid
+                                    onColumnVisibilityModelChange={handleColumnVisibilityModelChange}
                                     disableVirtualization={true}
                                     rows={rows}
                                     columns={columns}

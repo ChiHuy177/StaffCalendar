@@ -1,9 +1,8 @@
 import { Autocomplete, Box, Button, Card, CardContent, Fade, IconButton, Skeleton, Stack, styled, TextField, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Department, formatTime, User } from "../utils/type";
-import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridColumnVisibilityModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { formatDate } from "@fullcalendar/core/index.js";
 import dayjs, { Dayjs } from "dayjs";
 import { PickersShortcutsItem } from "@mui/x-date-pickers";
 import { DateRange } from "@mui/x-date-pickers-pro/models";
@@ -17,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getAllDepartmentName, getCheckinDataByDepartmentId, getUserFullNameByDepartmentId } from "../apis/CheckinDataApi";
 import { useThemeContext } from "../contexts/ThemeContext";
+import { getDateFromString } from "../utils/calendarCalculate";
 
 
 export default function CheckInTableByDepartment() {
@@ -33,13 +33,14 @@ export default function CheckInTableByDepartment() {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t, i18n } = useTranslation();
     const { isDarkMode } = useThemeContext();
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({
+        userId: !isMobile,
+        totalTime: !isMobile
+    })
 
-    // Add debug logs
-    // console.log('Current language:', i18n.language);
-    // console.log('selectDeptHelper translation:', t('selectDeptHelper'));
-    // console.log('selectStaffHelper translation:', t('selectStaffHelper'));
-    // console.log('dateRangeHelper translation:', t('dateRangeHelper'));
-
+    const handleColumnVisibilityModelChange = (newModel: GridColumnVisibilityModel) => {
+        setColumnVisibilityModel(newModel);
+    }
     const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
         {
             label: t('dayRange.thisWeek'),
@@ -84,11 +85,6 @@ export default function CheckInTableByDepartment() {
         { field: 'totalTime', headerName: t('table.workingTime'), flex: 1, headerAlign: 'center', cellClassName: 'grid-cell-center' },
     ];
 
-    const columnVisibilityModel = {
-        userId: !isMobile,
-        totalTime: !isMobile,
-        // Các cột khác không định nghĩa sẽ mặc định hiển thị
-    };
     const StyledGridOverlay = styled('div')(({ theme }) => ({
         display: 'flex',
         flexDirection: 'column',
@@ -242,7 +238,7 @@ export default function CheckInTableByDepartment() {
                         id: rowIndex,
                         userId: item.userId,
                         userFullName: item.fullName,
-                        workingDate: formatDate(item.at),
+                        workingDate: getDateFromString(item.inAt.toString()),
                         inAt: formatTime(item.inAt.toString()),
                         outAt: formatTime(item.outAt.toString()),
                         totalTime: hours > 0 || minutes > 0 ? `${hours}:${formattedMinutes}` : "N/A",
@@ -607,6 +603,7 @@ export default function CheckInTableByDepartment() {
                                 </Box>
                             ) : (
                                 <DataGrid
+                                    onColumnVisibilityModelChange={handleColumnVisibilityModelChange}
                                     disableVirtualization={true}
                                     rows={rows}
                                     columns={columns}
