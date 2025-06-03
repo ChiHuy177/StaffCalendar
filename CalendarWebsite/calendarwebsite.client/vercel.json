@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://staffcalendarserver-may.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
