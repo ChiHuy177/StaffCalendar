@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 #calendar {
   width: 1000px;
   /* max-width: 1000px; */
@@ -6,131 +7,207 @@
 }
 
 
-.fc-direction-ltr .fc-daygrid-event.fc-event-end, .fc-direction-rtl .fc-daygrid-event.fc-event-start {
+.fc-direction-ltr .fc-daygrid-event.fc-event-end,
+.fc-direction-rtl .fc-daygrid-event.fc-event-start {
   margin-right: 2px;
   padding: 10px;
 }
+
 .css-1xgnz6y-MuiStack-root {
   border: none;
 }
+
 .css-1ll44ll-MuiOutlinedInput-notchedOutline {
   border: none;
 }
-header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionFixed.mui-fixed.css-zanzjh-MuiPaper-root-MuiAppBar-root{
+
+header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionFixed.mui-fixed.css-zanzjh-MuiPaper-root-MuiAppBar-root {
   padding-right: 0 !important;
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* cho full calendar */
+/* Light mode (mặc định) */
+.light-calendar {
+  background-color: white;
+  color: #1F2937;
+}
+
+.light-calendar .fc {
+  background-color: white;
+}
+
+.light-calendar .fc-theme-standard td,
+.light-calendar .fc-theme-standard th {
+  border-color: #e5e7eb;
+}
+
+/* Dark mode */
+.dark-calendar {
+  background-color: #1E293B;
+  color: black;
+}
+
+.dark-calendar .fc-toolbar-title{
+  color: white;
+}
+
+.dark-calendar .fc {
+  background-color: #1E293B;
+}
+
+.dark-calendar .fc-theme-standard td,
+.dark-calendar .fc-theme-standard th {
+  border-color: #334155;
+}
+
+.dark-calendar .fc-button {
+  background-color: #334155 !important;
+  border-color: #334155 !important;
+  color: white !important;
+}
+
+.dark-calendar .fc-button:hover {
+  background-color: #475569 !important;
+  border-color: #475569 !important;
+}
+
+.dark-calendar .fc-day-today {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-calendar .fc-daygrid-day {
+  background-color: #1E293B !important;
+}
+
+.dark-calendar .fc-daygrid-day-frame {
+  background-color: #1E293B !important;
+}
+
+.dark-calendar .fc-day-today {
+  background-color: #2D3748 !important;
+}
+
+.dark-calendar .fc-daygrid-day-number {
+  color: #E2E8F0 !important;
+}
+
+.dark-calendar .fc-col-header-cell {
+  background-color: #1E293B !important;
+  color: #E2E8F0 !important;
+}
+
 
 @layer utilities {
-    .animate-fade-in {
-        animation: fadeIn 0.5s ease-in-out;
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
+  }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+  background: #f1f1f1;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+  background: #888;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+  background: #555;
 }
 
 /* DataGrid Custom Styles */
 .grid-cell-center {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 /* Card Hover Effect */
 .card-hover {
-    transition: all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
 /* Button Animation */
 .button-pulse {
-    animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(0, 202, 255, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(0, 202, 255, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(0, 202, 255, 0);
-    }
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 202, 255, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 202, 255, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 202, 255, 0);
+  }
 }
 
 /* Gradient Text */
 .gradient-text {
-    background: linear-gradient(45deg, #00CAFF, #0A4C94);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(45deg, #00CAFF, #0A4C94);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Input Focus Effect */
 .input-focus-effect:focus-within {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(8, 59, 117, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(8, 59, 117, 0.1);
 }
 
 /* Table Row Hover Animation */
 .table-row-hover {
-    transition: all 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .table-row-hover:hover {
-    transform: scale(1.002);
-    background-color: rgba(209, 228, 246, 0.5) !important;
+  transform: scale(1.002);
+  background-color: rgba(209, 228, 246, 0.5) !important;
 }
 
 /* Loading Skeleton Animation */
 @keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .skeleton-loading {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }

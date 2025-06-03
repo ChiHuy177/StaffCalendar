@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
@@ -17,10 +17,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
 import { useUser } from '../contexts/AuthUserContext';
+import { useThemeContext } from '../contexts/ThemeContext';
 
 
 export default function CalendarComponent() {
-    const {nameOfUsers, loadingUsername} = useUser();
+    const { nameOfUsers, loadingUsername } = useUser();
     const [loading, setLoading] = useState(false);
     // const [loadingUsername, setLoadingUsername] = useState(false);
     const [events, setEvents] = useState<EventInput[]>([]);
@@ -32,6 +33,7 @@ export default function CalendarComponent() {
     const [workDays, setWorkDays] = useState<number>(0);
     const { t } = useTranslation();
     const lang = localStorage.getItem('language') === 'vi' ? 'vi' : 'en';
+    const { isDarkMode } = useThemeContext();
 
     const getWorkDays = async (staffId: string, month: number, year: number) => {
         // console.log(`[getWorkDays] Called for staff: ${staffId}, month: ${month}, year: ${year}`);
@@ -102,7 +104,7 @@ export default function CalendarComponent() {
                             afternoonEnd: item.afternoonEnd
                         });
                     });
-                    
+
                 }
                 // console.log('workScheduleDetails', workScheduleDetails);
                 if (data.length === 0) {
@@ -125,8 +127,8 @@ export default function CalendarComponent() {
                     setLoading(false);
                     return;
                 }
-                
-                
+
+
 
                 const eventList: EventInput[] = [];
                 data.forEach((item: CheckinData) => {
@@ -155,7 +157,7 @@ export default function CalendarComponent() {
                 // console.log(`[fetchWorkSchedule] Processed events for ${staffIdToFetch}, month ${month}. Count: ${updatedEventList.length}. Setting events.`);
                 setEvents(updatedEventList);
                 getWorkDays(staffIdToFetch, month, year);
-                setLoading(false);   
+                setLoading(false);
 
             } catch (error) {
                 console.error('[fetchWorkSchedule] Error fetching work schedule:', error);
@@ -504,55 +506,59 @@ export default function CalendarComponent() {
                             <Chip label={workDays} sx={{ backgroundColor: '#b39ddb', color: 'black', fontWeight: 'bold' }} />
                         </Box>
                     )}
+                    <div className={isDarkMode ? 'dark-calendar' : 'light-calendar'}>
+                        <FullCalendar
 
-                    <FullCalendar
-                        ref={calendarRef}
-                        plugins={[dayGridPlugin]}
-                        initialView="dayGridMonth"
-                        headerToolbar={{
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth',
-                        }}
-                        buttonText={{
-                            today: t('today'),
-                            month: t('month'),
-                        }}
-                        locale={lang}
-                        events={events}
-                        eventClick={handleEventClick}
-                        editable={true}
-                        selectable={true}
-                        aspectRatio={1.2}
-                        contentHeight="auto"
-                        height="auto"
-                        datesSet={() => {
-                            // console.log(`[FullCalendar datesSet] View changed. Current start: ${viewInfo.view.currentStart.toISOString()}`);
-                            fetchWorkSchedule();
-                        }}
-                        dayMaxEventRows={true}
-                        eventContent={(arg) => (
-                            <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
-                                {arg.event.title == t('Absent') || arg.event.title == t('holidays') || arg.event.title === 'Nghỉ phép năm' ?
-                                    (<>
-                                        <p className="font-bold">{arg.event.title}</p>
-                                        <p className="font-bold">{arg.event.start ? new Date(arg.event.start).toLocaleDateString('vi-VN') : 'N/A'} </p>
-                                    </>
-
-                                    )
-
-                                    : (
-                                        <>
+                            ref={calendarRef}
+                            plugins={[dayGridPlugin]}
+                            initialView="dayGridMonth"
+                            headerToolbar={{
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'dayGridMonth',
+                            }}
+                            buttonText={{
+                                today: t('today'),
+                                month: t('month'),
+                            }}
+                            locale={lang}
+                            events={events}
+                            eventClick={handleEventClick}
+                            editable={true}
+                            selectable={true}
+                            aspectRatio={1.2}
+                            contentHeight="auto"
+                            height="auto"
+                            datesSet={() => {
+                                // console.log(`[FullCalendar datesSet] View changed. Current start: ${viewInfo.view.currentStart.toISOString()}`);
+                                fetchWorkSchedule();
+                            }}
+                            dayMaxEventRows={true}
+                            eventContent={(arg) => (
+                                <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
+                                    {arg.event.title == t('Absent') || arg.event.title == t('holidays') || arg.event.title === 'Nghỉ phép năm' ?
+                                        (<>
                                             <p className="font-bold">{arg.event.title}</p>
-                                            <p className="font-bold">{arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'}</p>
+                                            <p className="font-bold">{arg.event.start ? new Date(arg.event.start).toLocaleDateString('vi-VN') : 'N/A'} </p>
                                         </>
-                                    )
-                                }
-                                <p className="text-black-600">{arg.event.extendedProps?.description}</p>
-                            </div>
-                        )}
-                        viewClassNames='w-full'
-                    />
+
+                                        )
+
+                                        : (
+                                            <>
+                                                <p className="font-bold">{arg.event.title}</p>
+                                                <p className="font-bold">{arg.event.start ? new Date(arg.event.start).toLocaleString('vi-VN') : 'N/A'}</p>
+                                            </>
+                                        )
+                                    }
+                                    <p className="text-black-600">{arg.event.extendedProps?.description}</p>
+                                </div>
+                            )}
+                            viewClassNames='w-full'
+
+                        />
+                    </div>
+
                 </Card>
                 <EventPopover />
             </Box>
