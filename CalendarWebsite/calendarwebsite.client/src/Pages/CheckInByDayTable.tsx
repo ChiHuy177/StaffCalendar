@@ -362,7 +362,8 @@ export default function CheckInByDayTable() {
                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                         <DemoContainer components={['DateRangePicker']}>
                                             <DateRangePicker
-                                                defaultValue={[dayjs(), dayjs()]}
+                                                defaultValue={[dayjs().startOf('month'), dayjs()]}
+                                                format='DD/MM/YYYY'
                                                 sx={{
                                                     width: '100%',
                                                     '& .MuiInputBase-root': {
@@ -405,6 +406,10 @@ export default function CheckInByDayTable() {
                                                             },
                                                         },
                                                     },
+                                                }}
+                                                localeText={{
+                                                    start: t('dayRange.start'),
+                                                    end: t('dayRange.end')
                                                 }}
                                                 onChange={handleDateRangeChange}
                                             />
@@ -493,9 +498,10 @@ export default function CheckInByDayTable() {
                                         toolbar: MyCustomToolbar,
                                         noRowsOverlay: CustomNoRowsOverlay
                                     }}
+                                    
                                     columnVisibilityModel={columnVisibilityModel}
                                     sx={{
-                                        border: 'none',
+                                        border: '1px solid #e0e0e0',
                                         '& .MuiDataGrid-columnHeader': {
                                             backgroundColor: 'background.paper',
                                             color: 'text.primary',

@@ -790,7 +790,7 @@ export default function CustomWorkWeek() {
                             borderRadius: 2,
                             background: 'background.paper',
                             backdropFilter: 'blur(10px)',
-                            // height: 'calc(100vh - 300px)',
+                            height: 'calc(100vh - 300px)',
                             minHeight: 400,
                             position: 'relative',
                             zIndex: 1
@@ -799,13 +799,13 @@ export default function CustomWorkWeek() {
                         <DataGrid
                             rows={filteredWorkDays}
                             columns={columns}
-                            autoHeight
                             disableRowSelectionOnClick
                             localeText={i18n.language === 'vi' ? viVNGrid.components.MuiDataGrid.defaultProps.localeText : undefined}
                             slots={{
                                 toolbar: CustomToolbar
                             }}
                             sx={{
+                                // height: '100%',  
                                 border: '1px solid #e0e0e0',
                                 '& .MuiDataGrid-columnHeader': {
                                     backgroundColor: 'background.paper',

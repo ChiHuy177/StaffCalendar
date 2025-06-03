@@ -58,7 +58,9 @@
         "thisWeek": "Tuần hiện tại",
         "thisMonth": "Tháng hiện tại",
         "reset": "Đặt lại",
-        "lastWeek": "Tuần trước"
+        "lastWeek": "Tuần trước",
+        "start": "Ngày bắt đầu",
+        "end": "Ngày kết thúc"
     },
     "today": "Hôm nay",
     "month": "Tháng",
