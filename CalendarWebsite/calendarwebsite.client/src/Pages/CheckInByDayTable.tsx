@@ -19,6 +19,7 @@ import { getCheckinDataByDayRange } from '../apis/CheckinDataApi';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Bounce, toast } from 'react-toastify';
 import { CircularProgress } from '@mui/material';
+import { useThemeContext } from '../contexts/ThemeContext';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ export default function CheckInByDayTable() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
+    const { isDarkMode } = useThemeContext();
 
     async function handleExportExcelOfAllStaffByDateRange() {
         const dateRangeSelected = dateValue;
@@ -254,6 +256,7 @@ export default function CheckInByDayTable() {
                     aria-hidden
                     focusable="false"
                     className='pt-5'
+                    color='text.primary'
                 >
                     <path
                         className="no-rows-primary"
@@ -279,7 +282,19 @@ export default function CheckInByDayTable() {
 
     function MyCustomToolbar() {
         return (
-            <GridToolbarContainer>
+            <GridToolbarContainer
+                sx={{
+                    '& .MuiButton-root': {
+                        color: 'text.primary',
+                        '&:hover': {
+                            backgroundColor: 'action.hover'
+                        }
+                    },
+                    '& .MuiButton-startIcon': {
+                        color: 'text.primary'
+                    }
+                }}
+            >
                 <GridToolbarColumnsButton />
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector
@@ -297,21 +312,6 @@ export default function CheckInByDayTable() {
             </GridToolbarContainer>
         );
     }
-
-    const CustomButton = styled(Button)(() => ({
-        background: 'linear-gradient(45deg, #00CAFF 30%, #0A4C94 90%)',
-        borderRadius: '12px',
-        border: 0,
-        color: 'white',
-        padding: '12px 24px',
-        boxShadow: '0 3px 5px 2px rgba(8, 59, 117, .3)',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 6px 12px rgba(8, 59, 117, .4)',
-        },
-    }));
-
     return (
         <Fade in={true} timeout={800}>
             <Box
@@ -363,30 +363,43 @@ export default function CheckInByDayTable() {
                                                     '& .MuiInputBase-root': {
                                                         borderRadius: '12px',
                                                         transition: 'all 0.3s ease',
-                                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                                        '&:hover': {
-                                                            boxShadow: '0 4px 8px rgba(8, 59, 117, 0.1)',
-                                                            backgroundColor: 'white',
+                                                        backgroundColor: 'background.paper',
+                                                        border: isDarkMode ? '' : '1px solid black'
+                                                    },
+                                                    '& .MuiFormLabel-root': {
+                                                        color: 'text.primary',
+                                                        backgroundColor: 'background.paper',
+
+                                                        '&.Mui-focused': {
+                                                            color: 'text.primary !important',
                                                         },
                                                     },
-                                                    '& .MuiPickersDay-root': {
-                                                        borderRadius: '8px',
-                                                        transition: 'all 0.2s ease',
-                                                        '&:hover': {
-                                                            backgroundColor: '#D1E4F6',
-                                                            transform: 'scale(1.1)',
-                                                        },
-                                                        '&.Mui-selected': {
-                                                            backgroundColor: '#083B75',
-                                                            color: 'white',
-                                                            '&:hover': {
-                                                                backgroundColor: '#0A4C94',
-                                                            },
-                                                        },
-                                                    },
+
                                                 }}
                                                 slotProps={{
                                                     shortcuts: { items: shortcutsItems },
+                                                    actionBar: {
+                                                        actions: ['clear', 'accept'],
+                                                        sx: {
+                                                            '& .MuiButtonBase-root': {
+                                                                color: 'text.primary',
+                                                                '&:hover': {
+                                                                    backgroundColor: 'action.hover',
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                    popper: {
+                                                        sx: {
+                                                            '& .MuiPaper-root': {
+                                                                borderRadius: '12px',
+                                                                boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(1,1,1,10)',
+                                                                border: '1px solid',
+                                                                borderColor: 'divider',
+                                                                backgroundColor: 'background.paper',
+                                                            },
+                                                        },
+                                                    },
                                                 }}
                                                 onChange={handleDateRangeChange}
                                             />
@@ -394,16 +407,36 @@ export default function CheckInByDayTable() {
                                     </LocalizationProvider>
 
                                     <div className="flex justify-center items-center space-x-4">
-                                        <CustomButton
+                                        <Button
                                             className="w-full md:w-1/3 text-lg py-3"
                                             onClick={() => handleSearch(paginationModel.page, paginationModel.pageSize)}
+                                            sx={{
+                                                mb: 2,
+                                                px: 3,
+                                                py: 1.5,
+                                                backgroundColor: 'primary.light',
+                                                color: '#ffffff',
+                                                fontWeight: 'bold',
+                                                borderRadius: '8px',
+                                                boxShadow: 2,
+                                                '&:hover': {
+                                                    backgroundColor: 'primary.dark',
+                                                },
+                                                '&:disabled': {
+                                                    backgroundColor: 'action.disabledBackground',
+                                                    color: 'action.disabled',
+                                                },
+                                                transition: 'all 0.3s ease'
+
+                                            }}
                                         >
                                             {t('Find')}
-                                        </CustomButton>
+                                        </Button>
                                         <Tooltip title={t('refresh')} arrow>
-                                            <IconButton 
+                                            <IconButton
                                                 onClick={() => handleSearch(paginationModel.page, paginationModel.pageSize)}
                                                 sx={{
+                                                    mb: 2,
                                                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                                     '&:hover': {
                                                         backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -424,7 +457,7 @@ export default function CheckInByDayTable() {
                             sx={{
                                 p: 2,
                                 borderRadius: 2,
-                                background: 'rgba(255, 255, 255, 0.95)',
+                                background: 'background.paper',
                                 backdropFilter: 'blur(10px)',
                                 height: 'calc(100vh - 300px)',
                                 minHeight: 400,
@@ -458,38 +491,34 @@ export default function CheckInByDayTable() {
                                     sx={{
                                         border: 'none',
                                         '& .MuiDataGrid-columnHeader': {
-                                            backgroundColor: '#f8fafc',
-                                            color: '#083B75',
-                                            fontWeight: 'bold',
-                                            fontSize: '0.95rem',
-                                            '&:hover': {
-                                                backgroundColor: '#D1E4F6',
-                                            }
+                                            backgroundColor: 'background.paper',
+                                            color: 'text.primary',
+                                            fontWeight: 'bold'
                                         },
-                                        '& .MuiDataGrid-row': {
-                                            transition: 'background-color 0.2s ease',
-                                            '&:nth-of-type(odd)': {
-                                                backgroundColor: '#f8fafc',
-                                            },
-                                            '&:hover': {
-                                                backgroundColor: '#D1E4F6',
-                                                transform: 'scale(1.002)',
-                                            },
+                                        '& .MuiDataGrid-row:nth-of-type(odd)': {
+                                            backgroundColor: 'background.paper',
+                                        },
+                                        '& .MuiDataGrid-row:hover': {
+                                            backgroundColor: 'action.hover',
                                         },
                                         '& .MuiDataGrid-cell': {
-                                            borderBottom: '1px solid #e2e8f0',
-                                            '&:hover': {
-                                                color: '#083B75',
-                                            }
-                                        },
-                                        '& .MuiDataGrid-columnSeparator': {
-                                            display: 'none',
+                                            borderColor: 'divider',
+                                            color: 'text.primary'
                                         },
                                         '& .MuiDataGrid-footerContainer': {
-                                            borderTop: '1px solid #e2e8f0',
+                                            borderTop: 1,
+                                            borderColor: 'divider',
+                                            color: 'text.primary'
                                         },
-                                        '& .MuiTablePagination-root': {
-                                            color: '#083B75',
+                                        '& .MuiDataGrid-toolbarContainer': {
+                                            color: 'text.primary'
+                                        },
+                                        '& .MuiDataGrid-columnHeaders': {
+                                            borderBottom: 1,
+                                            borderColor: 'divider'
+                                        },
+                                        '& .MuiDataGrid-virtualScroller': {
+                                            backgroundColor: 'background.paper'
                                         }
                                     }}
                                 />

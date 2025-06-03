@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Card, CardContent, Fade, IconButton, Skeleton, styled, TextField, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { Autocomplete, Box, Button, Card, CardContent, Fade, IconButton, Skeleton, Stack, styled, TextField, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Department, formatTime, User } from "../utils/type";
 import { DataGrid, GridColDef, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 // import i18n from "../i18n";
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getAllDepartmentName, getCheckinDataByDepartmentId, getUserFullNameByDepartmentId } from "../apis/CheckinDataApi";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 
 export default function CheckInTableByDepartment() {
@@ -31,6 +32,7 @@ export default function CheckInTableByDepartment() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t, i18n } = useTranslation();
+    const { isDarkMode } = useThemeContext();
 
     // Add debug logs
     // console.log('Current language:', i18n.language);
@@ -141,7 +143,19 @@ export default function CheckInTableByDepartment() {
     }
     function MyCustomToolbar() {
         return (
-            <GridToolbarContainer>
+            <GridToolbarContainer
+                sx={{
+                    '& .MuiButton-root': {
+                        color: 'text.primary',
+                        '&:hover': {
+                            backgroundColor: 'action.hover'
+                        }
+                    },
+                    '& .MuiButton-startIcon': {
+                        color: 'text.primary'
+                    }
+                }}
+            >
                 <GridToolbarColumnsButton />
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector
@@ -271,19 +285,6 @@ export default function CheckInTableByDepartment() {
         }
     }
 
-    const CustomButton = styled(Button)(() => ({
-        background: 'linear-gradient(45deg, #00CAFF 30%, #0A4C94 90%)',
-        borderRadius: '12px',
-        border: 0,
-        color: 'white',
-        padding: '12px 24px',
-        boxShadow: '0 3px 5px 2px rgba(8, 59, 117, .3)',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 6px 12px rgba(8, 59, 117, .4)',
-        },
-    }));
 
     return (
         <Fade in={true} timeout={800}>
@@ -294,8 +295,19 @@ export default function CheckInTableByDepartment() {
                         <div className="w-24 h-1 bg-[#00CAFF] mx-auto mt-4 rounded-full"></div>
                     </h1>
 
-                    <Card className="mb-8 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl backdrop-blur-sm bg-white/95" style={{ position: 'relative', overflow: 'visible', zIndex: 2 }}>
-                        <CardContent className="space-y-6" style={{ position: 'relative', overflow: 'visible' }}>
+                    <Card
+                        elevation={3}
+                        sx={{
+                            mb: 10,
+                            p: 3,
+                            borderRadius: 2,
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            backdropFilter: 'blur(10px)',
+                            position: 'relative',
+                            overflow: 'visible',
+                            zIndex: 2
+                        }} >
+                        <Stack spacing={3}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ position: 'relative', overflow: 'visible' }}>
                                 <div className="space-y-2" style={{ position: 'relative', overflow: 'visible' }}>
                                     <Autocomplete
@@ -304,24 +316,6 @@ export default function CheckInTableByDepartment() {
                                             label: department.title || `Noname-${department.id}`,
                                             key: department.id
                                         }))}
-                                        sx={{
-                                            '& .MuiInputBase-root': {
-                                                borderRadius: '12px',
-                                                transition: 'all 0.3s ease',
-                                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                                '&:hover': {
-                                                    boxShadow: '0 4px 8px rgba(8, 59, 117, 0.1)',
-                                                    backgroundColor: 'white',
-                                                },
-                                            },
-                                            '& .MuiInputLabel-root': {
-                                                color: '#083B75',
-                                                backgroundColor: 'white',
-                                                padding: '0 8px',
-                                            },
-                                            position: 'relative',
-                                            zIndex: 9999
-                                        }}
                                         slotProps={{
                                             popper: {
                                                 sx: {
@@ -340,13 +334,13 @@ export default function CheckInTableByDepartment() {
                                                 ]
                                             },
                                             listbox: {
-                                                sx: { 
-                                                    backgroundColor: 'white',
+                                                sx: {
+                                                    backgroundColor: 'background.paper',
                                                     color: 'text.primary',
                                                     zIndex: 9999,
                                                     maxHeight: '300px',
-                                                    '& .MuiAutocomplete-option':{
-                                                        '&[aria-selected="true"]':{
+                                                    '& .MuiAutocomplete-option': {
+                                                        '&[aria-selected="true"]': {
                                                             backgroundColor: 'primary.light',
                                                             color: 'primary.contrastText',
                                                             '&.Mui-focused': {
@@ -354,7 +348,7 @@ export default function CheckInTableByDepartment() {
                                                                 color: 'primary.contrastText',
                                                             }
                                                         },
-                                                        '&:hover':{
+                                                        '&:hover': {
                                                             backgroundColor: 'action.hover',
                                                         }
                                                     }
@@ -363,7 +357,38 @@ export default function CheckInTableByDepartment() {
                                         }}
                                         onChange={(_event, value) => handleDepartmentChange(value?.key)}
                                         renderInput={(params) => (
-                                            <TextField {...params} label={t('selectDept')} />
+                                            <TextField
+                                                {...params}
+                                                label={t('selectDept')}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        borderRadius: '12px',
+                                                        backgroundColor: 'background.paper',
+                                                        color: 'text.primary',
+                                                        '& fieldset': {
+                                                            borderColor: 'grey.400',
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: 'grey.600',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: 'text.primary',
+                                                        },
+                                                        '& .MuiAutocomplete-input': {
+                                                            color: 'text.primary',
+                                                            paddingLeft: '4px !important',
+                                                        },
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        color: 'text.secondary',
+                                                    },
+                                                    '& .MuiInputLabel-root.Mui-focused': {
+                                                        color: 'text.secondary',
+                                                    },
+                                                    '& .MuiAutocomplete-popupIndicator': { color: 'text.secondary' },
+                                                    '& .MuiAutocomplete-clearIndicator': { color: 'text.secondary' },
+                                                }}
+                                            />
                                         )}
                                     />
                                     <div className="text-xs text-gray-500 ml-2">
@@ -378,24 +403,6 @@ export default function CheckInTableByDepartment() {
                                             label: name,
                                             key: index
                                         }))}
-                                        sx={{
-                                            '& .MuiInputBase-root': {
-                                                borderRadius: '12px',
-                                                transition: 'all 0.3s ease',
-                                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                                '&:hover': {
-                                                    boxShadow: '0 4px 8px rgba(8, 59, 117, 0.1)',
-                                                    backgroundColor: 'white',
-                                                },
-                                            },
-                                            '& .MuiInputLabel-root': {
-                                                color: '#083B75',
-                                                backgroundColor: 'white',
-                                                padding: '0 8px',
-                                            },
-                                            position: 'relative',
-                                            
-                                        }}
                                         slotProps={{
                                             popper: {
                                                 sx: {
@@ -414,13 +421,13 @@ export default function CheckInTableByDepartment() {
                                                 ]
                                             },
                                             listbox: {
-                                                sx: { 
-                                                    backgroundColor: 'white',
+                                                sx: {
+                                                    backgroundColor: 'background.paper',
                                                     color: 'text.primary',
                                                     zIndex: 9999,
                                                     maxHeight: '300px',
-                                                    '& .MuiAutocomplete-option':{
-                                                        '&[aria-selected="true"]':{
+                                                    '& .MuiAutocomplete-option': {
+                                                        '&[aria-selected="true"]': {
                                                             backgroundColor: 'primary.light',
                                                             color: 'primary.contrastText',
                                                             '&.Mui-focused': {
@@ -428,7 +435,7 @@ export default function CheckInTableByDepartment() {
                                                                 color: 'primary.contrastText',
                                                             }
                                                         },
-                                                        '&:hover':{
+                                                        '&:hover': {
                                                             backgroundColor: 'action.hover',
                                                         }
                                                     }
@@ -437,7 +444,38 @@ export default function CheckInTableByDepartment() {
                                         }}
                                         onChange={(_event, value) => handleSelectionOfStaffNameChange(value?.label)}
                                         renderInput={(params) => (
-                                            <TextField {...params} label={t('selectStaff')} />
+                                            <TextField
+                                                {...params}
+                                                label={t('selectStaff')}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        borderRadius: '12px',
+                                                        backgroundColor: 'background.paper',
+                                                        color: 'text.primary',
+                                                        '& fieldset': {
+                                                            borderColor: 'grey.400',
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: 'grey.600',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: 'text.primary',
+                                                        },
+                                                        '& .MuiAutocomplete-input': {
+                                                            color: 'text.primary',
+                                                            paddingLeft: '4px !important',
+                                                        },
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        color: 'text.secondary',
+                                                    },
+                                                    '& .MuiInputLabel-root.Mui-focused': {
+                                                        color: 'text.secondary',
+                                                    },
+                                                    '& .MuiAutocomplete-popupIndicator': { color: 'text.secondary' },
+                                                    '& .MuiAutocomplete-clearIndicator': { color: 'text.secondary' },
+                                                }}
+                                            />
                                         )}
                                     />
                                     <div className="text-xs text-gray-500 ml-2">
@@ -456,88 +494,18 @@ export default function CheckInTableByDepartment() {
                                                 '& .MuiInputBase-root': {
                                                     borderRadius: '12px',
                                                     transition: 'all 0.3s ease',
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                                    '&:hover': {
-                                                        boxShadow: '0 4px 8px rgba(8, 59, 117, 0.1)',
-                                                        backgroundColor: 'white',
-                                                    },
-                                                    '& .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: 'rgba(8, 59, 117, 0.2)',
-                                                        transition: 'all 0.3s ease',
-                                                    },
-                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: '#083B75',
-                                                    },
-                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                        borderColor: '#083B75',
-                                                        borderWidth: '2px',
-                                                    },
+                                                    backgroundColor: 'background.paper',
+                                                    border: isDarkMode ? '' : '1px solid black'
                                                 },
-                                                '& .MuiInputLabel-root': {
-                                                    color: '#083B75',
+                                                '& .MuiFormLabel-root': {
+                                                    color: 'text.primary',
+                                                    backgroundColor: 'background.paper',
+
                                                     '&.Mui-focused': {
-                                                        color: '#083B75',
+                                                        color: 'text.primary !important',
                                                     },
                                                 },
-                                                '& .MuiPickersDay-root': {
-                                                    borderRadius: '8px',
-                                                    transition: 'all 0.2s ease',
-                                                    margin: '2px',
-                                                    '&:hover': {
-                                                        backgroundColor: '#D1E4F6',
-                                                        transform: 'scale(1.1)',
-                                                    },
-                                                    '&.Mui-selected': {
-                                                        backgroundColor: '#083B75',
-                                                        color: 'white',
-                                                        '&:hover': {
-                                                            backgroundColor: '#0A4C94',
-                                                        },
-                                                    },
-                                                    '&.Mui-inRange': {
-                                                        backgroundColor: 'rgba(8, 59, 117, 0.1)',
-                                                        color: '#083B75',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(8, 59, 117, 0.2)',
-                                                        },
-                                                    },
-                                                },
-                                                '& .MuiPickersCalendarHeader-root': {
-                                                    marginBottom: '8px',
-                                                    '& .MuiPickersCalendarHeader-label': {
-                                                        color: '#083B75',
-                                                        fontWeight: 'bold',
-                                                    },
-                                                    '& .MuiIconButton-root': {
-                                                        color: '#083B75',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(8, 59, 117, 0.1)',
-                                                        },
-                                                    },
-                                                },
-                                                '& .MuiPickersArrowSwitcher-root': {
-                                                    '& .MuiIconButton-root': {
-                                                        color: '#083B75',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(8, 59, 117, 0.1)',
-                                                        },
-                                                    },
-                                                },
-                                                '& .MuiPickersShortcuts-root': {
-                                                    '& .MuiButtonBase-root': {
-                                                        color: '#083B75',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(8, 59, 117, 0.1)',
-                                                        },
-                                                        '&.Mui-selected': {
-                                                            backgroundColor: '#083B75',
-                                                            color: 'white',
-                                                            '&:hover': {
-                                                                backgroundColor: '#0A4C94',
-                                                            },
-                                                        },
-                                                    },
-                                                },
+
                                             }}
                                             slotProps={{
                                                 shortcuts: { items: shortcutsItems },
@@ -545,9 +513,9 @@ export default function CheckInTableByDepartment() {
                                                     actions: ['clear', 'accept'],
                                                     sx: {
                                                         '& .MuiButtonBase-root': {
-                                                            color: '#083B75',
+                                                            color: 'text.primary',
                                                             '&:hover': {
-                                                                backgroundColor: 'rgba(8, 59, 117, 0.1)',
+                                                                backgroundColor: 'action.hover',
                                                             },
                                                         },
                                                     },
@@ -556,8 +524,10 @@ export default function CheckInTableByDepartment() {
                                                     sx: {
                                                         '& .MuiPaper-root': {
                                                             borderRadius: '12px',
-                                                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                                                            border: '1px solid rgba(8, 59, 117, 0.1)',
+                                                            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(1,1,1,10)',
+                                                            border: '1px solid',
+                                                            borderColor: 'divider',
+                                                            backgroundColor: 'background.paper',
                                                         },
                                                     },
                                                 },
@@ -572,27 +542,61 @@ export default function CheckInTableByDepartment() {
                             </div>
 
                             <div className="flex justify-center items-center space-x-4">
-                                <CustomButton
+                                <Button
+                                    sx={{
+                                        mb: 2,
+                                        mr: 2,
+                                        px: 3,
+                                        py: 1.5,
+                                        backgroundColor: 'primary.light',
+                                        color: '#ffffff',
+                                        fontWeight: 'bold',
+                                        borderRadius: '8px',
+                                        boxShadow: 2,
+                                        '&:hover': {
+                                            backgroundColor: 'primary.dark',
+                                        },
+                                        '&:disabled': {
+                                            backgroundColor: 'action.disabledBackground',
+                                            color: 'action.disabled',
+                                        },
+                                        transition: 'all 0.3s ease'
+
+                                    }}
                                     className="w-full md:w-1/3 text-lg py-3"
                                     onClick={() => handleFind(paginationModel.page, paginationModel.pageSize)}
                                 >
                                     {t('Find')}
-                                </CustomButton>
+                                </Button>
                                 <Tooltip title={t('refresh')} arrow>
-                                    <IconButton 
+                                    <IconButton
                                         onClick={() => handleFind(paginationModel.page, paginationModel.pageSize)}
                                         sx={{
-                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                            mb: 2,
+                                            mr: 2,
+                                            px: 3,
+                                            py: 1.5,
+                                            backgroundColor: 'primary.light',
+                                            color: '#ffffff',
+                                            fontWeight: 'bold',
+                                            borderRadius: '8px',
+                                            boxShadow: 2,
                                             '&:hover': {
-                                                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                                            }
+                                                backgroundColor: 'primary.dark',
+                                            },
+                                            '&:disabled': {
+                                                backgroundColor: 'action.disabledBackground',
+                                                color: 'action.disabled',
+                                            },
+                                            transition: 'all 0.3s ease'
+
                                         }}
                                     >
                                         <RefreshIcon />
                                     </IconButton>
                                 </Tooltip>
                             </div>
-                        </CardContent>
+                        </Stack>
                     </Card>
 
                     <Card className="shadow-xl transition-all duration-300 hover:shadow-2xl backdrop-blur-sm bg-white/95" style={{ position: 'relative', zIndex: 1 }}>
@@ -620,38 +624,34 @@ export default function CheckInTableByDepartment() {
                                     sx={{
                                         border: 'none',
                                         '& .MuiDataGrid-columnHeader': {
-                                            backgroundColor: '#f8fafc',
-                                            color: '#083B75',
-                                            fontWeight: 'bold',
-                                            fontSize: '0.95rem',
-                                            '&:hover': {
-                                                backgroundColor: '#D1E4F6',
-                                            }
+                                            backgroundColor: 'background.paper',
+                                            color: 'text.primary',
+                                            fontWeight: 'bold'
                                         },
-                                        '& .MuiDataGrid-row': {
-                                            transition: 'background-color 0.2s ease',
-                                            '&:nth-of-type(odd)': {
-                                                backgroundColor: '#f8fafc',
-                                            },
-                                            '&:hover': {
-                                                backgroundColor: '#D1E4F6',
-                                                transform: 'scale(1.002)',
-                                            },
+                                        '& .MuiDataGrid-row:nth-of-type(odd)': {
+                                            backgroundColor: 'background.paper',
+                                        },
+                                        '& .MuiDataGrid-row:hover': {
+                                            backgroundColor: 'action.hover',
                                         },
                                         '& .MuiDataGrid-cell': {
-                                            borderBottom: '1px solid #e2e8f0',
-                                            '&:hover': {
-                                                color: '#083B75',
-                                            }
-                                        },
-                                        '& .MuiDataGrid-columnSeparator': {
-                                            display: 'none',
+                                            borderColor: 'divider',
+                                            color: 'text.primary'
                                         },
                                         '& .MuiDataGrid-footerContainer': {
-                                            borderTop: '1px solid #e2e8f0',
+                                            borderTop: 1,
+                                            borderColor: 'divider',
+                                            color: 'text.primary'
                                         },
-                                        '& .MuiTablePagination-root': {
-                                            color: '#083B75',
+                                        '& .MuiDataGrid-toolbarContainer': {
+                                            color: 'text.primary'
+                                        },
+                                        '& .MuiDataGrid-columnHeaders': {
+                                            borderBottom: 1,
+                                            borderColor: 'divider'
+                                        },
+                                        '& .MuiDataGrid-virtualScroller': {
+                                            backgroundColor: 'background.paper'
                                         }
                                     }}
                                 />

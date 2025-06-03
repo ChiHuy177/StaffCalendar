@@ -35,16 +35,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import React from "react";
 import LogoutButton from '../components/LogoutButton';
 import { useUser } from "../contexts/AuthUserContext";
+import { useThemeContext } from "../contexts/ThemeContext";
+
 
 const drawerWidth = 260;
 
 export default function DashboardLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
-    const {user} = useUser();
+    // const [darkMode, setDarkMode] = useState(false);
+    const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation();
     const location = useLocation();
+    const { isDarkMode, toggleTheme } = useThemeContext();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -70,7 +73,7 @@ export default function DashboardLayout() {
                 // Kiểm tra nếu click không phải trong Drawer và không phải nút menu
                 const drawerElement = document.querySelector('.MuiDrawer-paper');
                 const menuButton = document.querySelector('[aria-label="toggle drawer"]');
-                
+
                 if (drawerElement && menuButton) {
                     const target = event.target as Node;
                     if (!drawerElement.contains(target) && !menuButton.contains(target)) {
@@ -82,7 +85,7 @@ export default function DashboardLayout() {
 
         document.addEventListener('mousedown', handleClickOutside);
         document.addEventListener('touchstart', handleClickOutside, { passive: true });
-        
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('touchstart', handleClickOutside);
@@ -94,7 +97,7 @@ export default function DashboardLayout() {
         // console.log("isSidebarOpen changed to:", isSidebarOpen);
     }, [isSidebarOpen]);
 
-    
+
 
     const navigationItems = useMemo(
         () => navigationConfig.map((item: NavItemConfig) => ({
@@ -106,13 +109,9 @@ export default function DashboardLayout() {
     );
 
     const toggleSidebar = () => {
-        // console.log("toggleSidebar called, current state:", isSidebarOpen);
         setIsSidebarOpen(prev => !prev);
     };
 
-    const toggleDarkMode = () => {
-        setDarkMode(prev => !prev);
-    };
 
     // Get breadcrumb items from path
     const getBreadcrumbs = () => {
@@ -121,11 +120,11 @@ export default function DashboardLayout() {
 
         // If we're at the home page, return only Home
         if (pathSegments.length === 0) {
-            return [{ text: t('home'), icon: <HomeIcon fontSize="small" />, path: '/' }];
+            return [{ text: t('home'), icon: <HomeIcon fontSize="small" sx={{ color: "text.primary !important" }} />, path: '/' }];
         }
 
         // Start with home
-        const breadcrumbs = [{ text: t('home'), icon: <HomeIcon fontSize="small" />, path: '/' }];
+        const breadcrumbs = [{ text: t('home'), icon: <HomeIcon fontSize="small" sx={{ color: 'text.primary' }} />, path: '/' }];
 
         // Add additional path segments
         let currentPath = '';
@@ -136,7 +135,7 @@ export default function DashboardLayout() {
             breadcrumbs.push({
                 text: navItem ? navItem.text : segment.charAt(0).toUpperCase() + segment.slice(1),
                 path: currentPath,
-                icon: navItem?.icon ? React.cloneElement(navItem.icon as React.ReactElement) : <HomeIcon fontSize="small" />
+                icon: navItem?.icon ? React.cloneElement(navItem.icon as React.ReactElement) : <HomeIcon fontSize="small" sx={{ color: 'text.primary' }} />
             });
         });
 
@@ -147,9 +146,9 @@ export default function DashboardLayout() {
 
     return (
         <Box
-            className={`flex min-h-screen transition-all duration-300 ${darkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
+            className={`flex min-h-screen transition-all duration-300 ${isDarkMode ? 'bg-slate-900' : 'bg-gray-50'}`}
             sx={{
-                color: darkMode ? 'white' : 'inherit'
+                color: isDarkMode ? 'white' : 'black'
             }}
         >
             {/* Top Loading Bar */}
@@ -162,7 +161,7 @@ export default function DashboardLayout() {
                         right: 0,
                         zIndex: 9999,
                         height: 3,
-                        background: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+                        background: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
                     }}
                 />
             )}
@@ -174,14 +173,14 @@ export default function DashboardLayout() {
                 className="z-[1000]"
                 sx={{
                     backdropFilter: 'blur(10px)',
-                    backgroundColor: darkMode ? 'rgba(15, 23, 42, 0.95)' : 'rgba(13, 36, 99, 0.95)',
-                    borderBottom: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`
+                    backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.95)' : 'rgba(13, 36, 99, 0.95)',
+                    borderBottom: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.1)'}`
                 }}
             >
-                <Toolbar className={`flex justify-between items-center w-full box-border ${darkMode ? 'bg-gradient-to-b from-[#1E293B] to-[#0F172A]' : 'bg-gradient-to-b from-[#0D2463] to-[#050E35]'} text-white`}>
+                <Toolbar className={`flex justify-between items-center w-full box-border ${isDarkMode ? 'bg-gradient-to-b from-[#1E293B] to-[#0F172A]' : 'bg-gradient-to-b from-[#0D2463] to-[#050E35]'} text-white`}>
                     {/* Logo Section */}
                     <div className="flex items-center">
-                        <button 
+                        <button
                             onClick={toggleSidebar}
                             className="p-2 mr-2 rounded-full hover:bg-blue-800 focus:outline-none"
                             style={{ zIndex: 2000 }}
@@ -204,7 +203,7 @@ export default function DashboardLayout() {
                                     sx={{
                                         ml: 2,
                                         fontWeight: 'bold',
-                                        background: darkMode
+                                        background: isDarkMode
                                             ? 'linear-gradient(to right, #fff, #94a3b8)'
                                             : 'linear-gradient(to right, #fff, #b8c7ff)',
                                         WebkitBackgroundClip: 'text',
@@ -221,13 +220,13 @@ export default function DashboardLayout() {
                     {/* Icon and Avatar */}
                     <div className="flex items-center space-x-2 sm:space-x-4">
                         {/* Dark Mode Toggle */}
-                        <Tooltip title={darkMode ? t('lightMode') : t('darkMode')}>
+                        <Tooltip title={isDarkMode ? t('lightMode') : t('darkMode')}>
                             <IconButton
-                                onClick={toggleDarkMode}
+                                onClick={toggleTheme}
                                 color="inherit"
                                 className="text-white transition-transform hover:scale-110"
                             >
-                                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                                {isDarkMode ? <LightModeIcon /> : <DarkModeIcon />}
                             </IconButton>
                         </Tooltip>
 
@@ -270,7 +269,7 @@ export default function DashboardLayout() {
                     sx: {
                         width: drawerWidth,
                         boxSizing: 'border-box',
-                        background: darkMode
+                        background: isDarkMode
                             ? 'linear-gradient(to bottom, #1E293B, #0F172A)'
                             : 'linear-gradient(to bottom, #0D2463, #050E35)',
                         color: 'white',
@@ -325,7 +324,7 @@ export default function DashboardLayout() {
                                     width: 48,
                                     height: 48,
                                     border: '2px solid rgba(255,255,255,0.3)',
-                                    backgroundColor: darkMode ? '#60A5FA' : '#1E40AF',
+                                    backgroundColor: isDarkMode ? '#60A5FA' : '#1E40AF',
                                     transition: 'all 0.3s ease'
                                 }}
                             >
@@ -353,8 +352,8 @@ export default function DashboardLayout() {
                                             toggleSidebar();
                                         }}
                                         className={`mx-2 mb-1 rounded-lg transition-all duration-300 ${item.isActive
-                                                ? `${darkMode ? 'bg-blue-800' : 'bg-blue-700'} bg-opacity-80 shadow-md`
-                                                : `hover:${darkMode ? 'bg-slate-800' : 'bg-blue-900'} hover:bg-opacity-50`
+                                            ? `${isDarkMode ? 'bg-blue-800' : 'bg-blue-700'} bg-opacity-80 shadow-md`
+                                            : `hover:${isDarkMode ? 'bg-slate-800' : 'bg-blue-900'} hover:bg-opacity-50`
                                             }`}
                                         sx={{
                                             py: 1.5,
@@ -367,7 +366,7 @@ export default function DashboardLayout() {
                                                 transform: 'translateY(-50%)',
                                                 width: 4,
                                                 height: '60%',
-                                                backgroundColor: darkMode ? '#60A5FA' : '#60A5FA',
+                                                backgroundColor: isDarkMode ? '#60A5FA' : '#60A5FA',
                                                 borderRadius: '0 4px 4px 0',
                                                 transition: 'all 0.3s ease'
                                             } : {}
@@ -420,7 +419,7 @@ export default function DashboardLayout() {
                         duration: theme.transitions.duration.leavingScreen,
                     }),
                     marginLeft: 0,
-                    backgroundColor: darkMode ? 'rgba(15, 23, 42, 0.98)' : 'inherit'
+                    backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.98)' : 'inherit'
                 }}
             >
                 <Toolbar /> {/* Spacer to push content below AppBar */}
@@ -430,15 +429,15 @@ export default function DashboardLayout() {
                     elevation={0}
                     className="mb-4 px-4 py-2 rounded-lg"
                     sx={{
-                        backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.5)' : 'white',
-                        borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                        boxShadow: darkMode ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.05)'
+                        backgroundColor: isDarkMode ? 'rgba(30, 41, 59, 0.5)' : 'white',
+                        borderBottom: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
+                        boxShadow: isDarkMode ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(0, 0, 0, 0.05)'
                     }}
                 >
                     <Breadcrumbs
                         separator={<NavigateNextIcon fontSize="small" />}
                         aria-label="breadcrumb"
-                        sx={{ color: darkMode ? 'rgba(255,255,255,0.7)' : 'inherit' }}
+                        sx={{ color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'inherit' }}
                     >
                         {breadcrumbItems.map((item, index) => {
                             const isLast = index === breadcrumbItems.length - 1;
@@ -447,14 +446,21 @@ export default function DashboardLayout() {
                                     key={index}
                                     className="flex items-center"
                                     sx={{
-                                        color: darkMode ? 'white' : 'primary.main',
+                                        color: 'text.primary',
                                         fontWeight: 'bold',
                                         display: 'flex',
                                         alignItems: 'center'
                                     }}
                                 >
                                     {item.icon && (
-                                        <Box component="span" sx={{ mr: 0.5, display: 'flex', alignItems: 'center' }}>
+                                        <Box component="span"
+                                            sx={{
+                                                mr: 0.5,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                color: "text.primary"
+                                            
+                                            }}>
                                             {item.icon}
                                         </Box>
                                     )}
@@ -466,7 +472,7 @@ export default function DashboardLayout() {
                                     to={item.path}
                                     className="flex items-center hover:underline"
                                     style={{
-                                        color: darkMode ? 'rgba(255,255,255,0.7)' : 'inherit',
+                                        color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'inherit',
                                         display: 'flex',
                                         alignItems: 'center'
                                     }}
@@ -490,6 +496,7 @@ export default function DashboardLayout() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ duration: 0.3 }}
+                    // color="text.primary"
                     >
                         <Container
                             maxWidth="xl"

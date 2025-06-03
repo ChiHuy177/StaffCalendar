@@ -329,7 +329,6 @@ export default function CalendarComponent() {
                     p: 2,
                     mb: 3,
                     borderRadius: '16px',
-                    backgroundColor: 'white',
                     boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
                 }}>
                     {loadingUsername ? (
@@ -372,7 +371,7 @@ export default function CalendarComponent() {
                                 },
                                 listbox: {
                                     sx: {
-                                        backgroundColor: 'white',
+                                        backgroundColor: 'background.paper',
                                         color: 'text.primary',
                                         zIndex: 99999,
                                         '& .MuiAutocomplete-option': {
@@ -399,7 +398,7 @@ export default function CalendarComponent() {
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
                                             borderRadius: '12px',
-                                            backgroundColor: 'white',
+                                            backgroundColor: 'background.paper',
                                             color: 'text.primary',
                                             '& fieldset': {
                                                 borderColor: 'grey.400',
@@ -408,7 +407,7 @@ export default function CalendarComponent() {
                                                 borderColor: 'grey.600',
                                             },
                                             '&.Mui-focused fieldset': {
-                                                borderColor: 'primary.main',
+                                                borderColor: 'text.primary',
                                             },
                                             '& .MuiAutocomplete-input': {
                                                 color: 'text.primary',
@@ -456,7 +455,6 @@ export default function CalendarComponent() {
                 <Card sx={{
                     p: { xs: 1, sm: 2, md: 3 },
                     borderRadius: '16px',
-                    backgroundColor: 'white',
                     boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
                     position: 'relative'
                 }}>
@@ -494,7 +492,7 @@ export default function CalendarComponent() {
                             justifyContent: 'space-between',
                             mb: 2,
                             p: 1.5,
-                            backgroundColor: 'grey.100',
+                            backgroundColor: 'background.paper',
                             borderRadius: '12px'
                         }}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>

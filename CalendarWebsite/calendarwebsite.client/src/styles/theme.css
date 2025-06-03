@@ -1,0 +1,17 @@
+:root {
+    /* Light theme */
+    --bg-primary: #F3F4F6;
+    --bg-secondary: #FFFFFF;
+    --text-primary: #1F2937;
+    --text-secondary: #4B5563;
+    --border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+    /* Dark theme */
+    --bg-primary: #0F172A;
+    --bg-secondary: #1E293B;
+    --text-primary: #FFFFFF;
+    --text-secondary: #94A3B8;
+    --border-color: rgba(255, 255, 255, 0.1);
+}

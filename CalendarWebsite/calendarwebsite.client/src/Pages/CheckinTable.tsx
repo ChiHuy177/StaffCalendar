@@ -13,10 +13,11 @@ import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
 import { useUser } from '../contexts/AuthUserContext';
+// import { useThemeContext } from '../contexts/ThemeContext';
 
 export default function CheckinTablePage() {
     const [rows, setRows] = useState([]);
-    const {nameOfUsers, loadingUsername} = useUser();
+    const { nameOfUsers, loadingUsername } = useUser();
     // const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
     const [selectedName, setSelectedName] = useState<UserInfo>();
     const [selectedMonth, setSelectedMonth] = useState(() => (new Date().getMonth() + 1).toString());
@@ -29,6 +30,7 @@ export default function CheckinTablePage() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { t } = useTranslation();
+    // const { isDarkMode } = useThemeContext();
 
     const columnGroupingModel: GridColumnGroupingModel = [
         {
@@ -110,7 +112,23 @@ export default function CheckinTablePage() {
     }
     function MyCustomToolbar() {
         return (
-            <GridToolbarContainer>
+            <GridToolbarContainer
+                sx={{
+                    gap: 2,
+                    p: 2,
+                    '& .MuiButton-root': {
+                        color: 'text.primary',
+                        '&:hover': {
+                            backgroundColor: 'primary.dark',
+                            color: 'text.primary'
+                        },
+                    },
+                    '& .MuiButton-startIcon': {
+                        color: 'text.primary'
+                    }
+
+                }}
+            >
                 <GridToolbarColumnsButton />
                 <GridToolbarFilterButton />
                 <GridToolbarDensitySelector
@@ -120,8 +138,25 @@ export default function CheckinTablePage() {
                 <Button
                     onClick={handleExportExcel}
                     disabled={exportLoading}
-                    className="mb-6 cursor-pointer px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-                    startIcon={exportLoading ? <CircularProgress size={20} color="inherit" /> : <DownloadRoundedIcon />}
+                    variant="contained"
+                    sx={{
+                        mb: 2,
+                        px: 3,
+                        py: 1.5,
+                        backgroundColor: 'primary.light',
+                        color: '#ffffff !important',
+                        fontWeight: 'bold',
+                        borderRadius: '8px',
+                        boxShadow: 2,
+
+                        '&:disabled': {
+                            backgroundColor: 'action.disabledBackground',
+                            color: 'action.disabled',
+                        },
+                        transition: 'all 0.3s ease'
+
+                    }}
+                    startIcon={exportLoading ? <CircularProgress size={20} color="inherit" /> : <DownloadRoundedIcon sx={{ color: "#ffffff !important" }} />}
                 >
                     {exportLoading ? t('exporting') : t('ExportExcel')}
                 </Button>
@@ -536,7 +571,7 @@ export default function CheckinTablePage() {
                                             },
                                             listbox: {
                                                 sx: {
-                                                    backgroundColor: 'white',
+                                                    backgroundColor: 'background.paper',
                                                     color: 'text.primary',
                                                     zIndex: 9999,
                                                     maxHeight: '300px',
@@ -564,9 +599,31 @@ export default function CheckinTablePage() {
                                                 fullWidth
                                                 sx={{
                                                     '& .MuiOutlinedInput-root': {
-                                                        borderRadius: 2,
-                                                        backgroundColor: 'white'
-                                                    }
+                                                        borderRadius: '12px',
+                                                        backgroundColor: 'background.paper',
+                                                        color: 'text.primary',
+                                                        '& fieldset': {
+                                                            borderColor: 'grey.400',
+                                                        },
+                                                        '&:hover fieldset': {
+                                                            borderColor: 'grey.600',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: 'text.primary',
+                                                        },
+                                                        '& .MuiAutocomplete-input': {
+                                                            color: 'text.primary',
+                                                            paddingLeft: '4px !important',
+                                                        },
+                                                    },
+                                                    '& .MuiInputLabel-root': {
+                                                        color: 'text.secondary',
+                                                    },
+                                                    '& .MuiInputLabel-root.Mui-focused': {
+                                                        color: 'text.secondary',
+                                                    },
+                                                    '& .MuiAutocomplete-popupIndicator': { color: 'text.secondary' },
+                                                    '& .MuiAutocomplete-clearIndicator': { color: 'text.secondary' },
                                                 }}
                                             />
                                         )}
@@ -618,14 +675,23 @@ export default function CheckinTablePage() {
                                     onClick={handleSearch}
                                     startIcon={<SearchRoundedIcon />}
                                     sx={{
-                                        px: 4,
+                                        mb: 2,
+                                        px: 3,
                                         py: 1.5,
-                                        borderRadius: 2,
-                                        background: 'linear-gradient(45deg, #00B6E6 30%, #0088B3 90%)',
-                                        boxShadow: '0 3px 5px 2px rgba(0, 182, 230, .3)',
+                                        backgroundColor: 'primary.light',
+                                        color: '#ffffff',
+                                        fontWeight: 'bold',
+                                        borderRadius: '8px',
+                                        boxShadow: 2,
                                         '&:hover': {
-                                            background: 'linear-gradient(45deg, #0088B3 30%, #006688 90%)',
-                                        }
+                                            backgroundColor: 'primary.dark',
+                                        },
+                                        '&:disabled': {
+                                            backgroundColor: 'action.disabledBackground',
+                                            color: 'action.disabled',
+                                        },
+                                        transition: 'all 0.3s ease'
+
                                     }}
                                 >
                                     {t('Find')}
@@ -640,7 +706,7 @@ export default function CheckinTablePage() {
                         sx={{
                             p: 2,
                             borderRadius: 2,
-                            background: 'rgba(255, 255, 255, 0.95)',
+                            // background: 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(10px)',
                             height: 'calc(100vh - 300px)',
                             minHeight: 400,
@@ -675,17 +741,34 @@ export default function CheckinTablePage() {
                                 sx={{
                                     border: 'none',
                                     '& .MuiDataGrid-columnHeader': {
-                                        backgroundColor: '#f5f5f5',
+                                        backgroundColor: 'background.paper',
+                                        color: 'text.primary',
                                         fontWeight: 'bold'
                                     },
                                     '& .MuiDataGrid-row:nth-of-type(odd)': {
-                                        backgroundColor: '#fafafa'
+                                        backgroundColor: 'background.paper',
                                     },
                                     '& .MuiDataGrid-row:hover': {
-                                        backgroundColor: '#e3f2fd'
+                                        backgroundColor: 'action.hover',
                                     },
                                     '& .MuiDataGrid-cell': {
-                                        borderColor: '#e0e0e0'
+                                        borderColor: 'divider',
+                                        color: 'text.primary'
+                                    },
+                                    '& .MuiDataGrid-footerContainer': {
+                                        borderTop: 1,
+                                        borderColor: 'divider',
+                                        color: 'text.primary'
+                                    },
+                                    '& .MuiDataGrid-toolbarContainer': {
+                                        color: 'text.primary'
+                                    },
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        borderBottom: 1,
+                                        borderColor: 'divider'
+                                    },
+                                    '& .MuiDataGrid-virtualScroller': {
+                                        backgroundColor: 'background.paper'
                                     }
                                 }}
                             />

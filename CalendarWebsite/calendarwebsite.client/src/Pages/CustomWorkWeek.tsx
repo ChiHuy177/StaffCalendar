@@ -4,7 +4,6 @@ import {
     Typography,
     Box,
     IconButton,
-    useTheme,
     Button,
     Container,
     Stack,
@@ -36,6 +35,7 @@ import { UserInfo, WorkSchedule, WorkScheduleApiData } from '../utils/type';
 import Swal from 'sweetalert2'
 import i18n from '../i18n';
 import { useUser } from '../contexts/AuthUserContext';
+import { useThemeContext } from '../contexts/ThemeContext';
 
 // Extend WorkSchedule to include the custom fields we need
 interface ExtendedWorkSchedule extends WorkSchedule {
@@ -48,10 +48,9 @@ interface ExtendedWorkSchedule extends WorkSchedule {
 
 
 export default function CustomWorkWeek() {
-    const {nameOfUsers} = useUser();
+    const { nameOfUsers } = useUser();
     const { t } = useTranslation();
-    const theme = useTheme();
-    const isDarkMode = theme.palette.mode === 'dark';
+    const { isDarkMode } = useThemeContext();
     const [workDays, setWorkDays] = useState<ExtendedWorkSchedule[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -82,37 +81,13 @@ export default function CustomWorkWeek() {
     const [loading, setLoading] = useState(false);
     const [filteredWorkDays, setFilteredWorkDays] = useState<ExtendedWorkSchedule[]>([]);
 
-    // Fetch employees for autocomplete
-    // useEffect(() => {
-    //     async function fetchEmployees() {
-    //         try {
-    //             setLoading(true);
-    //             const data = await getAllUserName();
-                
-    //             // Kiểm tra dữ liệu trả về từ API
-    //             if (!data || !Array.isArray(data)) {
-    //                 console.error("API getAllUserName không trả về mảng dữ liệu hợp lệ:", data);
-    //                 setEmployees([]);  // Gán mảng rỗng thay vì undefined
-    //             } else {
-    //                 setEmployees(data);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching employees:", error);
-    //             setEmployees([]);  // Gán mảng rỗng khi có lỗi
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-
-    //     fetchEmployees();
-    // }, []);
 
 
     const handleRefresh = (personalProfileId?: number) => {
         // console.log('Refresh work day configurations');
         async function fetchCustomWorkingDays(personalProfileId?: number) {
             try {
-                if(!personalProfileId){
+                if (!personalProfileId) {
                     return;
                 }
                 setLoading(true);
@@ -161,8 +136,8 @@ export default function CustomWorkWeek() {
             setEditingWorkSchedule(workSchedule);
 
             // Kiểm tra employees trước khi tìm kiếm
-            const employeeMatch = Array.isArray(nameOfUsers) ? 
-                nameOfUsers.find(user => user.personalProfileId === workSchedule.personalProfileId) : 
+            const employeeMatch = Array.isArray(nameOfUsers) ?
+                nameOfUsers.find(user => user.personalProfileId === workSchedule.personalProfileId) :
                 null;
 
             // Chuẩn bị dữ liệu cho form chỉnh sửa
@@ -440,19 +415,34 @@ export default function CustomWorkWeek() {
     // Custom toolbar for DataGrid
     function CustomToolbar() {
         return (
-            <GridToolbarContainer sx={{ gap: 2, p: 2 }}>
+            <GridToolbarContainer
+                sx={{
+                    gap: 2,
+                    p: 2,
+                    '& .MuiButton-root': {
+                        color: 'text.primary',
+                        '&:hover': {
+                            backgroundColor: 'action.hover'
+                        }
+                    },
+                    '& .MuiButton-startIcon': {
+                        color: 'text.primary'
+                    }
+
+                }}
+            >
                 <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
-                    <GridToolbarColumnsButton 
+                    <GridToolbarColumnsButton
                         slotProps={{
                             tooltip: { title: t('dataGrid.columns') }
                         }}
                     />
-                    <GridToolbarFilterButton 
+                    <GridToolbarFilterButton
                         slotProps={{
                             tooltip: { title: t('dataGrid.filter') }
                         }}
                     />
-                    <GridToolbarDensitySelector 
+                    <GridToolbarDensitySelector
                         slotProps={{
                             tooltip: { title: t('dataGrid.density') }
                         }}
@@ -726,7 +716,7 @@ export default function CustomWorkWeek() {
                                             },
                                             listbox: {
                                                 sx: {
-                                                    backgroundColor: 'white',
+                                                    backgroundColor: 'background.paper',
                                                     color: 'text.primary',
                                                     zIndex: 9999,
                                                     maxHeight: '300px',
@@ -755,7 +745,8 @@ export default function CustomWorkWeek() {
                                                 sx={{
                                                     '& .MuiOutlinedInput-root': {
                                                         borderRadius: 2,
-                                                        backgroundColor: 'white'
+                                                        backgroundColor: 'background.paper',
+                                                        color: 'text.primary',
                                                     }
                                                 }}
                                             />
@@ -792,12 +783,17 @@ export default function CustomWorkWeek() {
                     </Card>
 
                     {/* Data Grid Section */}
-                    <Paper 
-                        elevation={3} 
-                        sx={{ 
+                    <Paper
+                        elevation={3}
+                        sx={{
                             p: 2,
                             borderRadius: 2,
-                            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'white'
+                            background: 'background.paper',
+                            backdropFilter: 'blur(10px)',
+                            // height: 'calc(100vh - 300px)',
+                            minHeight: 400,
+                            position: 'relative',
+                            zIndex: 1
                         }}
                     >
                         <DataGrid
@@ -810,47 +806,37 @@ export default function CustomWorkWeek() {
                                 toolbar: CustomToolbar
                             }}
                             sx={{
-                                border: 'none',
+                                border: '1px solid #e0e0e0',
+                                '& .MuiDataGrid-columnHeader': {
+                                    backgroundColor: 'background.paper',
+                                    color: 'text.primary',
+                                    fontWeight: 'bold'
+                                },
+                                '& .MuiDataGrid-row:nth-of-type(odd)': {
+                                    backgroundColor: 'background.paper',
+                                },
+                                '& .MuiDataGrid-row:hover': {
+                                    backgroundColor: 'action.hover',
+                                },
                                 '& .MuiDataGrid-cell': {
-                                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                                    padding: '12px 16px',
-                                },
-                                '& .MuiDataGrid-row': {
-                                    '&:nth-of-type(odd)': {
-                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                                    },
-                                    '&:hover': {
-                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
-                                        transition: 'background-color 0.2s',
-                                    },
-                                },
-                                '& .data-grid-header': {
-                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f5',
-                                    color: isDarkMode ? 'white' : '#1a1a1a',
-                                    fontWeight: 'bold',
-                                    fontSize: '0.875rem',
-                                    padding: '12px 16px',
-                                },
-                                '& .MuiDataGrid-columnHeaders': {
-                                    borderBottom: `2px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+                                    borderColor: 'divider',
+                                    color: 'text.primary'
                                 },
                                 '& .MuiDataGrid-footerContainer': {
-                                    borderTop: `2px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+                                    borderTop: 1,
+                                    borderColor: 'divider',
+                                    color: 'text.primary'
                                 },
                                 '& .MuiDataGrid-toolbarContainer': {
-                                    padding: '8px 16px',
-                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5',
-                                    borderRadius: '4px 4px 0 0',
+                                    color: 'text.primary'
                                 },
-                                '& .MuiButton-root': {
-                                    textTransform: 'none',
+                                '& .MuiDataGrid-columnHeaders': {
+                                    borderBottom: 1,
+                                    borderColor: 'divider'
                                 },
-                                '& .MuiIconButton-root': {
-                                    padding: '8px',
-                                    '&:hover': {
-                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)',
-                                    },
-                                },
+                                '& .MuiDataGrid-virtualScroller': {
+                                    backgroundColor: 'background.paper'
+                                }
                             }}
                         />
                     </Paper>
@@ -867,15 +853,17 @@ export default function CustomWorkWeek() {
                     elevation: 24,
                     sx: {
                         borderRadius: '12px',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        bgcolor: 'background.paper',
+                        color: 'text.primary'
                     }
                 }}
             >
                 <DialogTitle
                     sx={{
                         fontWeight: 'bold',
-                        bgcolor: theme.palette.primary.main,
-                        color: 'white',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText',
                         py: 2.5,
                         fontSize: '1.3rem',
                         backgroundImage: 'linear-gradient(45deg, #1976d2, #304ffe)'
@@ -883,14 +871,30 @@ export default function CustomWorkWeek() {
                 >
                     {t('addNewWorkSchedule')}
                 </DialogTitle>
-                <DialogContent sx={{ py: 4, px: 3 }}>
+                <DialogContent
+                    sx={{
+                        py: 4,
+                        px: 3,
+                        bgcolor: 'background.paper',
+                        '& .MuiInputLabel-root': {
+                            color: 'text.primary'
+                        },
+
+                        '& .MuiSelect-select': {
+                            color: 'text.primary'
+                        },
+                        '& .MuiFormHelperText-root': {
+                            color: 'error.main'
+                        }
+                    }}
+                >
                     <Box sx={{ mt: 1 }}>
                         {/* Thông tin chung */}
                         <Box sx={{ mb: 4 }}>
-                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                            <Typography variant="subtitle1" fontWeight="600" color="text.primary" gutterBottom>
                                 {t('generalInformation')}
                             </Typography>
-                            <Divider sx={{ mb: 2 }} />
+                            <Divider sx={{ mb: 2, bgcolor: "text.primary" }} />
 
                             <FormControl fullWidth sx={{ mb: 3 }}>
                                 <InputLabel required>{t('workweekTitle')}</InputLabel>
@@ -917,39 +921,53 @@ export default function CustomWorkWeek() {
                             </FormControl>
 
                             <Autocomplete
+                                disablePortal
+                                id="employee-select"
                                 options={nameOfUsers || []}
                                 getOptionLabel={(option) => option?.emailAndName || ''}
                                 value={newWorkSchedule.employeeName}
                                 loading={loading}
                                 onChange={(_, newValue) => {
-                                    setNewWorkSchedule({
-                                        ...newWorkSchedule,
+                                    console.log('Selected value:', newValue);
+                                    setNewWorkSchedule(prev => ({
+                                        ...prev,
                                         employeeName: newValue
-                                    });
-
-                                    // Clear error if exists
-                                    if (errors.personalProfileId) {
-                                        setErrors({
-                                            ...errors,
-                                            personalProfileId: undefined
-                                        });
-                                    }
+                                    }));
                                 }}
+                                renderOption={(props, option) => (
+                                    <li {...props} key={option.personalProfileId}>
+                                        {option.emailAndName}
+                                    </li>
+                                )}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
                                         label={t('selectEmployee')}
                                         error={!!errors.personalProfileId}
-                                        slotProps={{
-                                            input: {
-                                                sx: { borderRadius: '8px' },
-                                                endAdornment: (
-                                                    <>
-                                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                        {params.InputProps?.endAdornment}
-                                                    </>
-                                                )
+                                        variant="outlined"
+                                        fullWidth
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: 2,
+                                                backgroundColor: 'background.paper',
+                                                color: 'text.primary',
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: 'primary.dark',
+                                                borderWidth: '2px'
+                                            },
+                                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: 'primary.dark'
                                             }
+                                        }}
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            endAdornment: (
+                                                <>
+                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                    {params.InputProps.endAdornment}
+                                                </>
+                                            ),
                                         }}
                                     />
                                 )}
@@ -958,10 +976,10 @@ export default function CustomWorkWeek() {
 
                         {/* Giờ làm việc buổi sáng */}
                         <Box sx={{ mb: 4 }}>
-                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                            <Typography variant="subtitle1" fontWeight="600" color="text.primary" gutterBottom>
                                 {t('morningShift')}
                             </Typography>
-                            <Divider sx={{ mb: 2 }} />
+                            <Divider sx={{ mb: 2, bgcolor: "text.primary" }} />
 
                             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
                                 <Box sx={{ flexGrow: 1 }}>
@@ -1020,10 +1038,10 @@ export default function CustomWorkWeek() {
 
                         {/* Giờ làm việc buổi chiều */}
                         <Box sx={{ mb: 2 }}>
-                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                            <Typography variant="subtitle1" fontWeight="600" color="text.primary" gutterBottom>
                                 {t('afternoonShift')}
                             </Typography>
-                            <Divider sx={{ mb: 2 }} />
+                            <Divider sx={{ mb: 2, bgcolor: "text.primary" }} />
 
                             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
                                 <Box sx={{ flexGrow: 1 }}>
@@ -1081,7 +1099,12 @@ export default function CustomWorkWeek() {
                         </Box>
                     </Box>
                 </DialogContent>
-                <DialogActions sx={{ px: 3, pb: 3, pt: 1 }}>
+                <DialogActions sx={{
+                    px: 3,
+                    pb: 3,
+                    pt: 1,
+                    bgcolor: 'background.paper'
+                }}>
                     <Button
                         onClick={handleCloseDialog}
                         variant="outlined"
@@ -1135,8 +1158,8 @@ export default function CustomWorkWeek() {
                 <DialogTitle
                     sx={{
                         fontWeight: 'bold',
-                        bgcolor: theme.palette.primary.main,
-                        color: 'white',
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText',
                         py: 2.5,
                         fontSize: '1.3rem',
                         backgroundImage: 'linear-gradient(45deg, #1976d2, #304ffe)'
@@ -1148,10 +1171,10 @@ export default function CustomWorkWeek() {
                     <Box sx={{ mt: 1 }}>
                         {/* Thông tin chung */}
                         <Box sx={{ mb: 4 }}>
-                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                            <Typography variant="subtitle1" fontWeight="600" color="text.primary" gutterBottom>
                                 {t('generalInformation')}
                             </Typography>
-                            <Divider sx={{ mb: 2 }} />
+                            <Divider sx={{ mb: 2, bgcolor: "text.primary" }} />
 
                             <FormControl fullWidth sx={{ mb: 3 }}>
                                 <InputLabel required>{t('workweekTitle')}</InputLabel>
@@ -1199,10 +1222,10 @@ export default function CustomWorkWeek() {
 
                         {/* Giờ làm việc buổi sáng */}
                         <Box sx={{ mb: 4 }}>
-                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                            <Typography variant="subtitle1" fontWeight="600" color="text.primary" gutterBottom>
                                 {t('morningShift')}
                             </Typography>
-                            <Divider sx={{ mb: 2 }} />
+                            <Divider sx={{ mb: 2, bgcolor: "text.primary" }} />
 
                             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
                                 <Box sx={{ flexGrow: 1 }}>
@@ -1261,10 +1284,10 @@ export default function CustomWorkWeek() {
 
                         {/* Giờ làm việc buổi chiều */}
                         <Box sx={{ mb: 2 }}>
-                            <Typography variant="subtitle1" fontWeight="600" color="primary" gutterBottom>
+                            <Typography variant="subtitle1" fontWeight="600" color="text.primary" gutterBottom>
                                 {t('afternoonShift')}
                             </Typography>
-                            <Divider sx={{ mb: 2 }} />
+                            <Divider sx={{ mb: 2, bgcolor: "text.primary" }} />
 
                             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
                                 <Box sx={{ flexGrow: 1 }}>

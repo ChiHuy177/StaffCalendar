@@ -140,7 +140,7 @@ namespace CalendarWebsite.Server
                             throw new InvalidOperationException("ClientUrl is not configured properly");
                         }
 
-                        // Đảm bảo rằng redirect URI trỏ đến server API và luôn sử dụng HTTPS
+
                         var redirectUri = $"https://{context.Request.Host}/signin-oidc";
                         context.ProtocolMessage.RedirectUri = redirectUri;
 

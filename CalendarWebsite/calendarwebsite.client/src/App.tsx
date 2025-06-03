@@ -8,6 +8,7 @@ import './i18n';
 import { UserProvider } from './contexts/AuthUserContext';
 import { TokenInitializer } from './components/TokenInitializer';
 import { useState } from 'react';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 
 function App() {
@@ -15,25 +16,28 @@ function App() {
 
     return (
         <div>
-            <TokenInitializer onComplete={() => setTokenInitialized(true)} />
-            {tokenInitialized && (
-                <UserProvider>
-                    <Routes />
-                    <ToastContainer
-                        position="top-center"
-                        autoClose={5000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick={false}
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="light"
-                        transition={Bounce}
-                    />
-                </UserProvider>
-            )}
+            <ThemeProvider>
+                <TokenInitializer onComplete={() => setTokenInitialized(true)} />
+                {tokenInitialized && (
+                    <UserProvider>
+                        <Routes />
+                        <ToastContainer
+                            position="top-center"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick={false}
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="light"
+                            transition={Bounce}
+                        />
+                    </UserProvider>
+                )}
+            </ThemeProvider>
+
 
 
 
