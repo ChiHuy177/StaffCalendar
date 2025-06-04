@@ -387,8 +387,10 @@ export default function DashboardLayout() {
                                         }}
                                     >
                                         <ListItemIcon sx={{
+                                            
                                             minWidth: 45,
-                                            color: item.isActive ? '#fff' : 'rgba(255,255,255,0.7)',
+                                            // color: item.isActive ? '#fff' : 'rgba(255,255,255,0.7)',
+                                            color: '#ffff',
                                             transition: 'all 0.3s ease'
                                         }}>
                                             {item.icon}
@@ -472,8 +474,8 @@ export default function DashboardLayout() {
                                                 mr: 0.5,
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                color: "text.primary"
-                                            
+                                                color: "common.black"
+                                 
                                             }}>
                                             {item.icon}
                                         </Box>
@@ -486,7 +488,7 @@ export default function DashboardLayout() {
                                     to={item.path}
                                     className="flex items-center hover:underline"
                                     style={{
-                                        color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'inherit',
+                                        color: 'common.black',
                                         display: 'flex',
                                         alignItems: 'center'
                                     }}

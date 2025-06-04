@@ -32,12 +32,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                 default: isDarkMode ? '#0F172A' : '#F3F4F6',
                 paper: isDarkMode ? '#1E293B' : '#FFFFFF',
             },
-            text: {
-                
+            text: {          
                 primary: isDarkMode ? '#FFFFFF' : '#1F2937',
                 secondary: isDarkMode ? '#94A3B8' : '#4B5563',
                 
-            },
+            },common: {
+                black: isDarkMode ? '#FFFFFF' : '#94A3B8',
+            }
         },
         components: {
             MuiCssBaseline: {

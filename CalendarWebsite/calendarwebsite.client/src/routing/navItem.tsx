@@ -11,9 +11,9 @@ export type NavItemConfig = {
 
 export const navigationConfig: NavItemConfig[] = [
     
-    { key: 'nav.home', icon: <CalendarMonthTwoToneIcon className="text-amber-50" />, path: '/' },
-    { key: 'nav.staffTable', icon: <BackupTableIcon className="text-amber-50" />, path: '/table' },
-    { key: 'nav.byDay', icon: <CalendarViewMonthRoundedIcon className="text-amber-50" />, path: '/checkinbyday' },
-    { key: 'nav.byDept', icon: <CalendarViewMonthRoundedIcon className="text-amber-50" />, path: '/checkintablebydepartment' },
-    { key: 'nav.customWorkWeek', icon: <ScheduleIcon className="text-amber-50" />, path: '/customworkweek' },
+    { key: 'nav.home', icon: <CalendarMonthTwoToneIcon sx={{color:'common.black'}} />, path: '/' },
+    { key: 'nav.staffTable', icon: <BackupTableIcon sx={{color:'common.black'}} />, path: '/table' },
+    { key: 'nav.byDay', icon: <CalendarViewMonthRoundedIcon sx={{color:'common.black'}} />, path: '/checkinbyday' },
+    { key: 'nav.byDept', icon: <CalendarViewMonthRoundedIcon sx={{color:'common.black'}} />, path: '/checkintablebydepartment' },
+    { key: 'nav.customWorkWeek', icon: <ScheduleIcon sx={{color:'common.black'}} />, path: '/customworkweek' },
   ];
