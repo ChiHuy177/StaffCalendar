@@ -241,6 +241,6 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
     border: 0 !important;
 }
 
-.css-uypned-MuiButtonBase-root-MuiCheckbox-root.Mui-checked{
+.css-ydihg5.Mui-checked, .css-ydihg5.MuiCheckbox-indeterminate{
   color: black !important;
 }
