@@ -744,7 +744,7 @@ export default function CheckinTablePage() {
                                 columnGroupingModel={columnGroupingModel}
                                 columnVisibilityModel={columnVisibilityModel}
                                 sx={{
-                                    border: 'none',
+                                    border: '1px solid #e0e0e0',
                                     '& .MuiDataGrid-columnHeader': {
                                         backgroundColor: 'background.paper',
                                         color: 'text.primary',
