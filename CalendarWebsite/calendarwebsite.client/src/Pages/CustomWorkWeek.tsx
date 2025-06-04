@@ -20,9 +20,11 @@ import {
     FormHelperText,
     Divider,
     CircularProgress,
-    Card
+    Card,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton, GridColumnVisibilityModel } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -51,10 +53,11 @@ export default function CustomWorkWeek() {
     const { nameOfUsers } = useUser();
     const { t } = useTranslation();
     const { isDarkMode } = useThemeContext();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [workDays, setWorkDays] = useState<ExtendedWorkSchedule[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
-    // const [employees, setEmployees] = useState<UserInfo[]>([]);
     const [selectedEmployee, setSelectedEmployee] = useState<UserInfo | null>(null);
     const [editingWorkSchedule, setEditingWorkSchedule] = useState<ExtendedWorkSchedule | null>(null);
     const [newWorkSchedule, setNewWorkSchedule] = useState<{
@@ -80,8 +83,10 @@ export default function CustomWorkWeek() {
     }>({});
     const [loading, setLoading] = useState(false);
     const [filteredWorkDays, setFilteredWorkDays] = useState<ExtendedWorkSchedule[]>([]);
-
-
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({
+        stt: !isMobile,
+        employeeName: !isMobile
+    });
 
     const handleRefresh = (personalProfileId?: number) => {
         // console.log('Refresh work day configurations');
@@ -105,7 +110,7 @@ export default function CustomWorkWeek() {
                         ...item,
                         stt: index + 1,
                         name: `${item.workweekTitle}`,
-                        employeeName: item.fullName,
+                        employeeName: item.fullName === null ? selectedEmployee?.emailAndName : item.fullName,
                         isWorkingDay: item.morningStart != null || item.afternoonStart != null // Has any shift
                     };
                 });
@@ -412,6 +417,20 @@ export default function CustomWorkWeek() {
         }
     };
 
+    // Thêm hàm chuyển đổi workweekTitle
+    const translateWorkweekTitle = (title: string): string => {
+        const titleMap: { [key: string]: string } = {
+            'Monday': t('date.monday'),
+            'Tuesday': t('date.tuesday'),
+            'Wednesday': t('date.wednesday'),
+            'Thursday': t('date.thursday'),
+            'Friday': t('date.friday'),
+            'Saturday': t('date.saturday'),
+            'Sunday': t('date.sunday')
+        };
+        return titleMap[title] || title;
+    };
+
     // Custom toolbar for DataGrid
     function CustomToolbar() {
         return (
@@ -431,31 +450,31 @@ export default function CustomWorkWeek() {
 
                 }}
             >
-                <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
-                    <GridToolbarColumnsButton
-                        slotProps={{
-                            tooltip: { title: t('dataGrid.columns') }
-                        }}
-                    />
-                    <GridToolbarFilterButton
-                        slotProps={{
-                            tooltip: { title: t('dataGrid.filter') }
-                        }}
-                    />
-                    <GridToolbarDensitySelector
-                        slotProps={{
-                            tooltip: { title: t('dataGrid.density') }
-                        }}
-                    />
-                    <Button
-                        onClick={() => handleRefresh(selectedEmployee?.personalProfileId)}
-                        className="mb-6 ml-2 cursor-pointer px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
-                        startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
-                        disabled={loading}
-                    >
-                        {t('refresh')}
-                    </Button>
-                </Box>
+                <GridToolbarColumnsButton
+                    slotProps={{
+                        tooltip: { title: t('dataGrid.columns') }
+                    }}
+                />
+                <GridToolbarFilterButton
+                    slotProps={{
+                        tooltip: { title: t('dataGrid.filter') }
+                    }}
+                />
+                <GridToolbarDensitySelector
+                    slotProps={{
+                        tooltip: { title: t('dataGrid.density') }
+                    }}
+                />
+                <Box sx={{ flexGrow: 1 }} />
+                <Button
+                    onClick={() => handleRefresh(selectedEmployee?.personalProfileId)}
+                    className="mb-6 ml-2 cursor-pointer px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
+                    disabled={loading}
+                >
+                    {t('refresh')}
+                </Button>
+
             </GridToolbarContainer>
         );
     }
@@ -466,6 +485,15 @@ export default function CustomWorkWeek() {
     useEffect(() => {
         setFilteredWorkDays(workDays);
     }, [workDays]);
+
+    // Cập nhật columnVisibilityModel khi isMobile thay đổi
+    useEffect(() => {
+        setColumnVisibilityModel(prev => ({
+            ...prev,
+            stt: !isMobile,
+            employeeName: !isMobile
+        }));
+    }, [isMobile]);
 
     // Define columns for DataGrid - rerender when language changes
     const columns: GridColDef[] = [
@@ -486,19 +514,28 @@ export default function CustomWorkWeek() {
             field: 'name',
             headerName: t('day'),
             flex: 1.5,
-            headerClassName: 'data-grid-header'
+            headerAlign: 'center',
+            align: 'center',
+            headerClassName: 'data-grid-header',
+            renderCell: (params: GridRenderCellParams) => {
+                return translateWorkweekTitle(params.value);
+            }
         },
         {
             field: 'employeeName',
             headerName: t('dataGrid.name') || 'Tên nhân viên',
             flex: 2,
-            headerClassName: 'data-grid-header'
+            headerClassName: 'data-grid-header',
+            headerAlign: 'center',
+            align: 'center',
         },
         {
             field: 'morningStart',
             headerName: t('morningStart'),
             flex: 1,
             headerClassName: 'data-grid-header',
+            headerAlign: 'center',
+            align: 'center',
             renderCell: (params: GridRenderCellParams) => {
                 try {
                     const row = params.row as ExtendedWorkSchedule;
@@ -515,6 +552,8 @@ export default function CustomWorkWeek() {
             field: 'morningEnd',
             headerName: t('morningEnd'),
             flex: 1.5,
+            headerAlign: 'center',
+            align: 'center',
             headerClassName: 'data-grid-header',
             renderCell: (params: GridRenderCellParams) => {
                 try {
@@ -533,6 +572,8 @@ export default function CustomWorkWeek() {
             headerName: t('afternoonStart'),
             flex: 1.5,
             headerClassName: 'data-grid-header',
+            headerAlign: 'center',
+            align: 'center',
             renderCell: (params: GridRenderCellParams) => {
                 try {
                     const row = params.row as ExtendedWorkSchedule;
@@ -549,6 +590,8 @@ export default function CustomWorkWeek() {
             field: 'afternoonEnd',
             headerName: t('afternoonEnd'),
             flex: 1.5,
+            headerAlign: 'center',
+            align: 'center',
             headerClassName: 'data-grid-header',
             renderCell: (params: GridRenderCellParams) => {
                 try {
@@ -566,6 +609,8 @@ export default function CustomWorkWeek() {
             field: 'actions',
             headerName: t('actions'),
             flex: 1,
+            headerAlign: 'center',
+            align: 'center',
             headerClassName: 'data-grid-header',
             sortable: false,
             filterable: false,
@@ -804,6 +849,8 @@ export default function CustomWorkWeek() {
                             slots={{
                                 toolbar: CustomToolbar
                             }}
+                            columnVisibilityModel={columnVisibilityModel}
+                            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel as GridColumnVisibilityModel)}
                             sx={{
                                 // height: '100%',  
                                 border: '1px solid #e0e0e0',

@@ -7,12 +7,16 @@ import { Routes } from './routing/Routes';
 import './i18n';
 import { UserProvider } from './contexts/AuthUserContext';
 import { TokenInitializer } from './components/TokenInitializer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 
 function App() {
     const [tokenInitialized, setTokenInitialized] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('language', 'vi');
+    })
 
     return (
         <div>

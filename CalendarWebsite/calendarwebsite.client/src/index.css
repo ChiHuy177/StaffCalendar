@@ -240,3 +240,7 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
     white-space: nowrap !important;
     border: 0 !important;
 }
+
+.css-uypned-MuiButtonBase-root-MuiCheckbox-root.Mui-checked{
+  color: black !important;
+}

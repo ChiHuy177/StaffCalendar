@@ -297,6 +297,13 @@ export default function CheckInByDayTable() {
                     },
                     '& .MuiButton-startIcon': {
                         color: 'text.primary'
+                    },
+                    '&.Mui-checked': {
+                        color: 'primary.main',
+                        '& .MuiSvgIcon-root': {
+                            backgroundColor: 'primary.main',
+                            borderColor: 'primary.main'
+                        }
                     }
                 }}
             >
@@ -498,7 +505,7 @@ export default function CheckInByDayTable() {
                                         toolbar: MyCustomToolbar,
                                         noRowsOverlay: CustomNoRowsOverlay
                                     }}
-                                    
+
                                     columnVisibilityModel={columnVisibilityModel}
                                     sx={{
                                         border: '1px solid #e0e0e0',
