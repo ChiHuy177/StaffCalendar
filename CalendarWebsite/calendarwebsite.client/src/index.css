@@ -252,3 +252,8 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+.fc .fc-scrollgrid td,
+.fc .fc-scrollgrid th {
+  border-right: none !important;
+  border-left: none !important;
+}
