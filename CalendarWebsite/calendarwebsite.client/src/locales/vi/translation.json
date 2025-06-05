@@ -8,7 +8,12 @@
         "staffTable": "Bảng chấm công nhân viên theo tháng",
         "byDay": "Bảng chấm công nhân viên theo ngày",
         "byDept": "Bảng chấm công nhân viên theo phòng ban",
-        "customWorkWeek": "Cấu hình Tuần Làm Việc"
+        "customWorkWeek": "Cấu hình Tuần Làm Việc",
+        "companyCalendar": "Lịch công ty",
+        "staffCalendar": "Lịch của tôi",
+        "calendarEvents": "Sự kiện lịch",
+        "vehicleCalendar": "Lịch xe",
+        "meetingCalendar": "Lịch họp"
     },
     "profile": "Hồ sơ",
     "logout": "Đăng xuất",

@@ -9,7 +9,12 @@
         "staffTable": "Staff checkin table",
         "byDay": "Staff checkin table by day",
         "byDept": "Staff checkin table by department",
-        "customWorkWeek": "Custom Work Week"
+        "customWorkWeek": "Custom Work Week",
+        "companyCalendar": "Company Calendar",
+        "staffCalendar": "My Calendar",
+        "calendarEvents": "Calendar Events",
+        "vehicleCalendar": "Vehicle Calendar",
+        "meetingCalendar": "Meeting Calendar"
     },
     "profile": "Profile",
     "logout": "Logout",

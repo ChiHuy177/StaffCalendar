@@ -36,15 +36,23 @@ import React from "react";
 import LogoutButton from '../components/LogoutButton';
 import { useUser } from "../contexts/AuthUserContext";
 import { useThemeContext } from "../contexts/ThemeContext";
-
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import Collapse from "@mui/material/Collapse";
 
 const drawerWidth = 260;
+type NavItemWithState = NavItemConfig & {
+    isActive?: boolean;
+    text?: string;
+    children?: NavItemWithState[];
+}
 
 export default function DashboardLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     // const [darkMode, setDarkMode] = useState(false);
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
+    const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
     const { t } = useTranslation();
     const location = useLocation();
     const { isDarkMode, toggleTheme } = useThemeContext();
@@ -97,13 +105,102 @@ export default function DashboardLayout() {
         // console.log("isSidebarOpen changed to:", isSidebarOpen);
     }, [isSidebarOpen]);
 
+    const handleToggleMenu = (key: string) => {
+        setOpenMenus(prev => ({
+            ...prev,
+            [key]: !prev[key]
+        }))
+    }
 
+    function renderNavItems(items: NavItemWithState[], level = 0) {
+        return items.map((item) => {
+            const hasChildren = !!item.children && item.children.length > 0;
+            const isOpen = openMenus[item.key] || false;
 
-    const navigationItems = useMemo(
+            return (
+                <React.Fragment key={item.key}>
+                    <motion.div
+                        whileHover={{ x: 6 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        style={{ width: '100%' }}
+                    >
+                        <ListItem
+                            component={hasChildren ? 'div' : Link}
+                            to={hasChildren ? undefined : item.path}
+                            onClick={() => {
+                                if (hasChildren) {
+                                    handleToggleMenu(item.key);
+                                } else {
+                                    toggleSidebar();
+                                }
+                            }}
+                            className={`mx-2 mb-1 rounded-lg transition-all duration-300 ${item.isActive
+                                ? `${isDarkMode ? 'bg-blue-800' : 'bg-blue-700'} bg-opacity-80 shadow-md`
+                                : `hover:${isDarkMode ? 'bg-slate-800' : 'bg-blue-900'} hover:bg-opacity-50`
+                                }`}
+                            sx={{
+                                py: 1.5,
+                                pl: 2 + level * 2,
+                                position: 'relative',
+                                width: 'calc(100% - 16px)',
+                                '&::before': item.isActive ? {
+                                    content: '""',
+                                    position: 'absolute',
+                                    left: -8,
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    width: 4,
+                                    height: '60%',
+                                    backgroundColor: isDarkMode ? '#60A5FA' : '#60A5FA',
+                                    borderRadius: '0 4px 4px 0',
+                                    transition: 'all 0.3s ease'
+                                } : {}
+                            }}
+                        >
+                            <ListItemIcon sx={{
+
+                                minWidth: 45,
+                                // color: item.isActive ? '#fff' : 'rgba(255,255,255,0.7)',
+                                color: '#ffff',
+                                transition: 'all 0.3s ease'
+                            }}>
+                                {item.icon}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={item.text}
+                                primaryTypographyProps={{
+                                    sx: {
+                                        fontWeight: item.isActive ? 600 : 400,
+                                        fontSize: '0.95rem',
+                                        transition: 'all 0.3s ease'
+                                    }
+                                }}
+                            />
+                            {hasChildren ? (isOpen ? <ExpandLess /> : <ExpandMore />) : null}
+                        </ListItem>
+                    </motion.div>
+                    {hasChildren && (
+                        <Collapse in={isOpen} timeout='auto' unmountOnExit>
+                            <List component='div' disablePadding >
+                                {renderNavItems(item.children!, level + 1)}
+                            </List>
+                        </Collapse>
+                    )}
+                </React.Fragment>
+            )
+        })
+    }
+
+    const navigationItems: NavItemWithState[] = useMemo(
         () => navigationConfig.map((item: NavItemConfig) => ({
             ...item,
             text: t(item.key),
-            isActive: location.pathname === item.path
+            isActive: location.pathname === item.path,
+            children: item.children ? item.children.map(child => ({
+                ...child,
+                text: t(child.key),
+                isActive: location.pathname === child.path
+            })) : undefined
         })),
         [t, location.pathname]
     );
@@ -133,7 +230,7 @@ export default function DashboardLayout() {
             const navItem = navigationItems.find(item => item.path === currentPath);
 
             breadcrumbs.push({
-                text: navItem ? navItem.text : segment.charAt(0).toUpperCase() + segment.slice(1),
+                text: navItem?.text ?? segment.charAt(0).toUpperCase() + segment.slice(1),
                 path: currentPath,
                 icon: navItem?.icon ? React.cloneElement(navItem.icon as React.ReactElement) : <HomeIcon fontSize="small" sx={{ color: 'text.primary' }} />
             });
@@ -289,7 +386,7 @@ export default function DashboardLayout() {
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
                         className="flex flex-col h-full"
-                        style={{ 
+                        style={{
                             height: '100vh',
                             width: '100%',
                             overflowX: 'hidden'
@@ -343,15 +440,15 @@ export default function DashboardLayout() {
                         </Box>
 
                         {/* Navigation Items */}
-                        <List 
-                            className="py-4 flex-1 overflow-y-auto" 
-                            style={{ 
+                        <List
+                            className="py-4 flex-1 overflow-y-auto hide-scrollbar"
+                            style={{
                                 minHeight: 0,
                                 width: '100%',
                                 overflowX: 'hidden'
                             }}
                         >
-                            {navigationItems.map((item, index) => (
+                            {/* {navigationItems.map((item, index) => (
                                 <motion.div
                                     key={index}
                                     whileHover={{ x: 6 }}
@@ -387,7 +484,7 @@ export default function DashboardLayout() {
                                         }}
                                     >
                                         <ListItemIcon sx={{
-                                            
+
                                             minWidth: 45,
                                             // color: item.isActive ? '#fff' : 'rgba(255,255,255,0.7)',
                                             color: '#ffff',
@@ -407,7 +504,8 @@ export default function DashboardLayout() {
                                         />
                                     </ListItem>
                                 </motion.div>
-                            ))}
+                            ))} */}
+                            {renderNavItems(navigationItems)}
                         </List>
 
                         {/* Footer */}
@@ -475,7 +573,7 @@ export default function DashboardLayout() {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 color: "common.black"
-                                 
+
                                             }}>
                                             {item.icon}
                                         </Box>
