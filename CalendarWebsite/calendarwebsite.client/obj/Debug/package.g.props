@@ -9,6 +9,7 @@
     <PackageJsonScriptsBuild Condition="$(PackageJsonScriptsBuild) == ''">tsc -b &amp;&amp; vite build</PackageJsonScriptsBuild>
     <PackageJsonScriptsLint Condition="$(PackageJsonScriptsLint) == ''">eslint .</PackageJsonScriptsLint>
     <PackageJsonScriptsPreview Condition="$(PackageJsonScriptsPreview) == ''">vite preview</PackageJsonScriptsPreview>
+    <PackageJsonDependenciesCkeditorCkeditor5BuildClassic Condition="$(PackageJsonDependenciesCkeditorCkeditor5BuildClassic) == ''">^44.3.0</PackageJsonDependenciesCkeditorCkeditor5BuildClassic>
     <PackageJsonDependenciesCkeditorCkeditor5React Condition="$(PackageJsonDependenciesCkeditorCkeditor5React) == ''">^9.5.0</PackageJsonDependenciesCkeditorCkeditor5React>
     <PackageJsonDependenciesDateIoDayjs Condition="$(PackageJsonDependenciesDateIoDayjs) == ''">^3.2.0</PackageJsonDependenciesDateIoDayjs>
     <PackageJsonDependenciesEmotionReact Condition="$(PackageJsonDependenciesEmotionReact) == ''">^11.14.0</PackageJsonDependenciesEmotionReact>
