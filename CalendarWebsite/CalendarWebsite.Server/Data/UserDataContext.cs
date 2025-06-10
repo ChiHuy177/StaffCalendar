@@ -16,5 +16,11 @@ namespace CalendarWebsite.Server.Data
         public DbSet<CustomWorkingTime> CustomWorkingTimes { get; set; }
 
         public DbSet<Workweek> Workweeks { get; set; }
+
+        public DbSet<MeetingRoom> MeetingRooms { get; set; }
+
+        public DbSet<CalendarEvent> CalendarEvents {get; set;}
+
+        public DbSet<EventAttendee> EventAttendees {get; set;}
     }
 }

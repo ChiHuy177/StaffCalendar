@@ -94,19 +94,56 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
             MuiOutlinedInput: {
                 styleOverrides: {
-                    root:({theme}) => ({
-                        borderRadius: '8px',
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: theme.palette.primary.dark,
-                            borderWidth: '2px'
+                    root: ({ theme }) => ({
+                        '& .MuiInputLabel-root': {
+                            color: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+                            '&.Mui-focused': {
+                                color: theme.palette.primary.dark,
+                            },
                         },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: theme.palette.primary.dark
-                        }
-                    })
-                }
-            }
-
+                    }),
+                },
+            },
+            MuiTextField: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '12px',
+                            backgroundColor: theme.palette.background.paper,
+                            '& fieldset': {
+                                borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: theme.palette.primary.dark,
+                            },
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: theme.palette.text.primary,
+                            '&.Mui-focused': {
+                                color: theme.palette.text.primary,
+                            },
+                        },
+                        '& .MuiInputBase-input': {
+                            color: theme.palette.text.primary
+                        },
+                    }),
+                },
+            },
+            MuiRadio: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        '&.Mui-checked': {
+                            color: theme.palette.text.primary,
+                        },
+                        '& .MuiSvgIcon-root': {
+                            fontSize: 20,
+                        },
+                    }),
+                },
+            },
         },
     });
 

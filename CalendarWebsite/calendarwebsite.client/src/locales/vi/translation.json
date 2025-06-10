@@ -3,6 +3,19 @@
     "staffCheckinTable": "Bảng chấm công nhân viên",
     "staffCheckinTableByDay": "Bảng chấm công nhân viên theo ngày",
     "staffCheckinTableByDept": "Bảng chấm công nhân viên theo phòng ban",
+    "meetingCalendar" : "Lịch họp công ty",
+    "addNewEvent":"Thêm sự kiện mới",
+    "personalCalendar": "Thêm lịch cá nhân",
+    "addNew": {
+        "title": "Tiêu đề",
+        "content":"Nội dung",
+        "location": "Địa điểm",
+        "host": "Chủ trì",
+        "repeatType": "Kiểu lập",
+        "default": "Mặc định",
+        "weekly": "Hàng tuần",
+        "monthly": "Hàng tháng"
+    },
     "nav": {
         "home": "Lịch chấm công nhân viên",
         "staffTable": "Bảng chấm công nhân viên theo tháng",
@@ -13,7 +26,8 @@
         "staffCalendar": "Lịch của tôi",
         "calendarEvents": "Sự kiện lịch",
         "vehicleCalendar": "Lịch xe",
-        "meetingCalendar": "Lịch họp"
+        "meetingCalendar": "Lịch họp",
+        "addNewEvent": "Thêm lịch mới"
     },
     "profile": "Hồ sơ",
     "logout": "Đăng xuất",
@@ -169,5 +183,25 @@
         "friday": "Thứ 6",
         "saturday": "Thứ 7",
         "sunday": "Chủ nhật"
+    },
+    "validation": {
+        "titleRequired": "Vui lòng nhập tiêu đề sự kiện",
+        "contentRequired": "Vui lòng nhập nội dung sự kiện",
+        "locationRequired": "Vui lòng nhập địa điểm",
+        "hostRequired": "Vui lòng nhập người chủ trì",
+        "startDateRequired": "Vui lòng chọn ngày bắt đầu",
+        "endDateRequired": "Vui lòng chọn ngày kết thúc",
+        "startTimeRequired": "Vui lòng chọn giờ bắt đầu",
+        "endTimeRequired": "Vui lòng chọn giờ kết thúc",
+        "endDateAfterStart": "Ngày kết thúc phải sau ngày bắt đầu",
+        "endTimeAfterStart": "Giờ kết thúc phải sau giờ bắt đầu",
+        "endTimeAfterStartSameDay": "Giờ kết thúc phải sau giờ bắt đầu trong cùng ngày"
+    },
+    "calendarType": "Loại lịch",
+    "calendarTypes": {
+        "personal": "Lịch cá nhân",
+        "company": "Lịch công ty",
+        "meeting": "Lịch họp",
+        "vehicle": "Lịch xe"
     }
 }

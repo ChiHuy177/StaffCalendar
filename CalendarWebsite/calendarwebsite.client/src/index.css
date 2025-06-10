@@ -47,6 +47,19 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   border-color: #e5e7eb;
 }
 
+.light-calendar .fc-day-today {
+  background-color: rgba(173, 216, 230, 0.3) !important; /* Light blue with some transparency */
+}
+
+.light-calendar .fc-day-today .fc-daygrid-day-number {
+  color: black !important;
+}
+
+.dark-calendar .fc-day-today .fc-daygrid-day-number {
+  color: white !important;
+}
+
+
 /* Dark mode */
 .dark-calendar {
   background-color: #1E293B;
@@ -251,4 +264,9 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+.fc .fc-scrollgrid td,
+.fc .fc-scrollgrid th {
+  border-right: none !important;
+  border-left: none !important;
 }

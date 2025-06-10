@@ -4,6 +4,19 @@
     "staffCalendar": "Staff Calendar",
     "staffCheckinTableByDay": "Staff Checkin Table By Day",
     "staffCheckinTableByDept": "Staff Checkin Table By Department",
+    "meetingCalendar" : "Meeting Calendar",
+    "addNewEvent":"Add new event",
+    "personalCalendar": "Add new personal calendar",
+    "addNew": {
+        "title": "Title",
+        "content":"Content",
+        "location": "Locaion",
+        "host": "Host",
+        "repeatType": "Repeat type",
+        "default": "Default",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+    },
     "nav": {
         "home": "Staff checkin calendar",
         "staffTable": "Staff checkin table",
@@ -14,7 +27,8 @@
         "staffCalendar": "My Calendar",
         "calendarEvents": "Calendar Events",
         "vehicleCalendar": "Vehicle Calendar",
-        "meetingCalendar": "Meeting Calendar"
+        "meetingCalendar": "Meeting Calendar",
+        "addNewEvent": "Add new event"
     },
     "profile": "Profile",
     "logout": "Logout",
@@ -171,6 +185,25 @@
         "sunday": "Sunday"
     },
     "searchEmployee": "Search employee",
-    "find": "Find"
-    
+    "find": "Find",
+    "validation": {
+        "titleRequired": "Please enter event title",
+        "contentRequired": "Please enter event content",
+        "locationRequired": "Please enter location",
+        "hostRequired": "Please enter host",
+        "startDateRequired": "Please select start date",
+        "endDateRequired": "Please select end date",
+        "startTimeRequired": "Please select start time",
+        "endTimeRequired": "Please select end time",
+        "endDateAfterStart": "End date must be after start date",
+        "endTimeAfterStart": "End time must be after start time",
+        "endTimeAfterStartSameDay": "End time must be after start time on the same day"
+    },
+    "calendarType": "Calendar Type",
+    "calendarTypes": {
+        "personal": "Personal Calendar",
+        "company": "Company Calendar",
+        "meeting": "Meeting Calendar",
+        "vehicle": "Vehicle Calendar"
+    }
 }

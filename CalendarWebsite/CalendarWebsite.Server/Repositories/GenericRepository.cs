@@ -18,12 +18,13 @@ namespace CalendarWebsite.Server.Repositories
             this._dbSet = context.Set<T>();
         }
 
-        public virtual async Task AddAsync(T entity)
+        public virtual async Task<T> AddAsync(T entity)
         {
             try
             {
                 await _dbSet.AddAsync(entity);
                 await _context.SaveChangesAsync();
+                return entity;
             }
             catch (Exception ex)
             {

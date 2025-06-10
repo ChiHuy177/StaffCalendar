@@ -9,6 +9,7 @@
     <PackageJsonScriptsBuild Condition="$(PackageJsonScriptsBuild) == ''">tsc -b &amp;&amp; vite build</PackageJsonScriptsBuild>
     <PackageJsonScriptsLint Condition="$(PackageJsonScriptsLint) == ''">eslint .</PackageJsonScriptsLint>
     <PackageJsonScriptsPreview Condition="$(PackageJsonScriptsPreview) == ''">vite preview</PackageJsonScriptsPreview>
+    <PackageJsonDependenciesCkeditorCkeditor5React Condition="$(PackageJsonDependenciesCkeditorCkeditor5React) == ''">^9.5.0</PackageJsonDependenciesCkeditorCkeditor5React>
     <PackageJsonDependenciesDateIoDayjs Condition="$(PackageJsonDependenciesDateIoDayjs) == ''">^3.2.0</PackageJsonDependenciesDateIoDayjs>
     <PackageJsonDependenciesEmotionReact Condition="$(PackageJsonDependenciesEmotionReact) == ''">^11.14.0</PackageJsonDependenciesEmotionReact>
     <PackageJsonDependenciesEmotionStyled Condition="$(PackageJsonDependenciesEmotionStyled) == ''">^11.14.0</PackageJsonDependenciesEmotionStyled>
@@ -29,10 +30,15 @@
     <PackageJsonDependenciesMuiXDatePickers Condition="$(PackageJsonDependenciesMuiXDatePickers) == ''">^7.29.0</PackageJsonDependenciesMuiXDatePickers>
     <PackageJsonDependenciesMuiXDatePickersPro Condition="$(PackageJsonDependenciesMuiXDatePickersPro) == ''">^7.29.0</PackageJsonDependenciesMuiXDatePickersPro>
     <PackageJsonDependenciesTailwindcssVite Condition="$(PackageJsonDependenciesTailwindcssVite) == ''">^4.1.3</PackageJsonDependenciesTailwindcssVite>
+    <PackageJsonDependenciesTinymceTinymceReact Condition="$(PackageJsonDependenciesTinymceTinymceReact) == ''">^6.2.1</PackageJsonDependenciesTinymceTinymceReact>
     <PackageJsonDependenciesToolpadCore Condition="$(PackageJsonDependenciesToolpadCore) == ''">^0.13.0</PackageJsonDependenciesToolpadCore>
     <PackageJsonDependenciesAxios Condition="$(PackageJsonDependenciesAxios) == ''">^1.8.4</PackageJsonDependenciesAxios>
     <PackageJsonDependenciesCalendarwebsiteClient Condition="$(PackageJsonDependenciesCalendarwebsiteClient) == ''">file:</PackageJsonDependenciesCalendarwebsiteClient>
+    <PackageJsonDependenciesCkeditor5 Condition="$(PackageJsonDependenciesCkeditor5) == ''">^45.2.0</PackageJsonDependenciesCkeditor5>
     <PackageJsonDependenciesDayjs Condition="$(PackageJsonDependenciesDayjs) == ''">^1.11.13</PackageJsonDependenciesDayjs>
+    <PackageJsonDependenciesFilepond Condition="$(PackageJsonDependenciesFilepond) == ''">^4.32.7</PackageJsonDependenciesFilepond>
+    <PackageJsonDependenciesFilepondPluginImageExifOrientation Condition="$(PackageJsonDependenciesFilepondPluginImageExifOrientation) == ''">^1.0.11</PackageJsonDependenciesFilepondPluginImageExifOrientation>
+    <PackageJsonDependenciesFilepondPluginImagePreview Condition="$(PackageJsonDependenciesFilepondPluginImagePreview) == ''">^4.6.12</PackageJsonDependenciesFilepondPluginImagePreview>
     <PackageJsonDependenciesFramerMotion Condition="$(PackageJsonDependenciesFramerMotion) == ''">^12.7.4</PackageJsonDependenciesFramerMotion>
     <PackageJsonDependenciesFullcalendar Condition="$(PackageJsonDependenciesFullcalendar) == ''">^6.1.17</PackageJsonDependenciesFullcalendar>
     <PackageJsonDependenciesI18next Condition="$(PackageJsonDependenciesI18next) == ''">^25.0.1</PackageJsonDependenciesI18next>
@@ -43,6 +49,7 @@
     <PackageJsonDependenciesPreact Condition="$(PackageJsonDependenciesPreact) == ''">^10.26.5</PackageJsonDependenciesPreact>
     <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.1.0</PackageJsonDependenciesReact>
     <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^19.1.0</PackageJsonDependenciesReactDom>
+    <PackageJsonDependenciesReactFilepond Condition="$(PackageJsonDependenciesReactFilepond) == ''">^7.1.3</PackageJsonDependenciesReactFilepond>
     <PackageJsonDependenciesReactI18next Condition="$(PackageJsonDependenciesReactI18next) == ''">^15.4.1</PackageJsonDependenciesReactI18next>
     <PackageJsonDependenciesReactIcons Condition="$(PackageJsonDependenciesReactIcons) == ''">^5.5.0</PackageJsonDependenciesReactIcons>
     <PackageJsonDependenciesReactLoadingSkeleton Condition="$(PackageJsonDependenciesReactLoadingSkeleton) == ''">^3.5.0</PackageJsonDependenciesReactLoadingSkeleton>
@@ -51,6 +58,7 @@
     <PackageJsonDependenciesReactToastify Condition="$(PackageJsonDependenciesReactToastify) == ''">^11.0.5</PackageJsonDependenciesReactToastify>
     <PackageJsonDependenciesSweetalert2 Condition="$(PackageJsonDependenciesSweetalert2) == ''">^11.21.2</PackageJsonDependenciesSweetalert2>
     <PackageJsonDependenciesTailwindcss Condition="$(PackageJsonDependenciesTailwindcss) == ''">^4.1.3</PackageJsonDependenciesTailwindcss>
+    <PackageJsonDependenciesTinymce Condition="$(PackageJsonDependenciesTinymce) == ''">^7.9.1</PackageJsonDependenciesTinymce>
     <PackageJsonDevdependenciesEslintJs Condition="$(PackageJsonDevdependenciesEslintJs) == ''">^9.21.0</PackageJsonDevdependenciesEslintJs>
     <PackageJsonDevdependenciesTypesNode Condition="$(PackageJsonDevdependenciesTypesNode) == ''">^22.12.0</PackageJsonDevdependenciesTypesNode>
     <PackageJsonDevdependenciesTypesReact Condition="$(PackageJsonDevdependenciesTypesReact) == ''">^19.0.10</PackageJsonDevdependenciesTypesReact>
