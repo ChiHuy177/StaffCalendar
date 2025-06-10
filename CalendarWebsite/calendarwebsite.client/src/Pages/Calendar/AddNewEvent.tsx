@@ -277,7 +277,7 @@ function AddNewEvent() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 editor={ClassicEditor}
                 data={content}
-                onChange={(event, editor) => {
+                onChange={(_event, editor) => {
                   const data = editor.getData();
                   setContent(data);
                 }}
