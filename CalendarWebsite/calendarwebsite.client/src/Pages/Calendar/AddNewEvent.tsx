@@ -5,14 +5,19 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import AddIcon from '@mui/icons-material/Add';
-import { Editor } from '@tinymce/tinymce-react';
-
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic';
+import { Essentials } from '@ckeditor/ckeditor5-essentials';
+import { Bold, Italic } from '@ckeditor/ckeditor5-basic-styles';
+import { Link } from '@ckeditor/ckeditor5-link';
+import { List } from '@ckeditor/ckeditor5-list';
+import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
+import { Table, TableToolbar } from '@ckeditor/ckeditor5-table';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../contexts/ThemeContext';
 import dayjs from 'dayjs';
-import 'ckeditor5/ckeditor5.css';
 import { FilePond } from 'react-filepond'
 import { FilePondFile, registerPlugin } from 'filepond'
 import 'filepond/dist/filepond.min.css'
@@ -21,12 +26,9 @@ import 'filepond/dist/filepond.min.css'
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation'
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 
-
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
-
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview)
-
 
 function AddNewEvent() {
   const { t } = useTranslation();
@@ -257,29 +259,69 @@ function AddNewEvent() {
                 {errors.content}
               </Alert>
             )}
-            <Editor
-              key={isDarkMode ? 'dark' : 'light'}
-              apiKey='n2sf0utw792iyql3oakg4ozr2xipcs22fov28k28bwr0to1p'
-              value={content}
-              onEditorChange={(newValue) => setContent(newValue)}
-              init={{
-                height: 300,
-                menubar: false,
-                plugins: [
-                  'advlist autolink lists link image charmap print preview anchor',
-                  'searchreplace visualblocks code fullscreen',
-                  'insertdatetime media table paste code help wordcount emoticons autolink',
-                  'align',
-                ],
-                toolbar:
-                  'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table | code wordcount | help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                skin: isDarkMode ? 'oxide-dark' : 'oxide',
-                content_css: isDarkMode ? 'dark' : 'default',
-                toolbar_mode: 'floating',
-                statusbar: false,
-              }}
-            />
+            <Box sx={{ 
+              border: errors.content ? '1px solid #d32f2f' : '1px solid rgba(0, 0, 0, 0.23)',
+              borderRadius: '4px',
+              '& .ck-editor__editable': {
+                minHeight: '300px',
+                maxHeight: '500px',
+                backgroundColor: isDarkMode ? '#424242' : '#fff',
+                color: isDarkMode ? '#fff' : '#000',
+              },
+              '& .ck-toolbar': {
+                backgroundColor: isDarkMode ? '#616161' : '#f5f5f5',
+                borderColor: isDarkMode ? '#424242' : '#e0e0e0',
+              }
+            }}>
+              <CKEditor
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                editor={ClassicEditor}
+                data={content}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setContent(data);
+                }}
+                config={{
+                  licenseKey: '',
+                  plugins: [
+                    Essentials,
+                    Bold,
+                    Italic,
+                    Link,
+                    List,
+                    Paragraph,
+                    Table,
+                    TableToolbar
+                  ],
+                  toolbar: {
+                    items: [
+                      'heading',
+                      '|',
+                      'bold',
+                      'italic',
+                      'link',
+                      'bulletedList',
+                      'numberedList',
+                      '|',
+                      'outdent',
+                      'indent',
+                      '|',
+                      'blockQuote',
+                      'insertTable',
+                      'undo',
+                      'redo'
+                    ]
+                  },
+                  table: {
+                    contentToolbar: [
+                      'tableColumn',
+                      'tableRow',
+                      'mergeTableCells'
+                    ]
+                  }
+                }}
+              />
+            </Box>
 
             <Box sx={{ display: 'flex', gap: 2, my: 2 }}>
               <DatePicker
