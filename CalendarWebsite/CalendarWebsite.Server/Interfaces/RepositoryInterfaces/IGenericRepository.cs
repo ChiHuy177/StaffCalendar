@@ -9,7 +9,7 @@ namespace CalendarWebsite.Server.Interfaces.RepositoryInterfaces
         public Task<T> GetByIdAsync<TKey>(TKey id);
         public Task<IEnumerable<T>> GetTop100();
 
-        public Task AddAsync(T entity);
+        public Task<T> AddAsync(T entity);
 
         public Task DeleteAsync(T entity);
 

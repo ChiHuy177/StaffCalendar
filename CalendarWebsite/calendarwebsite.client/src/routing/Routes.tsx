@@ -6,6 +6,8 @@ import CheckInByDayTable from "../Pages/CheckInByDayTable";
 import CheckInTableByDepartment from "../Pages/CheckInTableByDepartment";
 import CustomWorkWeek from "../Pages/CustomWorkWeek";
 import ProtectedRoute from "../components/ProtectedRoute";
+import MeetingCalendarComponent from "../Pages/Calendar/meeting/MeetingCalendarPage";
+import AddNewEvent from "../Pages/Calendar/AddNewEvent";
 
 const router = createBrowserRouter(
     [
@@ -33,6 +35,14 @@ const router = createBrowserRouter(
                     path: 'customworkweek', 
                     element: <ProtectedRoute><CustomWorkWeek /></ProtectedRoute> 
                 },
+                {
+                    path: "calendar/meeting",
+                    element: <ProtectedRoute><MeetingCalendarComponent/></ProtectedRoute>
+                },
+                {
+                    path: 'calendar/addnew',
+                    element: <ProtectedRoute><AddNewEvent/></ProtectedRoute>
+                }
             ],
         },
     ]

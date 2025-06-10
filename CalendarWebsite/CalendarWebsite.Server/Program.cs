@@ -201,6 +201,8 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IWorkWeekRepository, WorkWeekRepository>();
             builder.Services.AddScoped<ICustomWorkingTimeRepository, CustomWorkingTimeRepository>();
             builder.Services.AddScoped<IMeetingRoomRepository, MeetingRoomRepository>();
+            builder.Services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
+            builder.Services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
 
             //register service
             builder.Services.AddScoped<ICheckInDataService, APICheckInService>();
@@ -211,6 +213,8 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IWorkingWeekService, WorkWeekService>();
             builder.Services.AddScoped<ICustomWorkingTimeService, CustomWorkingTimeService>();
             builder.Services.AddScoped<IMeetingRoomService, MeetingRoomService>();
+            builder.Services.AddScoped<IEventAttendeeService, EventAttendeeService>();
+            builder.Services.AddScoped<ICalendarEventService, CalendarEventService>();
 
             //add CORS
             builder.Services.AddCors(options =>

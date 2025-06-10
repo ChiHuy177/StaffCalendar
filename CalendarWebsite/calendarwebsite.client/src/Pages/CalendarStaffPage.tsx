@@ -530,7 +530,6 @@ export default function CalendarComponent() {
                             contentHeight="auto"
                             height="auto"
                             datesSet={() => {
-                                // console.log(`[FullCalendar datesSet] View changed. Current start: ${viewInfo.view.currentStart.toISOString()}`);
                                 fetchWorkSchedule();
                             }}
                             dayMaxEventRows={true}
