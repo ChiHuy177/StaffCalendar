@@ -1,26 +1,20 @@
-import { useState } from 'react';
-import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem } from '@mui/material';
+import { useState, useEffect, useRef } from 'react';
+import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import AddIcon from '@mui/icons-material/Add';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { ClassicEditor } from '@ckeditor/ckeditor5-editor-classic';
-import { Essentials } from '@ckeditor/ckeditor5-essentials';
-import { Bold, Italic } from '@ckeditor/ckeditor5-basic-styles';
-import { Link } from '@ckeditor/ckeditor5-link';
-import { List } from '@ckeditor/ckeditor5-list';
-import { Paragraph } from '@ckeditor/ckeditor5-paragraph';
-import { Table, TableToolbar } from '@ckeditor/ckeditor5-table';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '../../contexts/ThemeContext';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { FilePond } from 'react-filepond'
 import { FilePondFile, registerPlugin } from 'filepond'
 import 'filepond/dist/filepond.min.css'
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 
 // Import FilePond styles
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation'
@@ -58,6 +52,32 @@ function AddNewEvent() {
     startTime: '',
     endTime: ''
   });
+
+  const quillRef = useRef<Quill | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editorRef.current && !quillRef.current) {
+      quillRef.current = new Quill(editorRef.current, {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'align': [] }],
+            ['link', 'image'],
+            ['clean']
+          ]
+        }
+      });
+
+      quillRef.current.on('text-change', () => {
+        setContent(quillRef.current?.root.innerHTML || '');
+      });
+    }
+  }, []);
 
   const validateForm = () => {
     const newErrors = {
@@ -219,7 +239,7 @@ function AddNewEvent() {
               <Select
                 fullWidth
                 value={calendarType}
-                onChange={(e) => setCalendarType(e.target.value)}
+                onChange={(e: SelectChangeEvent) => setCalendarType(e.target.value)}
                 sx={{
                   '& .MuiSelect-select': {
                     color: isDarkMode ? 'white' : 'black',
@@ -237,13 +257,13 @@ function AddNewEvent() {
               <Typography variant="subtitle1" sx={{ color: 'text.primary' }}>
                 {t('addNew.title')}
               </Typography>
-              <span style={{ color: 'red' }}>*</span>
+              <Typography component="span" sx={{ color: 'red' }}>*</Typography>
             </Box>
             <TextField
               fullWidth
               margin="normal"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
               error={!!errors.title}
               helperText={errors.title}
               sx={{
@@ -252,7 +272,7 @@ function AddNewEvent() {
             />
 
             <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, color: 'text.primary' }}>
-              {t('addNew.content')} <span style={{ color: 'red' }}>*</span>
+              {t('addNew.content')} <Typography component="span" sx={{ color: 'red' }}>*</Typography>
             </Typography>
             {errors.content && (
               <Alert severity="error" sx={{ mb: 2 }}>
@@ -262,71 +282,23 @@ function AddNewEvent() {
             <Box sx={{ 
               border: errors.content ? '1px solid #d32f2f' : '1px solid rgba(0, 0, 0, 0.23)',
               borderRadius: '4px',
-              '& .ck-editor__editable': {
-                minHeight: '300px',
-                maxHeight: '500px',
+              '& .ql-container': {
+                minHeight: '200px',
                 backgroundColor: isDarkMode ? '#424242' : '#fff',
                 color: isDarkMode ? '#fff' : '#000',
               },
-              '& .ck-toolbar': {
+              '& .ql-toolbar': {
                 backgroundColor: isDarkMode ? '#616161' : '#f5f5f5',
                 borderColor: isDarkMode ? '#424242' : '#e0e0e0',
               }
             }}>
-              <CKEditor
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                editor={ClassicEditor}
-                data={content}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  setContent(data);
-                }}
-                config={{
-                  licenseKey: '',
-                  plugins: [
-                    Essentials,
-                    Bold,
-                    Italic,
-                    Link,
-                    List,
-                    Paragraph,
-                    Table,
-                    TableToolbar
-                  ],
-                  toolbar: {
-                    items: [
-                      'heading',
-                      '|',
-                      'bold',
-                      'italic',
-                      'link',
-                      'bulletedList',
-                      'numberedList',
-                      '|',
-                      'outdent',
-                      'indent',
-                      '|',
-                      'blockQuote',
-                      'insertTable',
-                      'undo',
-                      'redo'
-                    ]
-                  },
-                  table: {
-                    contentToolbar: [
-                      'tableColumn',
-                      'tableRow',
-                      'mergeTableCells'
-                    ]
-                  }
-                }}
-              />
+              <Box ref={editorRef} />
             </Box>
 
             <Box sx={{ display: 'flex', gap: 2, my: 2 }}>
               <DatePicker
                 value={startDate}
-                onChange={(newValue) => newValue && setStartDate(newValue)}
+                onChange={(newValue: Dayjs | null) => newValue && setStartDate(newValue)}
                 format='DD/MM/YYYY'
                 label={t('dayRange.start')}
                 sx={{ flexGrow: 1 }}
@@ -348,7 +320,7 @@ function AddNewEvent() {
               />
               <DatePicker
                 value={endDate}
-                onChange={(newValue) => newValue && setEndDate(newValue)}
+                onChange={(newValue: Dayjs | null) => newValue && setEndDate(newValue)}
                 format='DD/MM/YYYY'
                 label={t('dayRange.end')}
                 sx={{ flexGrow: 1 }}
@@ -373,7 +345,7 @@ function AddNewEvent() {
             <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
               <TimePicker
                 value={startTime}
-                onChange={(newValue) => newValue && setStartTime(newValue)}
+                onChange={(newValue: Dayjs | null) => newValue && setStartTime(newValue)}
                 label={t('startTime')}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
@@ -394,7 +366,7 @@ function AddNewEvent() {
               />
               <TimePicker
                 value={endTime}
-                onChange={(newValue) => newValue && setEndTime(newValue)}
+                onChange={(newValue: Dayjs | null) => newValue && setEndTime(newValue)}
                 label={t('endTime')}
                 sx={{ flexGrow: 1 }}
                 slotProps={{
@@ -420,7 +392,7 @@ function AddNewEvent() {
               fullWidth
               margin="normal"
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)}
               error={!!errors.location}
               helperText={errors.location}
             />
@@ -430,7 +402,7 @@ function AddNewEvent() {
               fullWidth
               margin="normal"
               value={host}
-              onChange={(e) => setHost(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setHost(e.target.value)}
               error={!!errors.host}
               helperText={errors.host}
             />
@@ -442,7 +414,7 @@ function AddNewEvent() {
               <RadioGroup
                 row
                 value={repeatType}
-                onChange={(e) => setRepeatType(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRepeatType(e.target.value)}
               >
                 <FormControlLabel
                   value="default"
@@ -469,7 +441,7 @@ function AddNewEvent() {
               allowMultiple={true}
               maxFiles={3}
               server={{
-                process: (_fieldName, _file, _metadata, load) => {
+                process: (_fieldName: string, _file: Blob, _metadata: unknown, load: (fileId: string) => void) => {
                   // Simulate immediate success after a short delay
                   setTimeout(() => {
                     load('file-id-mock'); // Pass a dummy ID or empty string
