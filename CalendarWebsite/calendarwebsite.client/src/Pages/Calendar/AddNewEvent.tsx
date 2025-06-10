@@ -427,7 +427,7 @@ function AddNewEvent() {
               allowMultiple={true}
               maxFiles={3}
               server={{
-                process: (fieldName, file, metadata, load) => {
+                process: (_fieldName, _file, _metadata, load) => {
                   // Simulate immediate success after a short delay
                   setTimeout(() => {
                     load('file-id-mock'); // Pass a dummy ID or empty string
