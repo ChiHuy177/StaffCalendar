@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { DataGrid, GridColDef, GridColumnGroupingModel, GridColumnVisibilityModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { useState } from 'react';
-import { formatTime, User, UserInfo } from '../utils/type';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { Autocomplete, Box, Button, Card, Container, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Skeleton, Stack, styled, TextField, Typography, useTheme, CircularProgress } from '@mui/material';
@@ -12,7 +11,10 @@ import i18n from '../i18n';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getCheckinDataByUserIdPaging } from '../apis/CheckinDataApi';
 import { useUser } from '../contexts/AuthUserContext';
-import { getDateFromString } from '../utils/calendarCalculate';
+import { formatTime, getDateFromString } from '../utils/calendarCalculate';
+import { User, UserInfo } from '../types/auth/auth_type';
+
+
 // import { useThemeContext } from '../contexts/ThemeContext';
 
 export default function CheckinTablePage() {

@@ -38,8 +38,8 @@ namespace CalendarWebsite.Server.Models
         [Required]
         public bool IsDeleted { get; set; } = false;
 
-        [Required]
-        public long MeetingRoomId {get; set;}
+        
+        public long? MeetingRoomId {get; set;}
 
         public virtual MeetingRoom? MeetingRoom {get; set;}
 

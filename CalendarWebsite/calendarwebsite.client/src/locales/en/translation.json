@@ -205,5 +205,8 @@
         "company": "Company Calendar",
         "meeting": "Meeting Calendar",
         "vehicle": "Vehicle Calendar"
-    }
+    },
+    "filePondDes": "Drag & Drop your files or <span class=\"filepond--label-action\">Browse</span>",
+    "attachments": "Attachment files",
+    "organizer": "Host"
 }

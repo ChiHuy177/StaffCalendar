@@ -47,8 +47,8 @@
     <PackageJsonDependenciesOidcClientTs Condition="$(PackageJsonDependenciesOidcClientTs) == ''">^3.2.1</PackageJsonDependenciesOidcClientTs>
     <PackageJsonDependenciesPreact Condition="$(PackageJsonDependenciesPreact) == ''">^10.26.5</PackageJsonDependenciesPreact>
     <PackageJsonDependenciesQuill Condition="$(PackageJsonDependenciesQuill) == ''">^2.0.3</PackageJsonDependenciesQuill>
-    <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^19.1.0</PackageJsonDependenciesReact>
-    <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^19.1.0</PackageJsonDependenciesReactDom>
+    <PackageJsonDependenciesReact Condition="$(PackageJsonDependenciesReact) == ''">^18.2.0</PackageJsonDependenciesReact>
+    <PackageJsonDependenciesReactDom Condition="$(PackageJsonDependenciesReactDom) == ''">^18.2.0</PackageJsonDependenciesReactDom>
     <PackageJsonDependenciesReactFilepond Condition="$(PackageJsonDependenciesReactFilepond) == ''">^7.1.3</PackageJsonDependenciesReactFilepond>
     <PackageJsonDependenciesReactI18next Condition="$(PackageJsonDependenciesReactI18next) == ''">^15.4.1</PackageJsonDependenciesReactI18next>
     <PackageJsonDependenciesReactIcons Condition="$(PackageJsonDependenciesReactIcons) == ''">^5.5.0</PackageJsonDependenciesReactIcons>

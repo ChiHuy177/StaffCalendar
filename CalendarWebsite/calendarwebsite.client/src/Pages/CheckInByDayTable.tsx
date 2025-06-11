@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Box, Button, Card, CardContent, Container, Fade, IconButton, Paper, Skeleton, Stack, styled, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { DataGrid, GridColDef, GridColumnVisibilityModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from '@mui/x-data-grid';
-import { formatTime, User } from '../utils/type';
+
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro/LocalizationProvider';
@@ -19,7 +19,8 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { Bounce, toast } from 'react-toastify';
 import { CircularProgress } from '@mui/material';
 import { useThemeContext } from '../contexts/ThemeContext';
-import { getDateFromString } from '../utils/calendarCalculate';
+import { formatTime, getDateFromString } from '../utils/calendarCalculate';
+import { User } from '../types/auth/auth_type';
 
 export default function CheckInByDayTable() {
     const [loading, setLoading] = useState(false);

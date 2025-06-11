@@ -329,9 +329,7 @@ export default function DashboardLayout() {
 
                         <LanguageSwitcherButton />
 
-                        <Tooltip title={t('logout')}>
-                            <LogoutButton />
-                        </Tooltip>
+                        <LogoutButton title={t('logout')} />
 
                         <Tooltip title={t('profile')}>
                             <IconButton className="p-0 transition-transform hover:scale-110">

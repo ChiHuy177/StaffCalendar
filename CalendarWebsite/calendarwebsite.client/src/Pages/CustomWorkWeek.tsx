@@ -33,11 +33,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useTranslation } from 'react-i18next';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { createCustomWorkingTime, updateCustomWorkingTime, softDeleteCustomWorkingTime, getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
-import { UserInfo, WorkSchedule, WorkScheduleApiData } from '../utils/type';
+
 import Swal from 'sweetalert2'
 import i18n from '../i18n';
 import { useUser } from '../contexts/AuthUserContext';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { WorkSchedule, WorkScheduleApiData } from '../types/checkin/checkin_type';
+import { UserInfo } from '../types/auth/auth_type';
 
 // Extend WorkSchedule to include the custom fields we need
 interface ExtendedWorkSchedule extends WorkSchedule {

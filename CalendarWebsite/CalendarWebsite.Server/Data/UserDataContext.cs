@@ -22,5 +22,7 @@ namespace CalendarWebsite.Server.Data
         public DbSet<CalendarEvent> CalendarEvents {get; set;}
 
         public DbSet<EventAttendee> EventAttendees {get; set;}
+
+        public DbSet<EventAttachment> EventAttachments {get; set;}
     }
 }

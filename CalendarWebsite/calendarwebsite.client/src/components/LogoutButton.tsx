@@ -1,9 +1,13 @@
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
 import { getApiUrl } from '../config/api';
 
-const LogoutButton = () => {
+interface LogoutButtonProps {
+    title?: string;
+}
+
+const LogoutButton = ({ title }: LogoutButtonProps) => {
     const handleLogout = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -35,13 +39,15 @@ const LogoutButton = () => {
     };
 
     return (
-        <IconButton
-            onClick={handleLogout}
-            color="inherit"
-            className="text-white transition-transform hover:scale-110"
-        >
-            <LogoutIcon />
-        </IconButton>
+        <Tooltip title={title}>
+            <IconButton
+                onClick={handleLogout}
+                color="inherit"
+                className="text-white transition-transform hover:scale-110"
+            >
+                <LogoutIcon />
+            </IconButton>
+        </Tooltip>
     );
 };
 

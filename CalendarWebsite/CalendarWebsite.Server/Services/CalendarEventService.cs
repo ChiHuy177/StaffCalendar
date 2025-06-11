@@ -11,15 +11,19 @@ namespace CalendarWebsite.Server.Services
         private readonly ICalendarEventRepository _calendarEventRepository;
         private readonly IEventAttendeeRepository _eventAttendeeRepository;
 
+        private readonly IFileService _fileService;
+
         private readonly UserDataContext _context;
         public CalendarEventService(ICalendarEventRepository calendarEventRepository,
             IEventAttendeeRepository eventAttendeeRepository,
-            UserDataContext userDataContext
+            UserDataContext userDataContext,
+            IFileService fileService
             )
         {
             _calendarEventRepository = calendarEventRepository;
             _eventAttendeeRepository = eventAttendeeRepository;
             _context = userDataContext;
+            _fileService = fileService;
         }
 
         public async Task AddNewEvent(CalendarEvent calendarEvent)
@@ -43,10 +47,7 @@ namespace CalendarWebsite.Server.Services
             {
                 // Validate meeting room exists
                 var meetingRoom = await _context.MeetingRooms.FindAsync(createEventDTO.Event.MeetingRoomId);
-                if (meetingRoom == null)
-                {
-                    throw new Exception($"Phòng họp với ID {createEventDTO.Event.MeetingRoomId} không tồn tại");
-                }
+                
 
                 // Validate attendees exist
                 foreach (var attendeeId in createEventDTO.AttendeeIds)
@@ -69,10 +70,26 @@ namespace CalendarWebsite.Server.Services
                     ApprovalStatus = false
                 }).ToList();
 
-                foreach(EventAttendee eventAttendee in eventAttendees) {
+                foreach (EventAttendee eventAttendee in eventAttendees)
+                {
                     await _eventAttendeeRepository.AddAsync(eventAttendee);
                 }
-                
+
+                //xử lý attachment file
+                if (createEventDTO.TempFiles != null && createEventDTO.TempFiles.Any())
+                {
+                    foreach (var tempFile in createEventDTO.TempFiles)
+                    {
+                        await _fileService.MoveTempToPermanent(
+                            newEvent.Id,
+                            tempFile.TempFileName,
+                            tempFile.OriginalFileName,
+                            tempFile.FileType,
+                            tempFile.FileSize
+                        );
+                    }
+                }
+
                 //commit transaction
                 await transaction.CommitAsync();
                 return newEvent;
@@ -104,9 +121,9 @@ namespace CalendarWebsite.Server.Services
         }
 
         public Task<List<CalendarEvent>> GetAllMeetingEvents()
-        {   
+        {
             var result = _calendarEventRepository.FindList(
-                predicate: each => each.EventType == "Meeting"
+                predicate: x => true
             );
             return result;
         }

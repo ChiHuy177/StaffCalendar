@@ -1,14 +1,16 @@
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createContext, useContext, useEffect, useState } from "react";
-
 
 type ThemeContextType = {
     isDarkMode: boolean;
     toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextType>({
+    isDarkMode: false,
+    toggleTheme: () => { }
+});
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -32,11 +34,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                 default: isDarkMode ? '#0F172A' : '#F3F4F6',
                 paper: isDarkMode ? '#1E293B' : '#FFFFFF',
             },
-            text: {          
+            text: {
                 primary: isDarkMode ? '#FFFFFF' : '#1F2937',
                 secondary: isDarkMode ? '#94A3B8' : '#4B5563',
-                
-            },common: {
+
+            }, common: {
                 black: isDarkMode ? '#FFFFFF' : '#94A3B8',
             }
         },
@@ -46,7 +48,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
                     body: {
                         transition: 'background-color 0.3s ease-in-out',
                     },
+
                 },
+            },
+            MuiSelect: {
+                styleOverrides: {
+                    root: {
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : '#2563EB',
+                        },
+                        '& .MuiSelect-icon': {
+                            color: isDarkMode ? 'white' : 'black',
+                        }
+
+                    }
+                }
             },
             MuiPaper: {
                 styleOverrides: {
@@ -151,13 +173,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setIsDarkMode(prev => !prev);
     };
 
-    return (
-        <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-            <MuiThemeProvider theme={theme}>
-                <CssBaseline />
-                {children}
-            </MuiThemeProvider>
-        </ThemeContext.Provider>
+    return React.createElement(
+        MuiThemeProvider,
+        { theme },
+        React.createElement(
+            ThemeContext.Provider,
+            { value: { isDarkMode, toggleTheme } },
+            React.createElement(CssBaseline),
+            children
+        )
     );
 }
 

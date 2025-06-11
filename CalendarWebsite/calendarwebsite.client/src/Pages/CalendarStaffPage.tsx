@@ -4,7 +4,6 @@ import FullCalendar from '@fullcalendar/react';
 import { EventClickArg, EventInput } from '@fullcalendar/core';
 import Popover from '@mui/material/Popover';
 import { Bounce, toast } from 'react-toastify';
-import { CheckinData, UserInfo, WorkScheduleDetail, WorkSchedule } from '../utils/type';
 import { useTranslation } from 'react-i18next';
 import { getCheckinDataByUserId, getRecordDataByMonth } from '../apis/CheckinDataApi';
 import dayjs from 'dayjs';
@@ -18,6 +17,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { getCustomWorkingTimeByPersonalProfileId } from '../apis/CustomWorkingTimeApi';
 import { useUser } from '../contexts/AuthUserContext';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { UserInfo } from '../types/auth/auth_type';
+import { CheckinData, WorkSchedule, WorkScheduleDetail } from '../types/checkin/checkin_type';
 
 
 export default function CalendarComponent() {

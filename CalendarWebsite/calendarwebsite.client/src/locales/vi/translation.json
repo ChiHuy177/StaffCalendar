@@ -203,5 +203,8 @@
         "company": "Lịch công ty",
         "meeting": "Lịch họp",
         "vehicle": "Lịch xe"
-    }
+    },
+    "filePondDes": "Kéo & thả file hoặc <span class=\"filepond--label-action\">Tìm</span>",
+    "attachments": "File đính kèm",
+    "organizer": "Chủ trì"
 }

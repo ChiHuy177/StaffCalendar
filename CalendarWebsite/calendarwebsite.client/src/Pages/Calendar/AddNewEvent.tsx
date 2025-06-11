@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem, SelectChangeEvent, Autocomplete, AutocompleteRenderInputParams } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -22,25 +22,42 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
+import { getAllMeetingRoom } from '../../apis/MeetingRoomApi';
+import { MeetingRoom } from '../../types/location/location_type';
+import { createEventWithAttachments, deleteTempFile, uploadTempFile } from '../../apis/EventApi';
+import { useUser } from '../../contexts/AuthUserContext';
+import { UserInfo } from '../../types/auth/auth_type';
+
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview)
+
+interface TempFile {
+  tempFileName: string;
+  originalFileName: string;
+  fileType: string;
+  fileSize: number;
+}
+
 
 function AddNewEvent() {
   const { t } = useTranslation();
+  const { nameOfUsers, user } = useUser();
   const { isDarkMode } = useThemeContext();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [location, setLocation] = useState('');
-  const [host, setHost] = useState('');
   const [repeatType, setRepeatType] = useState('default');
   const [calendarType, setCalendarType] = useState('personal');
   const [files, setFiles] = useState<FilePondFile[]>([]);
-  
+  const [meetingRooms, setMeetingRooms] = useState<MeetingRoom[]>([]);
+  const [tempFiles, setTempFiles] = useState<TempFile[]>([]);
+  const [selectedAttendees, setSelectedAttendees] = useState<UserInfo[]>([]);
+
   // Thêm state cho ngày và giờ
   const [startDate, setStartDate] = useState(dayjs());
   const [endDate, setEndDate] = useState(dayjs());
   const [startTime, setStartTime] = useState(dayjs());
   const [endTime, setEndTime] = useState(dayjs());
-  
+
   // State cho validation
   const [errors, setErrors] = useState({
     title: '',
@@ -64,7 +81,7 @@ function AddNewEvent() {
           toolbar: [
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             [{ 'color': [] }, { 'background': [] }],
             [{ 'align': [] }],
             ['link', 'image'],
@@ -76,6 +93,18 @@ function AddNewEvent() {
       quillRef.current.on('text-change', () => {
         setContent(quillRef.current?.root.innerHTML || '');
       });
+
+      async function fetchMeetingRooms() {
+        try {
+          const data = await getAllMeetingRoom();
+          // const data = await response.json();
+          setMeetingRooms(data);
+        } catch (error) {
+          console.error('Error fetching meeting rooms:', error);
+        }
+      }
+
+      fetchMeetingRooms();
     }
   }, []);
 
@@ -100,16 +129,6 @@ function AddNewEvent() {
 
     if (!content.trim()) {
       newErrors.content = t('validation.contentRequired');
-      isValid = false;
-    }
-
-    if (!location.trim()) {
-      newErrors.location = t('validation.locationRequired');
-      isValid = false;
-    }
-
-    if (!host.trim()) {
-      newErrors.host = t('validation.hostRequired');
       isValid = false;
     }
 
@@ -157,21 +176,66 @@ function AddNewEvent() {
     return isValid;
   };
 
-  const handleSubmit = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFileUpload = async (file: any) => {
+    try {
+      // Rút ngắn tên file nếu quá dài
+      const originalName = file.name;
+      const extension = originalName.split('.').pop();
+      const shortName = originalName.length > 50 
+        ? `${originalName.substring(0, 50)}.${extension}`
+        : originalName;
+      
+      // Tạo file mới với tên ngắn hơn
+      const shortFile = new File([file], shortName, { type: file.type });
+      
+      const result = await uploadTempFile(shortFile);
+      setTempFiles(prev => [...prev, {
+        tempFileName: result.tempFileName,
+        originalFileName: originalName,
+        fileType: file.type,
+        fileSize: file.size
+      }]);
+      return result.tempFileName;
+    } catch (error) {
+      console.error('Error uploading file: ', error);
+      throw error;
+    }
+  }
+
+  const handleFileRemove = async (tempFileName: string) => {
+    try {
+      console.log(tempFileName);
+      await deleteTempFile(tempFileName);
+      setTempFiles(prev => prev.filter(f => f.tempFileName !== tempFileName));
+    } catch (error) {
+      console.error('Error removing file: ', error);
+    }
+  };
+
+  const handleSubmit = async () => {
     if (validateForm()) {
-      console.log('Form Data:', {
-        title,
-        content,
-        location,
-        host,
-        repeatType,
-        calendarType,
-        startDate: startDate.format('YYYY-MM-DD'),
-        endDate: endDate.format('YYYY-MM-DD'),
-        startTime: startTime.format('HH:mm'),
-        endTime: endTime.format('HH:mm'),
-        files: files.map(file => file.filename)
-      });
+      try {
+        const eventData = {
+          event: {
+            title,
+            description: content,
+            eventType: calendarType,
+            startTime: `${startDate.format('YYYY-MM-DD')}T${startTime.format('HH:mm')}:00`,
+            endTime: `${endDate.format('YYYY-MM-DD')}T${endTime.format('HH:mm')}:00`,
+            createdBy: user.email,
+            recurrentType: repeatType === 'default' ? 'Default' : repeatType === 'weekly' ? 'Weekly' : 'Monthly',
+            isDeleted: false,
+            ...(location && { meetingRoomId: Number(location) })
+          },
+          attendeeIds: selectedAttendees.map(user => user.personalProfileId),
+          tempFiles: tempFiles
+        };
+        
+        await createEventWithAttachments(eventData);
+      } catch (error) {
+        console.error('Error creating event: ', error);
+      }
     }
   };
 
@@ -244,6 +308,18 @@ function AddNewEvent() {
                   '& .MuiSelect-select': {
                     color: isDarkMode ? 'white' : 'black',
                   },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : '#2563EB',
+                  },
+                  '& .MuiSelect-icon': {
+                    color: isDarkMode ? 'white' : 'black',
+                  }
                 }}
               >
                 <MenuItem value="personal">{t('calendarTypes.personal')}</MenuItem>
@@ -267,7 +343,7 @@ function AddNewEvent() {
               error={!!errors.title}
               helperText={errors.title}
               sx={{
-                marginTop:1
+                marginTop: 1
               }}
             />
 
@@ -279,17 +355,42 @@ function AddNewEvent() {
                 {errors.content}
               </Alert>
             )}
-            <Box sx={{ 
+            <Box sx={{
               border: errors.content ? '1px solid #d32f2f' : '1px solid rgba(0, 0, 0, 0.23)',
               borderRadius: '4px',
               '& .ql-container': {
                 minHeight: '200px',
-                backgroundColor: isDarkMode ? '#424242' : '#fff',
+                backgroundColor: isDarkMode ? '#1E293B' : '#fff',
                 color: isDarkMode ? '#fff' : '#000',
               },
               '& .ql-toolbar': {
-                backgroundColor: isDarkMode ? '#616161' : '#f5f5f5',
+                backgroundColor: isDarkMode ? '#1E293B' : '#f5f5f5',
                 borderColor: isDarkMode ? '#424242' : '#e0e0e0',
+                '& .ql-picker': {
+                  color: isDarkMode ? '#fff' : '#000',
+                },
+                '& .ql-stroke': {
+                  stroke: isDarkMode ? '#fff' : '#000',
+                },
+                '& .ql-fill': {
+                  fill: isDarkMode ? '#fff' : '#000',
+                },
+                '& .ql-picker-options': {
+                  backgroundColor: isDarkMode ? '#1E293B' : '#fff',
+                  borderColor: isDarkMode ? '#424242' : '#e0e0e0',
+                },
+                '& button:hover .ql-stroke': {
+                  stroke: isDarkMode ? '#60A5FA' : '#2563EB',
+                },
+                '& button:hover .ql-fill': {
+                  fill: isDarkMode ? '#60A5FA' : '#2563EB',
+                },
+                '& button.ql-active .ql-stroke': {
+                  stroke: isDarkMode ? '#60A5FA' : '#2563EB',
+                },
+                '& button.ql-active .ql-fill': {
+                  fill: isDarkMode ? '#60A5FA' : '#2563EB',
+                },
               }
             }}>
               <Box ref={editorRef} />
@@ -387,24 +488,37 @@ function AddNewEvent() {
               />
             </Box>
 
-            <TextField
-              label={t('addNew.location')}
-              fullWidth
-              margin="normal"
-              value={location}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)}
-              error={!!errors.location}
-              helperText={errors.location}
+            <Autocomplete
+              options={meetingRooms}
+              getOptionLabel={(option: MeetingRoom) => option.roomName || ''}
+              value={meetingRooms.find(room => room.id?.toString() === location) || null}
+              onChange={(_: React.SyntheticEvent, newValue: MeetingRoom | null) => {
+                setLocation(newValue?.id?.toString() || '');
+              }}
+              renderInput={(params: AutocompleteRenderInputParams) => (
+                <TextField
+                  {...params}
+                  label={t('addNew.location')}
+                  error={!!errors.location}
+                  helperText={errors.location}
+                  margin="normal"
+                />
+              )}
             />
 
-            <TextField
-              label={t('addNew.host')}
-              fullWidth
-              margin="normal"
-              value={host}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setHost(e.target.value)}
-              error={!!errors.host}
-              helperText={errors.host}
+            <Autocomplete
+              multiple
+              options={nameOfUsers}
+              getOptionLabel={(option) => option.emailAndName}
+              value={selectedAttendees}
+              onChange={(_, newValue) => setSelectedAttendees(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t('addNew.host')}
+                  margin="normal"
+                />
+              )}
             />
 
             <Box sx={{ my: 3 }}>
@@ -438,19 +552,39 @@ function AddNewEvent() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               files={files as any}
               onupdatefiles={setFiles}
+              onremovefile={async (error, file) => {
+                if (error) {
+                  console.error('Error removing file:', error);
+                  return;
+                }
+                try {
+                  console.log("onremovefile", file.serverId);
+                  await handleFileRemove(file.serverId);
+                  setTempFiles(prev => prev.filter(f => f.tempFileName !== file.serverId));
+                  setFiles(prev => prev.filter(f => f.serverId !== file.serverId));
+                } catch (error) {
+                  console.error('Error in onremovefile:', error);
+                }
+              }}
               allowMultiple={true}
               maxFiles={3}
               server={{
-                process: (_fieldName: string, _file: Blob, _metadata: unknown, load: (fileId: string) => void) => {
-                  // Simulate immediate success after a short delay
-                  setTimeout(() => {
-                    load('file-id-mock'); // Pass a dummy ID or empty string
-                  }, 500);
-                },
-                // You might need to implement other methods like revert, load, fetch if you use them
+                process: async (_fieldName, file, _metadata, load) => {
+                  try {
+                    const tempFileName = await handleFileUpload(file);
+                    load(tempFileName);
+                  } catch (error) {
+                    console.error('Error processing file:', error);
+                    load('error');
+                  }
+                }
               }}
-              name="files" /* sets the file input name, it's filepond by default */
-              labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+              name="files"
+              labelIdle={t('filePondDes')}
+              allowImagePreview={true}
+              imagePreviewMaxHeight={200}
+              imagePreviewMinHeight={100}
+              imagePreviewMaxFileSize="10MB"
             />
           </Card>
         </Box>

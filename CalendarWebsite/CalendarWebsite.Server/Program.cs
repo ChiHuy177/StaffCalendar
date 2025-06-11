@@ -203,6 +203,7 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IMeetingRoomRepository, MeetingRoomRepository>();
             builder.Services.AddScoped<IEventAttendeeRepository, EventAttendeeRepository>();
             builder.Services.AddScoped<ICalendarEventRepository, CalendarEventRepository>();
+            builder.Services.AddScoped<IEventAttachmentRepository, EventAttachmentRepository>();
 
             //register service
             builder.Services.AddScoped<ICheckInDataService, APICheckInService>();
@@ -215,6 +216,8 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IMeetingRoomService, MeetingRoomService>();
             builder.Services.AddScoped<IEventAttendeeService, EventAttendeeService>();
             builder.Services.AddScoped<ICalendarEventService, CalendarEventService>();
+            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<IEventAttachmentService, EventAttachmentService>();
 
             //add CORS
             builder.Services.AddCors(options =>

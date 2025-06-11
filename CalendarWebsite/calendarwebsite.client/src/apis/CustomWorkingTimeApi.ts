@@ -1,5 +1,6 @@
 import axios from "axios";
-import { WorkSchedule, WorkScheduleApiData } from "../utils/type";
+import { WorkSchedule, WorkScheduleApiData } from "../types/checkin/checkin_type";
+
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 

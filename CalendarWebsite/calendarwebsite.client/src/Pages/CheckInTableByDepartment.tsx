@@ -1,6 +1,5 @@
 import { Autocomplete, Box, Button, Card, CardContent, Fade, IconButton, Skeleton, Stack, styled, TextField, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Department, formatTime, User } from "../utils/type";
 import { DataGrid, GridColDef, GridColumnVisibilityModel, GridPaginationModel, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarFilterButton } from "@mui/x-data-grid";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import dayjs, { Dayjs } from "dayjs";
@@ -16,7 +15,11 @@ import { useTranslation } from 'react-i18next';
 import { viVN as viVNGrid } from '@mui/x-data-grid/locales';
 import { getAllDepartmentName, getCheckinDataByDepartmentId, getUserFullNameByDepartmentId } from "../apis/CheckinDataApi";
 import { useThemeContext } from "../contexts/ThemeContext";
-import { getDateFromString } from "../utils/calendarCalculate";
+import { formatTime, getDateFromString } from "../utils/calendarCalculate";
+import { Department } from "../types/location/location_type";
+import { User } from "../types/auth/auth_type";
+
+
 
 
 export default function CheckInTableByDepartment() {

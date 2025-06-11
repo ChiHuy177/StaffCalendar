@@ -1,7 +1,48 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\services\\calendareventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\services\\calendareventservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\models\\calendarevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\models\\calendarevent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\models\\createeventdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\models\\createeventdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\models\\tempfileinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\models\\tempfileinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\models\\eventattachment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\models\\eventattachment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\repositories\\eventattachmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\repositories\\eventattachmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\interfaces\\repositoryinterfaces\\ieventattachmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\interfaces\\repositoryinterfaces\\ieventattachmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\services\\eventattachmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\services\\eventattachmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\services\\fileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\services\\fileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|d:\\github\\staffcalendar\\calendarwebsite\\calendarwebsite.server\\interfaces\\serviceinterfaces\\ifileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0B09F95-BF05-46F2-8C49-A520B279A67F}|CalendarWebsite.Server\\CalendarWebsite.Server.csproj|solutionrelative:calendarwebsite.server\\interfaces\\serviceinterfaces\\ifileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +50,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -22,6 +63,128 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CalendarEventService.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\CalendarEventService.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Services\\CalendarEventService.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\CalendarEventService.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Services\\CalendarEventService.cs",
+              "ViewState": "AgIAAHgAAAAAAAAAAAAowH0AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T03:42:52.709Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CalendarEvent.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\CalendarEvent.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Models\\CalendarEvent.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\CalendarEvent.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Models\\CalendarEvent.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAADwvykAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T03:29:56.422Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CreateEventDTO.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\CreateEventDTO.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Models\\CreateEventDTO.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\CreateEventDTO.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Models\\CreateEventDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T01:26:30.056Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TempFileInfo.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\TempFileInfo.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Models\\TempFileInfo.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\TempFileInfo.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Models\\TempFileInfo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T01:22:57.129Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "EventAttachmentRepository.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Repositories\\EventAttachmentRepository.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Repositories\\EventAttachmentRepository.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Repositories\\EventAttachmentRepository.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Repositories\\EventAttachmentRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:34:28.96Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "EventAttachmentService.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\EventAttachmentService.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Services\\EventAttachmentService.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\EventAttachmentService.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Services\\EventAttachmentService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:29:56.343Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IEventAttachmentRepository.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\IEventAttachmentRepository.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\IEventAttachmentRepository.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\IEventAttachmentRepository.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Interfaces\\RepositoryInterfaces\\IEventAttachmentRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:16:44.756Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "FileService.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\FileService.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Services\\FileService.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Services\\FileService.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Services\\FileService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAlwF0AAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:15:43.525Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EventAttachment.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\EventAttachment.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Models\\EventAttachment.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Models\\EventAttachment.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Models\\EventAttachment.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAYwA8AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:07:58.92Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IFileService.cs",
+              "DocumentMoniker": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\IFileService.cs",
+              "RelativeDocumentMoniker": "CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\IFileService.cs",
+              "ToolTip": "D:\\GitHub\\StaffCalendar\\CalendarWebsite\\CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\IFileService.cs",
+              "RelativeToolTip": "CalendarWebsite.Server\\Interfaces\\ServiceInterfaces\\IFileService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-10T08:06:25.633Z"
             }
           ]
         }
