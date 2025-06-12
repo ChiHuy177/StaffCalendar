@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem, SelectChangeEvent, Autocomplete, AutocompleteRenderInputParams } from '@mui/material';
+import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem, SelectChangeEvent, Autocomplete, AutocompleteRenderInputParams, CircularProgress } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -15,6 +15,8 @@ import { FilePondFile, registerPlugin } from 'filepond'
 import 'filepond/dist/filepond.min.css'
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 // Import FilePond styles
 import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation'
@@ -24,7 +26,7 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
 import { getAllMeetingRoom } from '../../apis/MeetingRoomApi';
 import { MeetingRoom } from '../../types/location/location_type';
-import { createEventWithAttachments, deleteTempFile, uploadTempFile } from '../../apis/EventApi';
+import { createEventWithAttachments, uploadTempFile } from '../../apis/EventApi';
 import { useUser } from '../../contexts/AuthUserContext';
 import { UserInfo } from '../../types/auth/auth_type';
 
@@ -51,6 +53,7 @@ function AddNewEvent() {
   const [meetingRooms, setMeetingRooms] = useState<MeetingRoom[]>([]);
   const [tempFiles, setTempFiles] = useState<TempFile[]>([]);
   const [selectedAttendees, setSelectedAttendees] = useState<UserInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Thêm state cho ngày và giờ
   const [startDate, setStartDate] = useState(dayjs());
@@ -72,6 +75,7 @@ function AddNewEvent() {
 
   const quillRef = useRef<Quill | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (editorRef.current && !quillRef.current) {
@@ -179,17 +183,22 @@ function AddNewEvent() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFileUpload = async (file: any) => {
     try {
-      // Rút ngắn tên file nếu quá dài
       const originalName = file.name;
       const extension = originalName.split('.').pop();
-      const shortName = originalName.length > 50 
+      const shortName = originalName.length > 50
         ? `${originalName.substring(0, 50)}.${extension}`
         : originalName;
-      
-      // Tạo file mới với tên ngắn hơn
+
       const shortFile = new File([file], shortName, { type: file.type });
-      
+
       const result = await uploadTempFile(shortFile);
+      console.log('Upload result:', result); // Thêm dòng này để xem response
+
+      // Đảm bảo tempFileName không bị undefined
+      if (!result.tempFileName) {
+        throw new Error('No tempFileName in response');
+      }
+
       setTempFiles(prev => [...prev, {
         tempFileName: result.tempFileName,
         originalFileName: originalName,
@@ -203,19 +212,10 @@ function AddNewEvent() {
     }
   }
 
-  const handleFileRemove = async (tempFileName: string) => {
-    try {
-      console.log(tempFileName);
-      await deleteTempFile(tempFileName);
-      setTempFiles(prev => prev.filter(f => f.tempFileName !== tempFileName));
-    } catch (error) {
-      console.error('Error removing file: ', error);
-    }
-  };
-
   const handleSubmit = async () => {
     if (validateForm()) {
       try {
+        setIsLoading(true);
         const eventData = {
           event: {
             title,
@@ -231,10 +231,33 @@ function AddNewEvent() {
           attendeeIds: selectedAttendees.map(user => user.personalProfileId),
           tempFiles: tempFiles
         };
-        
+
         await createEventWithAttachments(eventData);
+        
+        // Hiển thị thông báo thành công
+        await Swal.fire({
+          title: t('success'),
+          text: t('eventCreatedSuccessfully'),
+          icon: 'success',
+          confirmButtonText: t('ok'),
+          confirmButtonColor: '#083B75'
+        });
+
+        // Chuyển hướng về trang calendar
+        navigate('/calendar/meeting');
       } catch (error) {
         console.error('Error creating event: ', error);
+        
+        // Hiển thị thông báo lỗi
+        await Swal.fire({
+          title: t('error'),
+          text: t('errorCreatingEvent'),
+          icon: 'error',
+          confirmButtonText: t('ok'),
+          confirmButtonColor: '#083B75'
+        });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -267,7 +290,27 @@ function AddNewEvent() {
             borderRadius: '16px',
             boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
             backgroundColor: isDarkMode ? 'background.paper' : 'white',
+            position: 'relative'
           }}>
+            {isLoading && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  borderRadius: '16px',
+                  zIndex: 1000
+                }}
+              >
+                <CircularProgress sx={{ color: '#fff' }} />
+              </Box>
+            )}
             <Box sx={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -282,15 +325,16 @@ function AddNewEvent() {
               </Typography>
               <Box>
                 <Button
-                  startIcon={<AddIcon />}
+                  startIcon={isLoading ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : <AddIcon />}
                   variant="contained"
                   sx={{ mr: 1 }}
                   onClick={handleSubmit}
+                  disabled={isLoading}
                 >
-                  {t('add')}
+                  {isLoading ? t('creating') : t('add')}
                 </Button>
 
-                <IconButton color="inherit">
+                <IconButton color="inherit" disabled={isLoading}>
                   <CloseIcon />
                 </IconButton>
               </Box>
@@ -558,8 +602,8 @@ function AddNewEvent() {
                   return;
                 }
                 try {
-                  console.log("onremovefile", file.serverId);
-                  await handleFileRemove(file.serverId);
+                  // console.log("onremovefile", file.serverId);
+                  // await handleFileRemove(file.serverId);
                   setTempFiles(prev => prev.filter(f => f.tempFileName !== file.serverId));
                   setFiles(prev => prev.filter(f => f.serverId !== file.serverId));
                 } catch (error) {

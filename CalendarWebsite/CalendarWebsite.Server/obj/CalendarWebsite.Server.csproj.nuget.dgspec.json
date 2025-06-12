@@ -88,9 +88,25 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "MongoDB.Bson": {
+              "target": "Package",
+              "version": "[3.4.0, )"
+            },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.4.0, )"
+            },
+            "PdfPig": {
+              "target": "Package",
+              "version": "[0.1.10, )"
+            },
             "Scalar.AspNetCore": {
               "target": "Package",
               "version": "[2.1.11, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.9, )"
             }
           },
           "imports": [

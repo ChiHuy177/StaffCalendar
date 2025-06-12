@@ -13,11 +13,15 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.0",
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "9.0.5",
           "Microsoft.AspNetCore.OpenApi": "9.0.0",
-          "Microsoft.AspNetCore.SpaProxy": "9.0.5",
+          "Microsoft.AspNetCore.SpaProxy": "9.0.6",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.4",
           "Microsoft.EntityFrameworkCore.Tools": "9.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "9.0.0",
-          "Scalar.AspNetCore": "2.1.11"
+          "MongoDB.Bson": "3.4.0",
+          "MongoDB.Driver": "3.4.0",
+          "PdfPig": "0.1.10",
+          "Scalar.AspNetCore": "2.1.11",
+          "SixLabors.ImageSharp": "3.1.9"
         },
         "runtime": {
           "CalendarWebsite.Server.dll": {}
@@ -46,7 +50,7 @@
           "Azure.Core": "1.38.0",
           "Microsoft.Identity.Client": "4.61.3",
           "Microsoft.Identity.Client.Extensions.Msal": "4.61.3",
-          "System.Memory": "4.5.4",
+          "System.Memory": "4.5.5",
           "System.Security.Cryptography.ProtectedData": "8.0.0",
           "System.Text.Json": "9.0.4",
           "System.Threading.Tasks.Extensions": "4.5.4"
@@ -78,6 +82,17 @@
           "lib/netstandard2.1/ClosedXML.Parser.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "DnsClient/1.6.1": {
+        "dependencies": {
+          "Microsoft.Win32.Registry": "5.0.0"
+        },
+        "runtime": {
+          "lib/net5.0/DnsClient.dll": {
+            "assemblyVersion": "1.6.1.0",
+            "fileVersion": "1.6.1.0"
           }
         }
       },
@@ -740,11 +755,11 @@
           }
         }
       },
-      "Microsoft.AspNetCore.SpaProxy/9.0.5": {
+      "Microsoft.AspNetCore.SpaProxy/9.0.6": {
         "runtime": {
           "lib/net9.0/Microsoft.AspNetCore.SpaProxy.dll": {
-            "assemblyVersion": "9.0.5.0",
-            "fileVersion": "9.0.525.22904"
+            "assemblyVersion": "9.0.6.0",
+            "fileVersion": "9.0.625.26701"
           }
         }
       },
@@ -1648,7 +1663,7 @@
           }
         }
       },
-      "Microsoft.NETCore.Platforms/2.0.0": {},
+      "Microsoft.NETCore.Platforms/5.0.0": {},
       "Microsoft.OpenApi/1.6.17": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {
@@ -1867,9 +1882,15 @@
           }
         }
       },
+      "Microsoft.Win32.Registry/5.0.0": {
+        "dependencies": {
+          "System.Security.AccessControl": "5.0.0",
+          "System.Security.Principal.Windows": "5.0.0"
+        }
+      },
       "Microsoft.Win32.SystemEvents/4.5.0": {
         "dependencies": {
-          "Microsoft.NETCore.Platforms": "2.0.0"
+          "Microsoft.NETCore.Platforms": "5.0.0"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.Win32.SystemEvents.dll": {
@@ -1883,6 +1904,35 @@
             "assetType": "runtime",
             "assemblyVersion": "4.0.0.0",
             "fileVersion": "4.6.26515.6"
+          }
+        }
+      },
+      "MongoDB.Bson/3.4.0": {
+        "dependencies": {
+          "System.Memory": "4.5.5",
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/MongoDB.Bson.dll": {
+            "assemblyVersion": "3.4.0.0",
+            "fileVersion": "3.4.0.0"
+          }
+        }
+      },
+      "MongoDB.Driver/3.4.0": {
+        "dependencies": {
+          "DnsClient": "1.6.1",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.4",
+          "MongoDB.Bson": "3.4.0",
+          "SharpCompress": "0.30.1",
+          "Snappier": "1.0.0",
+          "System.Buffers": "4.5.1",
+          "ZstdSharp.Port": "0.7.3"
+        },
+        "runtime": {
+          "lib/net6.0/MongoDB.Driver.dll": {
+            "assemblyVersion": "3.4.0.0",
+            "fileVersion": "3.4.0.0"
           }
         }
       },
@@ -2005,6 +2055,38 @@
           }
         }
       },
+      "PdfPig/0.1.10": {
+        "runtime": {
+          "lib/net8.0/UglyToad.PdfPig.Core.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          },
+          "lib/net8.0/UglyToad.PdfPig.DocumentLayoutAnalysis.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Fonts.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Package.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Tokenization.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          },
+          "lib/net8.0/UglyToad.PdfPig.Tokens.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          },
+          "lib/net8.0/UglyToad.PdfPig.dll": {
+            "assemblyVersion": "0.1.10.0",
+            "fileVersion": "0.1.10.0"
+          }
+        }
+      },
       "RBush/4.0.0": {
         "runtime": {
           "lib/net8.0/RBush.dll": {
@@ -2018,6 +2100,14 @@
           "lib/net9.0/Scalar.AspNetCore.dll": {
             "assemblyVersion": "2.1.11.0",
             "fileVersion": "2.1.11.0"
+          }
+        }
+      },
+      "SharpCompress/0.30.1": {
+        "runtime": {
+          "lib/net5.0/SharpCompress.dll": {
+            "assemblyVersion": "0.30.1.0",
+            "fileVersion": "0.30.1.0"
           }
         }
       },
@@ -2037,6 +2127,23 @@
           }
         }
       },
+      "SixLabors.ImageSharp/3.1.9": {
+        "runtime": {
+          "lib/net6.0/SixLabors.ImageSharp.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.1.9.0"
+          }
+        }
+      },
+      "Snappier/1.0.0": {
+        "runtime": {
+          "lib/net5.0/Snappier.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "System.Buffers/4.5.1": {},
       "System.ClientModel/1.0.0": {
         "dependencies": {
           "System.Memory.Data": "1.0.2",
@@ -2139,7 +2246,7 @@
       "System.Diagnostics.EventLog/8.0.0": {},
       "System.Drawing.Common/4.5.0": {
         "dependencies": {
-          "Microsoft.NETCore.Platforms": "2.0.0",
+          "Microsoft.NETCore.Platforms": "5.0.0",
           "Microsoft.Win32.SystemEvents": "4.5.0"
         },
         "runtime": {
@@ -2192,7 +2299,7 @@
         }
       },
       "System.IO.Pipelines/7.0.0": {},
-      "System.Memory/4.5.4": {},
+      "System.Memory/4.5.5": {},
       "System.Memory.Data/1.0.2": {
         "dependencies": {
           "System.Text.Encodings.Web": "6.0.0",
@@ -2243,6 +2350,12 @@
         }
       },
       "System.Runtime.CompilerServices.Unsafe/6.0.0": {},
+      "System.Security.AccessControl/5.0.0": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "5.0.0",
+          "System.Security.Principal.Windows": "5.0.0"
+        }
+      },
       "System.Security.Cryptography.Cng/5.0.0": {
         "dependencies": {
           "System.Formats.Asn1": "9.0.4"
@@ -2282,7 +2395,15 @@
       },
       "System.Threading.Channels/7.0.0": {},
       "System.Threading.Tasks.Dataflow/8.0.0": {},
-      "System.Threading.Tasks.Extensions/4.5.4": {}
+      "System.Threading.Tasks.Extensions/4.5.4": {},
+      "ZstdSharp.Port/0.7.3": {
+        "runtime": {
+          "lib/net7.0/ZstdSharp.dll": {
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
+          }
+        }
+      }
     }
   },
   "libraries": {
@@ -2318,6 +2439,13 @@
       "sha512": "sha512-w+/0tsxABS3lkSH8EUlA7IGme+mq5T/Puf3DbOiTckmSuUpAUO2LK29oXYByCcWkBv6wcRHxgWlQb1lxkwI0Tw==",
       "path": "closedxml.parser/1.2.0",
       "hashPath": "closedxml.parser.1.2.0.nupkg.sha512"
+    },
+    "DnsClient/1.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4H/f2uYJOZ+YObZjpY9ABrKZI+JNw3uizp6oMzTXwDw6F+2qIPhpRl/1t68O/6e98+vqNiYGu+lswmwdYUy3gg==",
+      "path": "dnsclient/1.6.1",
+      "hashPath": "dnsclient.1.6.1.nupkg.sha512"
     },
     "DocumentFormat.OpenXml/3.1.1": {
       "type": "package",
@@ -2746,12 +2874,12 @@
       "path": "microsoft.aspnetcore.razor.language/6.0.24",
       "hashPath": "microsoft.aspnetcore.razor.language.6.0.24.nupkg.sha512"
     },
-    "Microsoft.AspNetCore.SpaProxy/9.0.5": {
+    "Microsoft.AspNetCore.SpaProxy/9.0.6": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-iVsR0q1BizeYqgLst1g0k/TWxNOOGf46Od/VEqZficzRGuxOwPrhSsS8aQa6RYi9X3d2SjuURI33Ddky9LuE/Q==",
-      "path": "microsoft.aspnetcore.spaproxy/9.0.5",
-      "hashPath": "microsoft.aspnetcore.spaproxy.9.0.5.nupkg.sha512"
+      "sha512": "sha512-8eqqxeHechUxhNN4+u63DP4TenA9QpsC21os76e+RA5AUC4OziLa7UNYOUs+ftp37ZkYdQVOavSIEC4abuIWow==",
+      "path": "microsoft.aspnetcore.spaproxy/9.0.6",
+      "hashPath": "microsoft.aspnetcore.spaproxy.9.0.6.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
       "type": "package",
@@ -3075,12 +3203,12 @@
       "path": "microsoft.net.stringtools/17.10.4",
       "hashPath": "microsoft.net.stringtools.17.10.4.nupkg.sha512"
     },
-    "Microsoft.NETCore.Platforms/2.0.0": {
+    "Microsoft.NETCore.Platforms/5.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-VdLJOCXhZaEMY7Hm2GKiULmn7IEPFE4XC5LPSfBVCUIA8YLZVh846gtfBJalsPQF2PlzdD7ecX7DZEulJ402ZQ==",
-      "path": "microsoft.netcore.platforms/2.0.0",
-      "hashPath": "microsoft.netcore.platforms.2.0.0.nupkg.sha512"
+      "sha512": "sha512-VyPlqzH2wavqquTcYpkIIAQ6WdenuKoFN0BdYBbCWsclXacSOHNQn66Gt4z5NBqEYW0FAPm5rlvki9ZiCij5xQ==",
+      "path": "microsoft.netcore.platforms/5.0.0",
+      "hashPath": "microsoft.netcore.platforms.5.0.0.nupkg.sha512"
     },
     "Microsoft.OpenApi/1.6.17": {
       "type": "package",
@@ -3145,12 +3273,33 @@
       "path": "microsoft.visualstudio.web.codegenerators.mvc/9.0.0",
       "hashPath": "microsoft.visualstudio.web.codegenerators.mvc.9.0.0.nupkg.sha512"
     },
+    "Microsoft.Win32.Registry/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dDoKi0PnDz31yAyETfRntsLArTlVAVzUzCIvvEDsDsucrl33Dl8pIJG06ePTJTI3tGpeyHS9Cq7Foc/s4EeKcg==",
+      "path": "microsoft.win32.registry/5.0.0",
+      "hashPath": "microsoft.win32.registry.5.0.0.nupkg.sha512"
+    },
     "Microsoft.Win32.SystemEvents/4.5.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-LuI1oG+24TUj1ZRQQjM5Ew73BKnZE5NZ/7eAdh1o8ST5dPhUnJvIkiIn2re3MwnkRy6ELRnvEbBxHP8uALKhJw==",
       "path": "microsoft.win32.systemevents/4.5.0",
       "hashPath": "microsoft.win32.systemevents.4.5.0.nupkg.sha512"
+    },
+    "MongoDB.Bson/3.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0fBbXqO/ADhWLcgq0cUNizcKEFAuz5klxUc5CWTWV8vdnlOl5QTeAI7Kh64bCoz654ZN7WWOjz9WRw0QGHcqQA==",
+      "path": "mongodb.bson/3.4.0",
+      "hashPath": "mongodb.bson.3.4.0.nupkg.sha512"
+    },
+    "MongoDB.Driver/3.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+8vGdlbbzfPfQzCI00nPX59vH+5Nfumb2lyXf7xdIcAa05JPBdXFc/vWw0rPQOqIWYWfTmvQsxUgUXyzk0AKGw==",
+      "path": "mongodb.driver/3.4.0",
+      "hashPath": "mongodb.driver.3.4.0.nupkg.sha512"
     },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
@@ -3229,6 +3378,13 @@
       "path": "nuget.versioning/6.11.0",
       "hashPath": "nuget.versioning.6.11.0.nupkg.sha512"
     },
+    "PdfPig/0.1.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9baMcYq7yL0QuaI0ZGq24EB5HY6oVa8ZhspEgYfo4gXpTLqk8RMIMlxtWr3mwuxguheIdscIFH2TN77y5y4L8g==",
+      "path": "pdfpig/0.1.10",
+      "hashPath": "pdfpig.0.1.10.nupkg.sha512"
+    },
     "RBush/4.0.0": {
       "type": "package",
       "serviceable": true,
@@ -3243,6 +3399,13 @@
       "path": "scalar.aspnetcore/2.1.11",
       "hashPath": "scalar.aspnetcore.2.1.11.nupkg.sha512"
     },
+    "SharpCompress/0.30.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XqD4TpfyYGa7QTPzaGlMVbcecKnXy4YmYLDWrU+JIj7IuRNl7DH2END+Ll7ekWIY8o3dAMWLFDE1xdhfIWD1nw==",
+      "path": "sharpcompress/0.30.1",
+      "hashPath": "sharpcompress.0.30.1.nupkg.sha512"
+    },
     "SharpZipLib/1.2.0": {
       "type": "package",
       "serviceable": true,
@@ -3256,6 +3419,27 @@
       "sha512": "sha512-LFQsCZlV0xlUyXAOMUo5kkSl+8zAQXXbbdwWchtk0B4o7zotZhQsQOcJUELGHdfPfm/xDAsz6hONAuV25bJaAg==",
       "path": "sixlabors.fonts/1.0.0",
       "hashPath": "sixlabors.fonts.1.0.0.nupkg.sha512"
+    },
+    "SixLabors.ImageSharp/3.1.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8yY4Bcxgw5u7xLWFXb2mK4fbX+0JYJ7eyM19n0inj/cgcHAuIAge982Eiy8vTHT9Zow4HvKJaZKRFBhTNFqD4A==",
+      "path": "sixlabors.imagesharp/3.1.9",
+      "hashPath": "sixlabors.imagesharp.3.1.9.nupkg.sha512"
+    },
+    "Snappier/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rFtK2KEI9hIe8gtx3a0YDXdHOpedIf9wYCEYtBEmtlyiWVX3XlCNV03JrmmAi/Cdfn7dxK+k0sjjcLv4fpHnqA==",
+      "path": "snappier/1.0.0",
+      "hashPath": "snappier.1.0.0.nupkg.sha512"
+    },
+    "System.Buffers/4.5.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg==",
+      "path": "system.buffers/4.5.1",
+      "hashPath": "system.buffers.4.5.1.nupkg.sha512"
     },
     "System.ClientModel/1.0.0": {
       "type": "package",
@@ -3383,12 +3567,12 @@
       "path": "system.io.pipelines/7.0.0",
       "hashPath": "system.io.pipelines.7.0.0.nupkg.sha512"
     },
-    "System.Memory/4.5.4": {
+    "System.Memory/4.5.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw==",
-      "path": "system.memory/4.5.4",
-      "hashPath": "system.memory.4.5.4.nupkg.sha512"
+      "sha512": "sha512-XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "path": "system.memory/4.5.5",
+      "hashPath": "system.memory.4.5.5.nupkg.sha512"
     },
     "System.Memory.Data/1.0.2": {
       "type": "package",
@@ -3431,6 +3615,13 @@
       "sha512": "sha512-/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg==",
       "path": "system.runtime.compilerservices.unsafe/6.0.0",
       "hashPath": "system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    },
+    "System.Security.AccessControl/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dagJ1mHZO3Ani8GH0PHpPEe/oYO+rVdbQjvjJkBRNQkX4t0r1iaeGn8+/ybkSLEan3/slM0t59SVdHzuHf2jmw==",
+      "path": "system.security.accesscontrol/5.0.0",
+      "hashPath": "system.security.accesscontrol.5.0.0.nupkg.sha512"
     },
     "System.Security.Cryptography.Cng/5.0.0": {
       "type": "package",
@@ -3501,6 +3692,13 @@
       "sha512": "sha512-zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg==",
       "path": "system.threading.tasks.extensions/4.5.4",
       "hashPath": "system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+    },
+    "ZstdSharp.Port/0.7.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-U9Ix4l4cl58Kzz1rJzj5hoVTjmbx1qGMwzAcbv1j/d3NzrFaESIurQyg+ow4mivCgkE3S413y+U9k4WdnEIkRA==",
+      "path": "zstdsharp.port/0.7.3",
+      "hashPath": "zstdsharp.port.0.7.3.nupkg.sha512"
     }
   }
 }

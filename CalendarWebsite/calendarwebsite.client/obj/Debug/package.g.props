@@ -53,6 +53,7 @@
     <PackageJsonDependenciesReactI18next Condition="$(PackageJsonDependenciesReactI18next) == ''">^15.4.1</PackageJsonDependenciesReactI18next>
     <PackageJsonDependenciesReactIcons Condition="$(PackageJsonDependenciesReactIcons) == ''">^5.5.0</PackageJsonDependenciesReactIcons>
     <PackageJsonDependenciesReactLoadingSkeleton Condition="$(PackageJsonDependenciesReactLoadingSkeleton) == ''">^3.5.0</PackageJsonDependenciesReactLoadingSkeleton>
+    <PackageJsonDependenciesReactPdf Condition="$(PackageJsonDependenciesReactPdf) == ''">^9.2.1</PackageJsonDependenciesReactPdf>
     <PackageJsonDependenciesReactRouterDom Condition="$(PackageJsonDependenciesReactRouterDom) == ''">^7.5.0</PackageJsonDependenciesReactRouterDom>
     <PackageJsonDependenciesReactTinyPopover Condition="$(PackageJsonDependenciesReactTinyPopover) == ''">^8.1.6</PackageJsonDependenciesReactTinyPopover>
     <PackageJsonDependenciesReactToastify Condition="$(PackageJsonDependenciesReactToastify) == ''">^11.0.5</PackageJsonDependenciesReactToastify>

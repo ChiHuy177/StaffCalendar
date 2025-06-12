@@ -216,8 +216,10 @@ namespace CalendarWebsite.Server
             builder.Services.AddScoped<IMeetingRoomService, MeetingRoomService>();
             builder.Services.AddScoped<IEventAttendeeService, EventAttendeeService>();
             builder.Services.AddScoped<ICalendarEventService, CalendarEventService>();
-            builder.Services.AddScoped<IFileService, FileService>();
             builder.Services.AddScoped<IEventAttachmentService, EventAttachmentService>();
+            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddSingleton<MongoFileService>();
+
 
             //add CORS
             builder.Services.AddCors(options =>

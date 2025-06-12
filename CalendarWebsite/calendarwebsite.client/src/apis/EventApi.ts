@@ -31,29 +31,6 @@ export async function uploadTempFile(file: File) {
     }
 }
 
-export async function deleteTempFile(tempFileName: string) {
-    try {
-        console.log("Đang xóa file tạm:", tempFileName);
-        console.log("URL API:", `${API_BASE_URL}api/events/deleteTempAttachment`);
-        
-        const response = await axios.post(
-            `${API_BASE_URL}api/events/deleteTempAttachment?tempFileName=${encodeURIComponent(tempFileName)}`
-        );
-        
-        console.log("Kết quả xóa file:", response.data);
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Chi tiết lỗi:", {
-                status: error.response?.status,
-                data: error.response?.data,
-                message: error.message
-            });
-        }
-        console.error("Lỗi khi xóa file tạm:", error);
-        throw error;
-    }
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createEventWithAttachments(eventData : any) {
