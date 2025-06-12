@@ -885,3 +885,17 @@ D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\obj\Debug\net9.0\
 D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\obj\Debug\net9.0\ref\CalendarWebsite.Server.dll
 D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\DnsClient.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\MongoDB.Bson.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\MongoDB.Driver.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.Core.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.DocumentLayoutAnalysis.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.Fonts.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.Package.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.Tokenization.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.Tokens.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\UglyToad.PdfPig.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\SharpCompress.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\SixLabors.ImageSharp.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\Snappier.dll
+D:\GitHub\StaffCalendar\CalendarWebsite\CalendarWebsite.Server\bin\Debug\net9.0\ZstdSharp.dll

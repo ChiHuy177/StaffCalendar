@@ -24,7 +24,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="MongoDB.Bson" Version="3.4.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
+    <PackageReference Include="PdfPig" Version="0.1.10" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.1.11" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.9" />
   </ItemGroup>
 
   <ItemGroup>

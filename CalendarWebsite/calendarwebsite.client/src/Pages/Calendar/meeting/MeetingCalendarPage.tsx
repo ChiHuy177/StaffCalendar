@@ -4,10 +4,9 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import FullCalendar from '@fullcalendar/react';
 import Popover from '@mui/material/Popover';
 import { useTranslation } from 'react-i18next';
-import { Card, Typography, Chip, Paper, Box, List, ListItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
+import { Card, Typography, Chip, Paper, Box, List, ListItem, ListItemIcon, ListItemText, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DownloadIcon from '@mui/icons-material/Download';
 
 import { useThemeContext } from '../../../contexts/ThemeContext';
 import { EventInput, EventClickArg } from '@fullcalendar/core/index.js';
@@ -27,16 +26,21 @@ const EventPopoverContent = React.memo(({
     attachments, 
     isDarkMode, 
     lang, 
-    t, 
-    handleDownload 
+    t,
+    isLoading
 }: { 
     selectedEvent: EventInput;
     attachments: EventAttachment[];
     isDarkMode: boolean;
     lang: string;
     t: (key: string) => string;
-    handleDownload: (filePath: string, fileName: string) => void;
+    isLoading: boolean;
 }) => {
+    const handleViewFile = (filePath: string) => {
+        const url = `${import.meta.env.VITE_API_URL}api/file/${filePath}`;
+        window.open(url, '_blank');
+    };
+
     return (
         <Paper sx={{ p: 2.5, maxWidth: 320, width: 'auto' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1.5 }}>
@@ -64,15 +68,19 @@ const EventPopoverContent = React.memo(({
                 }}
             />
             
-            {attachments.length > 0 && (
-                <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle2" sx={{ 
-                        color: isDarkMode ? 'text.secondary' : 'text.primary',
-                        mb: 1,
-                        fontWeight: 500
-                    }}>
-                        {t('attachments')}:
-                    </Typography>
+            <Box sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" sx={{ 
+                    color: isDarkMode ? 'text.secondary' : 'text.primary',
+                    mb: 1,
+                    fontWeight: 500
+                }}>
+                    {t('attachments')}:
+                </Typography>
+                {isLoading ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                        <CircularProgress size={24} color={isDarkMode ? "primary" : "secondary"} />
+                    </Box>
+                ) : attachments.length > 0 ? (
                     <List dense>
                         {attachments.map((attachment) => (
                             <ListItem
@@ -84,7 +92,9 @@ const EventPopoverContent = React.memo(({
                                     '&:hover': {
                                         backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#eeeeee',
                                     },
+                                    cursor: 'pointer'
                                 }}
+                                onClick={() => handleViewFile(attachment.filePath)}
                             >
                                 <ListItemIcon>
                                     <InsertDriveFileIcon color={isDarkMode ? "primary" : "action"} />
@@ -105,23 +115,20 @@ const EventPopoverContent = React.memo(({
                                         }
                                     }}
                                 />
-                                <IconButton
-                                    size="small"
-                                    onClick={() => handleDownload(attachment.filePath, attachment.fileName)}
-                                    sx={{ 
-                                        color: isDarkMode ? 'primary.main' : 'primary.main',
-                                        '&:hover': {
-                                            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)'
-                                        }
-                                    }}
-                                >
-                                    <DownloadIcon />
-                                </IconButton>
                             </ListItem>
                         ))}
                     </List>
-                </Box>
-            )}
+                ) : (
+                    <Typography variant="body2" sx={{ 
+                        color: isDarkMode ? 'text.secondary' : 'text.secondary',
+                        fontStyle: 'italic',
+                        textAlign: 'center',
+                        py: 2
+                    }}>
+                        {t('noAttachments')}
+                    </Typography>
+                )}
+            </Box>
         </Paper>
     );
 });
@@ -132,8 +139,8 @@ const EventPopover = React.memo(({
     attachments, 
     isDarkMode, 
     lang, 
-    t, 
-    handleDownload,
+    t,
+    isLoading,
     onClose 
 }: { 
     anchorEl: HTMLElement | null;
@@ -142,7 +149,7 @@ const EventPopover = React.memo(({
     isDarkMode: boolean;
     lang: string;
     t: (key: string) => string;
-    handleDownload: (filePath: string, fileName: string) => void;
+    isLoading: boolean;
     onClose: () => void;
 }) => {
     const isOpen = Boolean(anchorEl) && Boolean(selectedEvent);
@@ -181,7 +188,7 @@ const EventPopover = React.memo(({
                         isDarkMode={isDarkMode}
                         lang={lang}
                         t={t}
-                        handleDownload={handleDownload}
+                        isLoading={isLoading}
                     />
                 </motion.div>
             )}
@@ -198,6 +205,8 @@ export default function MeetingCalendarComponent() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
     const [attachments, setAttachments] = useState<EventAttachment[]>([]);
+    const [isLoadingAttachments, setIsLoadingAttachments] = useState(false);
+    const [isLoadingEvents, setIsLoadingEvents] = useState(false);
 
     const handleEventClick = useCallback((info: EventClickArg) => {
         setAnchorEl(info.el);
@@ -214,11 +223,14 @@ export default function MeetingCalendarComponent() {
         const fetchAttachments = async () => {
             if (selectedEvent?.id) {
                 try {
+                    setIsLoadingAttachments(true);
                     const eventAttachments = await getEventAttachments(Number(selectedEvent.id));
                     setAttachments(eventAttachments);
                 } catch (error) {
                     console.error("Error fetching attachments:", error);
                     setAttachments([]);
+                } finally {
+                    setIsLoadingAttachments(false);
                 }
             }
         };
@@ -227,45 +239,52 @@ export default function MeetingCalendarComponent() {
     }, [selectedEvent?.id]);
 
     async function fetchMeetingEvents() {
-        const data = await getAllMeetingEvents();
-        const eventList: EventInput[] = [];
-        
-        if (data && Array.isArray(data)) {
-            data.forEach(meeting => {
-                eventList.push({
-                    id: meeting.id,
-                    eventType: meeting.eventType,
-                    title: meeting.title,
-                    start: meeting.startTime,
-                    end: meeting.endTime,
-                    backgroundColor: meeting.eventType === 'Personal' ? '#4CAF50' : 
-                                    meeting.eventType === 'Company' ? '#2196F3' :
-                                    meeting.eventType === 'Meeting' ? '#9C27B0' :
-                                    meeting.eventType === 'Vehicle' ? '#FF9800' : '#4CAF50',
-                    extendedProps: {
-                        description: meeting.description,
-                        organizer: meeting.organizer,
-                        status: meeting.status
-                    }
+        try {
+            setIsLoadingEvents(true);
+            const data = await getAllMeetingEvents();
+            const eventList: EventInput[] = [];
+            
+            if (data && Array.isArray(data)) {
+                data.forEach(meeting => {
+                    eventList.push({
+                        id: meeting.id,
+                        eventType: meeting.eventType,
+                        title: meeting.title,
+                        start: meeting.startTime,
+                        end: meeting.endTime,
+                        backgroundColor: meeting.eventType === 'personal' ? '#4CAF50' : 
+                                        meeting.eventType === 'company' ? '#2196F3' :
+                                        meeting.eventType === 'meeting' ? '#9C27B0' :
+                                        meeting.eventType === 'vehicle' ? '#FF9800' : '#4CAF50',
+                        extendedProps: {
+                            description: meeting.description,
+                            organizer: meeting.organizer,
+                            status: meeting.status
+                        }
+                    });
                 });
-            });
+            }
+            
+            setEvents(eventList);
+        } catch (error) {
+            console.error("Error fetching meeting events:", error);
+        } finally {
+            setIsLoadingEvents(false);
         }
-        
-        setEvents(eventList);
     }
 
     useEffect(() => {
         fetchMeetingEvents();
     }, []);
 
-    const handleDownload = (filePath: string, fileName: string) => {
-        const link = document.createElement('a');
-        link.href = filePath;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    // const handleDownload = (filePath: string, fileName: string) => {
+    //     const link = document.createElement('a');
+    //     link.href = filePath;
+    //     link.download = fileName;
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    // };
 
     const handlePopoverClose = useCallback(() => {
         setAnchorEl(null);
@@ -301,49 +320,60 @@ export default function MeetingCalendarComponent() {
                     boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
                     position: 'relative'
                 }}>
-                    
+                    {isLoadingEvents && (
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            alignItems: 'center',
+                            minHeight: '400px'
+                        }}>
+                            <CircularProgress sx={{ color: '#083B75' }} />
+                        </Box>
+                    )}
 
-                    <div className={isDarkMode ? 'dark-calendar' : 'light-calendar'}>
-                        <FullCalendar
-                            ref={calendarRef}
-                            plugins={[dayGridPlugin, timeGridPlugin]}
-                            initialView="dayGridMonth"
-                            headerToolbar={{
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth,timeGridDay',
-                            }}
-                            buttonText={{
-                                today: t('today'),
-                                month: t('month'),
-                                day: t('day'),
-                            }}
-                            locale={lang}
-                            events={events}
-                            editable={true}
-                            selectable={true}
-                            aspectRatio={1.2}
-                            contentHeight="auto"
-                            height="auto"
-                            dayMaxEventRows={true}
-                            eventContent={(arg) => {
-                                const startTime = arg.event.start ? new Date(arg.event.start).toLocaleTimeString(lang === 'vi' ? 'vi-VN' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A';
-                                const endTime = arg.event.end ? new Date(arg.event.end).toLocaleTimeString(lang === 'vi' ? 'vi-VN' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : '';
-                                const timeRange = endTime !== '' && endTime !== startTime ? `${startTime}-${endTime}` : startTime;
+                    {!isLoadingEvents && (
+                        <div className={isDarkMode ? 'dark-calendar' : 'light-calendar'}>
+                            <FullCalendar
+                                ref={calendarRef}
+                                plugins={[dayGridPlugin, timeGridPlugin]}
+                                initialView="dayGridMonth"
+                                headerToolbar={{
+                                    left: 'prev,next today',
+                                    center: 'title',
+                                    right: 'dayGridMonth,timeGridDay',
+                                }}
+                                buttonText={{
+                                    today: t('today'),
+                                    month: t('month'),
+                                    day: t('day'),
+                                }}
+                                locale={lang}
+                                events={events}
+                                editable={true}
+                                selectable={true}
+                                aspectRatio={1.2}
+                                contentHeight="auto"
+                                height="auto"
+                                dayMaxEventRows={true}
+                                eventContent={(arg) => {
+                                    const startTime = arg.event.start ? new Date(arg.event.start).toLocaleTimeString(lang === 'vi' ? 'vi-VN' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                                    const endTime = arg.event.end ? new Date(arg.event.end).toLocaleTimeString(lang === 'vi' ? 'vi-VN' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+                                    const timeRange = endTime !== '' && endTime !== startTime ? `${startTime}-${endTime}` : startTime;
 
-                                return (
-                                    <div className="flex w-100 flex-col p-2 box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base" style={{ backgroundColor: arg.event.backgroundColor, borderLeft: '4px solid #083B75' }}>
-                                        <p className="font-bold text-white">{timeRange}</p>
-                                        <p className="font-bold text-white">{arg.event.title}</p>
-                                    </div>
-                                );
-                            }}
-                            eventBackgroundColor="#90ee90"
-                            eventBorderColor="#90ee90"
-                            viewClassNames='w-full'
-                            eventClick={handleEventClick}
-                        />
-                    </div>
+                                    return (
+                                        <div className="flex w-100 flex-col p-2 box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base" style={{ backgroundColor: arg.event.backgroundColor, borderLeft: '4px solid #083B75' }}>
+                                            <p className="font-bold text-white">{timeRange}</p>
+                                            <p className="font-bold text-white">{arg.event.title}</p>
+                                        </div>
+                                    );
+                                }}
+                                eventBackgroundColor="#90ee90"
+                                eventBorderColor="#90ee90"
+                                viewClassNames='w-full'
+                                eventClick={handleEventClick}
+                            />
+                        </div>
+                    )}
                 </Card>
                 <EventPopover 
                     anchorEl={anchorEl}
@@ -352,7 +382,7 @@ export default function MeetingCalendarComponent() {
                     isDarkMode={isDarkMode}
                     lang={lang}
                     t={t}
-                    handleDownload={handleDownload}
+                    isLoading={isLoadingAttachments}
                     onClose={handlePopoverClose}
                 />
             </Box>

@@ -10,5 +10,6 @@ namespace CalendarWebsite.Server.Interfaces.ServiceInterfaces
         Task DeleteAttachment(long attachmentId);
         Task<EventAttachment> GetAttachment(long attachmentId);
         Task<List<EventAttachment>> GetAttachmentsByEventId(long eventId);
+        Task<FileDocument> GetFile(string fileId);
     }
 }

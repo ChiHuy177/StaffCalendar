@@ -1,103 +1,167 @@
-﻿using CalendarWebsite.Server.Interfaces.ServiceInterfaces;
+using CalendarWebsite.Server.Interfaces.ServiceInterfaces;
 using CalendarWebsite.Server.Models;
+using MongoDB.Driver;
 
 namespace CalendarWebsite.Server.Services
 {
     public class FileService : IFileService
     {
-        private readonly string _tempPath;
-        private readonly string _uploadPath;
-        private readonly IEventAttachmentService _attachmentService;
+        private readonly MongoFileService _mongoFileService;
+        private readonly ILogger<FileService> _logger;
 
-        public FileService(IWebHostEnvironment environment, IEventAttachmentService attachmentService)
+        public FileService(MongoFileService mongoFileService, ILogger<FileService> logger)
         {
-            _tempPath = Path.Combine(environment.ContentRootPath, "TempUpLoads");
-            _uploadPath = Path.Combine(environment.ContentRootPath, "Uploads");
-            _attachmentService = attachmentService;
-
-            if (!Directory.Exists(_tempPath))
-            {
-                Directory.CreateDirectory(_tempPath);
-            }
-            if (!Directory.Exists(_uploadPath))
-            {
-                Directory.CreateDirectory(_uploadPath);
-            }
+            _mongoFileService = mongoFileService;
+            _logger = logger;
         }
 
-        public async Task DeleteAttachment(long attachmentId)
+        public async Task<string> SaveTempFile(IFormFile file)
         {
-            var attachment = await _attachmentService.GetAttachment(attachmentId);
-            if(attachment != null && System.IO.File.Exists(attachment.FilePath)){
-                await Task.Run(() => System.IO.File.Delete(attachment.FilePath));
-                await _attachmentService.DeleteAttachment(attachmentId);
+            try
+            {
+                _logger.LogInformation($"Saving temporary file: {file.FileName}");
+                var fileId = await _mongoFileService.SaveFiles(file);
+                _logger.LogInformation($"File saved successfully with ID: {fileId}");
+                return fileId;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error saving temporary file: {ex.Message}");
+                throw;
             }
         }
 
         public async Task DeleteTempFile(string tempFileName)
         {
-            var tempFilePath = Path.Combine(_tempPath, tempFileName);
-            if(System.IO.File.Exists(tempFilePath)){
-                await Task.Run(() => System.IO.File.Delete(tempFilePath));
+            try
+            {
+                _logger.LogInformation($"Deleting temporary file: {tempFileName}");
+                await _mongoFileService.DeleteFile(tempFileName);
+                _logger.LogInformation($"Temporary file deleted successfully: {tempFileName}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting temporary file: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<EventAttachment> MoveTempToPermanent(long eventId, string tempFileName, string originalFileName, string fileType, long fileSize)
+        {
+            try
+            {
+                _logger.LogInformation($"Moving file {tempFileName} to permanent storage for event {eventId}");
+                
+                // Kiểm tra file tồn tại
+                var file = await _mongoFileService.GetFile(tempFileName);
+                if (file == null)
+                {
+                    _logger.LogWarning($"File with ID {tempFileName} not found in MongoDB");
+                    throw new Exception($"File with ID {tempFileName} not found");
+                }
+
+                _logger.LogInformation($"Found file in MongoDB: {file.FileName}");
+
+                // Cập nhật EventId trong MongoDB
+                var filter = Builders<FileDocument>.Filter.Eq(x => x.Id, tempFileName);
+                var update = Builders<FileDocument>.Update.Set(x => x.EventId, eventId.ToString());
+                
+                _logger.LogInformation($"Updating file with filter: {filter}");
+                _logger.LogInformation($"Update operation: {update}");
+                
+                await _mongoFileService.UpdateFile(filter, update);
+
+                var attachment = new EventAttachment
+                {
+                    EventId = eventId,
+                    FileName = originalFileName,
+                    FilePath = tempFileName,
+                    FileType = fileType,
+                    FileSize = fileSize
+                };
+
+                _logger.LogInformation($"File moved successfully to event {eventId}");
+                return attachment;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error moving file to permanent storage: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task DeleteAttachment(long attachmentId)
+        {
+            try
+            {
+                _logger.LogInformation($"Deleting attachment: {attachmentId}");
+                // TODO: Implement delete attachment logic
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting attachment: {ex.Message}");
+                throw;
             }
         }
 
         public async Task<EventAttachment> GetAttachment(long attachmentId)
         {
-            return await _attachmentService.GetAttachment(attachmentId);
+            try
+            {
+                _logger.LogInformation($"Getting attachment: {attachmentId}");
+                // TODO: Implement get attachment logic
+                return new EventAttachment();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting attachment: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<List<EventAttachment>> GetAttachmentsByEventId(long eventId)
         {
-            return await _attachmentService.GetAttachmentsByEventId(eventId);
+            try
+            {
+                _logger.LogInformation($"Getting attachments for event: {eventId}");
+                var files = await _mongoFileService.GetFilesByEventId(eventId.ToString());
+                
+                return files.Select(f => new EventAttachment
+                {
+                    EventId = eventId,
+                    FileName = f.FileName,
+                    FilePath = f.Id,
+                    FileType = f.FileType,
+                    FileSize = f.FileSize
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting attachments for event: {ex.Message}");
+                throw;
+            }
         }
 
-        public async Task<EventAttachment> MoveTempToPermanent(long eventId, string tempFileName, string originalFileName, string fileType, long fileSize)
+        public async Task<FileDocument> GetFile(string fileId)
         {
-            var tempFilePath = Path.Combine(_tempPath, tempFileName);
-            if (!System.IO.File.Exists(tempFilePath)){
-                throw new FileNotFoundException("Temp file not found");
-            }
-
-            var permanentFileName = $"{Guid.NewGuid()}_{originalFileName}";
-            var permanentPath = Path.Combine(_uploadPath, permanentFileName);
-
-            await Task.Run(() => System.IO.File.Move(tempFilePath, permanentPath));
-
-            var attachment = new EventAttachment {
-                EventId = eventId,
-                FileName = originalFileName,
-                FilePath = permanentPath,
-                FileType = fileType,
-                FileSize = fileSize
-            };
-
-            return await _attachmentService.AddAttachment(attachment);
-        }
-
-        public async Task<string> SaveTempFile(IFormFile file)
-        {
-            if (file == null || file.Length == 0)
+            try
             {
-                throw new ArgumentException("No file upload");
+                _logger.LogInformation($"Getting file with ID: {fileId}");
+                var file = await _mongoFileService.GetFile(fileId);
+                if (file == null)
+                {
+                    _logger.LogWarning($"File with ID {fileId} not found");
+                    throw new Exception($"File with ID {fileId} not found");
+                }
+                _logger.LogInformation($"File retrieved successfully: {file.FileName}");
+                return file;
             }
-
-            // Rút ngắn tên file nếu quá dài
-            var originalName = file.FileName;
-            var extension = Path.GetExtension(originalName);
-            var shortName = originalName.Length > 50 
-                ? $"{originalName.Substring(0, 50)}{extension}"
-                : originalName;
-
-            // Tạo tên file tạm ngắn hơn
-            var tempFileName = $"{Guid.NewGuid().ToString("N")}_{shortName}";
-            var tempFilePath = Path.Combine(_tempPath, tempFileName);
-
-            using (var stream = new FileStream(tempFilePath, FileMode.Create))
+            catch (Exception ex)
             {
-                await file.CopyToAsync(stream);
+                _logger.LogError(ex, $"Error getting file: {ex.Message}");
+                throw;
             }
-            return tempFileName;
         }
     }
-}
+} 
