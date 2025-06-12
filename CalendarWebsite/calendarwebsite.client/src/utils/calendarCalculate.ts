@@ -1,6 +1,7 @@
 import { EventInput } from "@fullcalendar/core/index.js";
 import dayjs from 'dayjs';
-import { CheckinData, WorkScheduleDetail } from "./type";
+import { CheckinData, WorkScheduleDetail } from "../types/checkin/checkin_type";
+
 
 
 type TranslateFunction = (key: string) => string;

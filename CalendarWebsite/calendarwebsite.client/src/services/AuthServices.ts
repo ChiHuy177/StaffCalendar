@@ -1,5 +1,6 @@
 import axios from "axios";
-import { AuthUser } from "../utils/type";
+import { AuthUser } from "../types/auth/auth_type";
+
 
 export class AuthService {
     static getTokenFromUrl(): string | null {

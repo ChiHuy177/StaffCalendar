@@ -223,7 +223,7 @@ function AddNewEvent() {
             eventType: calendarType,
             startTime: `${startDate.format('YYYY-MM-DD')}T${startTime.format('HH:mm')}:00`,
             endTime: `${endDate.format('YYYY-MM-DD')}T${endTime.format('HH:mm')}:00`,
-            createdBy: user.email,
+            createdBy: user?.email,
             recurrentType: repeatType === 'default' ? 'Default' : repeatType === 'weekly' ? 'Weekly' : 'Monthly',
             isDeleted: false,
             ...(location && { meetingRoomId: Number(location) })

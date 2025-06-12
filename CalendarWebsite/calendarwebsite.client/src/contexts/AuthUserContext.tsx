@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { AuthUser, UserInfo } from "../utils/type";
+
 // import axios from "axios";
 import { getAllUserName } from "../apis/CheckinDataApi";
 import { AuthService } from "../services/AuthServices";
+import { AuthUser, UserInfo } from "../types/auth/auth_type";
 
 interface AuthUserContextType {
     user: AuthUser | null;
