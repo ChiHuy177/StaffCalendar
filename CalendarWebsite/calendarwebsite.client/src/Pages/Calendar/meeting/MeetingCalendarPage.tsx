@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import FullCalendar from '@fullcalendar/react';
@@ -32,7 +32,7 @@ export default function MeetingCalendarComponent() {
     const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
     const [attachments, setAttachments] = useState<EventAttachment[]>([]);
 
-    const handleEventClick = async (info: EventClickArg) => {
+    const handleEventClick = useCallback((info: EventClickArg) => {
         setAnchorEl(info.el);
         setSelectedEvent({
             id: info.event.id,
@@ -41,15 +41,23 @@ export default function MeetingCalendarComponent() {
             end: info.event.end || undefined,
             extendedProps: info.event.extendedProps,
         });
-        
-        try {
-            const eventAttachments = await getEventAttachments(Number(info.event.id));
-            setAttachments(eventAttachments);
-        } catch (error) {
-            console.error("Error fetching attachments:", error);
-            setAttachments([]);
-        }
-    };
+    }, []);
+
+    useEffect(() => {
+        const fetchAttachments = async () => {
+            if (selectedEvent?.id) {
+                try {
+                    const eventAttachments = await getEventAttachments(Number(selectedEvent.id));
+                    setAttachments(eventAttachments);
+                } catch (error) {
+                    console.error("Error fetching attachments:", error);
+                    setAttachments([]);
+                }
+            }
+        };
+
+        fetchAttachments();
+    }, [selectedEvent?.id]);
 
     async function fetchMeetingEvents() {
         const data = await getAllMeetingEvents();
