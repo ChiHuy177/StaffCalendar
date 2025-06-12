@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import FullCalendar from '@fullcalendar/react';
 import Popover from '@mui/material/Popover';
 import { useTranslation } from 'react-i18next';
 import { Card, Typography, Chip, Paper, Box, List, ListItem, ListItemIcon, ListItemText, IconButton } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DownloadIcon from '@mui/icons-material/Download';
 
@@ -21,6 +21,173 @@ interface EventAttachment {
     fileType: string;
     fileSize: number;
 }
+
+const EventPopoverContent = React.memo(({ 
+    selectedEvent, 
+    attachments, 
+    isDarkMode, 
+    lang, 
+    t, 
+    handleDownload 
+}: { 
+    selectedEvent: EventInput;
+    attachments: EventAttachment[];
+    isDarkMode: boolean;
+    lang: string;
+    t: (key: string) => string;
+    handleDownload: (filePath: string, fileName: string) => void;
+}) => {
+    return (
+        <Paper sx={{ p: 2.5, maxWidth: 320, width: 'auto' }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1.5 }}>
+                {selectedEvent.title}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                <span style={{ fontWeight: '500' }}>{t('organizer')}:</span> {selectedEvent.extendedProps?.organizer === undefined ? "None" : selectedEvent.extendedProps?.organizer}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
+                <span style={{ fontWeight: '500' }}>{t('time')}:</span> {' '}
+                {selectedEvent.start instanceof Date ? selectedEvent.start.toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US') : 'N/A'}
+            </Typography>
+            <Chip
+                label={
+                    <div dangerouslySetInnerHTML={{ __html: selectedEvent.extendedProps?.description || '<p>None</p>' }} />
+                }
+                size="small"
+                sx={{
+                    backgroundColor: isDarkMode ? 'success.light' : '#e8f5e9',
+                    color: isDarkMode ? 'success.dark' : '#2e7d32',
+                    fontWeight: 500,
+                    '& .MuiChip-label': {
+                        padding: '0 8px'
+                    }
+                }}
+            />
+            
+            {attachments.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="subtitle2" sx={{ 
+                        color: isDarkMode ? 'text.secondary' : 'text.primary',
+                        mb: 1,
+                        fontWeight: 500
+                    }}>
+                        {t('attachments')}:
+                    </Typography>
+                    <List dense>
+                        {attachments.map((attachment) => (
+                            <ListItem
+                                key={attachment.id}
+                                sx={{
+                                    borderRadius: '8px',
+                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5',
+                                    mb: 0.5,
+                                    '&:hover': {
+                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#eeeeee',
+                                    },
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <InsertDriveFileIcon color={isDarkMode ? "primary" : "action"} />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={attachment.fileName}
+                                    secondary={`${(attachment.fileSize / 1024).toFixed(1)} KB`}
+                                    primaryTypographyProps={{
+                                        sx: {
+                                            color: isDarkMode ? 'text.primary' : 'text.primary',
+                                            fontWeight: 500
+                                        }
+                                    }}
+                                    secondaryTypographyProps={{
+                                        sx: {
+                                            color: isDarkMode ? 'text.secondary' : 'text.secondary',
+                                            fontSize: '0.75rem'
+                                        }
+                                    }}
+                                />
+                                <IconButton
+                                    size="small"
+                                    onClick={() => handleDownload(attachment.filePath, attachment.fileName)}
+                                    sx={{ 
+                                        color: isDarkMode ? 'primary.main' : 'primary.main',
+                                        '&:hover': {
+                                            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)'
+                                        }
+                                    }}
+                                >
+                                    <DownloadIcon />
+                                </IconButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+            )}
+        </Paper>
+    );
+});
+
+const EventPopover = React.memo(({ 
+    anchorEl, 
+    selectedEvent, 
+    attachments, 
+    isDarkMode, 
+    lang, 
+    t, 
+    handleDownload,
+    onClose 
+}: { 
+    anchorEl: HTMLElement | null;
+    selectedEvent: EventInput | null;
+    attachments: EventAttachment[];
+    isDarkMode: boolean;
+    lang: string;
+    t: (key: string) => string;
+    handleDownload: (filePath: string, fileName: string) => void;
+    onClose: () => void;
+}) => {
+    const isOpen = Boolean(anchorEl) && Boolean(selectedEvent);
+
+    return (
+        <Popover
+            open={isOpen}
+            anchorEl={anchorEl}
+            onClose={onClose}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+            }}
+            PaperProps={{
+                sx: {
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                    mt: 1.5,
+                }
+            }}
+        >
+            {selectedEvent && (
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                >
+                    <EventPopoverContent
+                        selectedEvent={selectedEvent}
+                        attachments={attachments}
+                        isDarkMode={isDarkMode}
+                        lang={lang}
+                        t={t}
+                        handleDownload={handleDownload}
+                    />
+                </motion.div>
+            )}
+        </Popover>
+    );
+});
 
 export default function MeetingCalendarComponent() {
     const { t } = useTranslation();
@@ -100,135 +267,11 @@ export default function MeetingCalendarComponent() {
         document.body.removeChild(link);
     };
 
-    const EventPopover = () => {
-        const handlePopoverClose = () => {
-            setAnchorEl(null);
-            setSelectedEvent(null);
-            setAttachments([]);
-        };
-
-        const isOpen = Boolean(anchorEl);
-
-        return (
-            <Popover
-                open={isOpen}
-                anchorEl={anchorEl}
-                onClose={handlePopoverClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-                PaperProps={{
-                    sx: {
-                        borderRadius: '12px',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-                        mt: 1.5,
-                    }
-                }}
-            >
-                <AnimatePresence>
-                    {selectedEvent && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <Paper sx={{ p: 2.5, maxWidth: 320, width: 'auto' }}>
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1.5 }}>
-                                    {selectedEvent.title}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                                    <span style={{ fontWeight: '500' }}>{t('organizer')}:</span> {selectedEvent.extendedProps?.organizer === undefined ? "None" : selectedEvent.extendedProps?.organizer}
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
-                                    <span style={{ fontWeight: '500' }}>{t('time')}:</span> {' '}
-                                    {selectedEvent.start instanceof Date ? selectedEvent.start.toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US') : 'N/A'}
-                                </Typography>
-                                <Chip
-                                    label={
-                                        <div dangerouslySetInnerHTML={{ __html: selectedEvent.extendedProps?.description || '<p>None</p>' }} />
-                                    }
-                                    size="small"
-                                    sx={{
-                                        backgroundColor: isDarkMode ? 'success.light' : '#e8f5e9',
-                                        color: isDarkMode ? 'success.dark' : '#2e7d32',
-                                        fontWeight: 500,
-                                        '& .MuiChip-label': {
-                                            padding: '0 8px'
-                                        }
-                                    }}
-                                />
-                                
-                                {attachments.length > 0 && (
-                                    <Box sx={{ mt: 2 }}>
-                                        <Typography variant="subtitle2" sx={{ 
-                                            color: isDarkMode ? 'text.secondary' : 'text.primary',
-                                            mb: 1,
-                                            fontWeight: 500
-                                        }}>
-                                            {t('attachments')}:
-                                        </Typography>
-                                        <List dense>
-                                            {attachments.map((attachment) => (
-                                                <ListItem
-                                                    key={attachment.id}
-                                                    sx={{
-                                                        borderRadius: '8px',
-                                                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5',
-                                                        mb: 0.5,
-                                                        '&:hover': {
-                                                            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#eeeeee',
-                                                        },
-                                                    }}
-                                                >
-                                                    <ListItemIcon>
-                                                        <InsertDriveFileIcon color={isDarkMode ? "primary" : "action"} />
-                                                    </ListItemIcon>
-                                                    <ListItemText
-                                                        primary={attachment.fileName}
-                                                        secondary={`${(attachment.fileSize / 1024).toFixed(1)} KB`}
-                                                        primaryTypographyProps={{
-                                                            sx: {
-                                                                color: isDarkMode ? 'text.primary' : 'text.primary',
-                                                                fontWeight: 500
-                                                            }
-                                                        }}
-                                                        secondaryTypographyProps={{
-                                                            sx: {
-                                                                color: isDarkMode ? 'text.secondary' : 'text.secondary',
-                                                                fontSize: '0.75rem'
-                                                            }
-                                                        }}
-                                                    />
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleDownload(attachment.filePath, attachment.fileName)}
-                                                        sx={{ 
-                                                            color: isDarkMode ? 'primary.main' : 'primary.main',
-                                                            '&:hover': {
-                                                                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)'
-                                                            }
-                                                        }}
-                                                    >
-                                                        <DownloadIcon />
-                                                    </IconButton>
-                                                </ListItem>
-                                            ))}
-                                        </List>
-                                    </Box>
-                                )}
-                            </Paper>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </Popover>
-        );
-    };
+    const handlePopoverClose = useCallback(() => {
+        setAnchorEl(null);
+        setSelectedEvent(null);
+        setAttachments([]);
+    }, []);
 
     return (
         <motion.div
@@ -302,7 +345,16 @@ export default function MeetingCalendarComponent() {
                         />
                     </div>
                 </Card>
-                <EventPopover />
+                <EventPopover 
+                    anchorEl={anchorEl}
+                    selectedEvent={selectedEvent}
+                    attachments={attachments}
+                    isDarkMode={isDarkMode}
+                    lang={lang}
+                    t={t}
+                    handleDownload={handleDownload}
+                    onClose={handlePopoverClose}
+                />
             </Box>
         </motion.div>
     );
