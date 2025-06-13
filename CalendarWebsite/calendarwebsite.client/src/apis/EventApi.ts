@@ -1,4 +1,5 @@
 import axios from "axios";
+import {  RoomAvailabilityCheck } from "../types/meetingEvent/meetingEvent_type";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -58,6 +59,17 @@ export async function getEventAttachments(eventId: number) {
         return response.data;
     } catch (error) {
         console.error("Error getting event attachments: ", error);
+        throw error;
+    }
+}
+
+export async function checkRoomAvailabilityApi(event: RoomAvailabilityCheck) {
+    const apiUrl = `${API_BASE_URL}api/MeetingRoom/CheckAvailability`;
+    try {
+        const response = await axios.post(apiUrl, event);
+        return response.data;
+    } catch (error) {
+        console.error('Error checking room availability');
         throw error;
     }
 }

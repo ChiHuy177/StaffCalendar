@@ -1,4 +1,5 @@
 ﻿using CalendarWebsite.Server.Data;
+using CalendarWebsite.Server.interfaces;
 using CalendarWebsite.Server.Interfaces.RepositoryInterfaces;
 using CalendarWebsite.Server.Interfaces.ServiceInterfaces;
 using CalendarWebsite.Server.Models;
@@ -10,20 +11,23 @@ namespace CalendarWebsite.Server.Services
     {
         private readonly ICalendarEventRepository _calendarEventRepository;
         private readonly IEventAttendeeRepository _eventAttendeeRepository;
-
         private readonly IFileService _fileService;
-
+        private readonly IMeetingRoomRepository _meetingRoomRepository;
+        private readonly IMeetingRoomService _meetingRoomService;
         private readonly UserDataContext _context;
         public CalendarEventService(ICalendarEventRepository calendarEventRepository,
             IEventAttendeeRepository eventAttendeeRepository,
             UserDataContext userDataContext,
-            IFileService fileService
-            )
+            IFileService fileService,
+            IMeetingRoomRepository meetingRoomRepository,
+            IMeetingRoomService meetingRoomService)
         {
             _calendarEventRepository = calendarEventRepository;
             _eventAttendeeRepository = eventAttendeeRepository;
             _context = userDataContext;
             _fileService = fileService;
+            _meetingRoomRepository = meetingRoomRepository;
+            _meetingRoomService = meetingRoomService;
         }
 
         public async Task AddNewEvent(CalendarEvent calendarEvent)
@@ -46,8 +50,20 @@ namespace CalendarWebsite.Server.Services
             try
             {
                 // Validate meeting room exists
-                var meetingRoom = await _context.MeetingRooms.FindAsync(createEventDTO.Event.MeetingRoomId);
-                
+                var meetingRoom = await _meetingRoomRepository.GetByIdAsync(createEventDTO.Event.MeetingRoomId.Value);
+                //only check when user choose room (the event without chosing room is ok)
+                if (meetingRoom != null)
+                {
+                    var isRoomAvailable = await _meetingRoomService.IsRoomAvailable(
+                        createEventDTO.Event.MeetingRoomId.Value,
+                        createEventDTO.Event.StartTime,
+                        createEventDTO.Event.EndTime
+                    );
+
+                    if(!isRoomAvailable){
+                        throw new Exception("This room is not available");
+                    }
+                }
 
                 // Validate attendees exist
                 foreach (var attendeeId in createEventDTO.AttendeeIds)

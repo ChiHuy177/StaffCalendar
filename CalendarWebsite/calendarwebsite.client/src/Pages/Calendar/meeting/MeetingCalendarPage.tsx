@@ -49,6 +49,7 @@ const EventPopoverContent = React.memo(({
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                 <span style={{ fontWeight: '500' }}>{t('organizer')}:</span> {selectedEvent.extendedProps?.organizer === undefined ? "None" : selectedEvent.extendedProps?.organizer}
             </Typography>
+            {selectedEvent.extendedProps?.room}
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
                 <span style={{ fontWeight: '500' }}>{t('time')}:</span> {' '}
                 {selectedEvent.start instanceof Date ? selectedEvent.start.toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US') : 'N/A'}
@@ -259,7 +260,8 @@ export default function MeetingCalendarComponent() {
                         extendedProps: {
                             description: meeting.description,
                             organizer: meeting.organizer,
-                            status: meeting.status
+                            status: meeting.status,
+                            meetingRoom: meeting.meetingRoomId
                         }
                     });
                 });
@@ -276,16 +278,6 @@ export default function MeetingCalendarComponent() {
     useEffect(() => {
         fetchMeetingEvents();
     }, []);
-
-    // const handleDownload = (filePath: string, fileName: string) => {
-    //     const link = document.createElement('a');
-    //     link.href = filePath;
-    //     link.download = fileName;
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    // };
-
     const handlePopoverClose = useCallback(() => {
         setAnchorEl(null);
         setSelectedEvent(null);
@@ -361,14 +353,14 @@ export default function MeetingCalendarComponent() {
                                     const timeRange = endTime !== '' && endTime !== startTime ? `${startTime}-${endTime}` : startTime;
 
                                     return (
-                                        <div className="flex w-100 flex-col p-2 box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base" style={{ backgroundColor: arg.event.backgroundColor, borderLeft: '4px solid #083B75' }}>
+                                        <div className="flex w-[100%] h-[100%] flex-col  box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base" style={{ backgroundColor: arg.event.backgroundColor }}>
                                             <p className="font-bold text-white">{timeRange}</p>
                                             <p className="font-bold text-white">{arg.event.title}</p>
                                         </div>
                                     );
                                 }}
-                                eventBackgroundColor="#90ee90"
-                                eventBorderColor="#90ee90"
+                                // eventBackgroundColor="#90ee90"
+                                // eventBorderColor="#90ee90"
                                 viewClassNames='w-full'
                                 eventClick={handleEventClick}
                             />

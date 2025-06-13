@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, Card, IconButton, Alert, Select, MenuItem, SelectChangeEvent, Autocomplete, AutocompleteRenderInputParams, CircularProgress } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -26,7 +26,7 @@ import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
 import { getAllMeetingRoom } from '../../apis/MeetingRoomApi';
 import { MeetingRoom } from '../../types/location/location_type';
-import { createEventWithAttachments, uploadTempFile } from '../../apis/EventApi';
+import { checkRoomAvailabilityApi, createEventWithAttachments, uploadTempFile } from '../../apis/EventApi';
 import { useUser } from '../../contexts/AuthUserContext';
 import { UserInfo } from '../../types/auth/auth_type';
 
@@ -54,6 +54,8 @@ function AddNewEvent() {
   const [tempFiles, setTempFiles] = useState<TempFile[]>([]);
   const [selectedAttendees, setSelectedAttendees] = useState<UserInfo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRoomAvailable, setIsRoomAvailable] = useState(true);
+  const [isCheckingRoom, setIsCheckingRoom] = useState(false);
 
   // Thêm state cho ngày và giờ
   const [startDate, setStartDate] = useState(dayjs());
@@ -176,6 +178,11 @@ function AddNewEvent() {
       isValid = false;
     }
 
+    if(location && !isRoomAvailable) {
+      newErrors.location = t('validation.roomNotAvailable');
+      isValid = false;
+    }
+
     setErrors(newErrors);
     return isValid;
   };
@@ -233,7 +240,7 @@ function AddNewEvent() {
         };
 
         await createEventWithAttachments(eventData);
-        
+
         // Hiển thị thông báo thành công
         await Swal.fire({
           title: t('success'),
@@ -247,7 +254,7 @@ function AddNewEvent() {
         navigate('/calendar/meeting');
       } catch (error) {
         console.error('Error creating event: ', error);
-        
+
         // Hiển thị thông báo lỗi
         await Swal.fire({
           title: t('error'),
@@ -261,6 +268,64 @@ function AddNewEvent() {
       }
     }
   };
+
+  const checkRoomAvailability = useCallback(async () => {
+    if (!location || !startDate || !endDate || !startTime || !endDate) return;
+
+    try {
+      setIsCheckingRoom(true);
+      const eventData = {
+        meetingRoomId: Number(location),
+        startTime: new Date(`${startDate.format('YYYY-MM-DD')}T${startTime.format("HH:mm")}:00`),
+        endTime: new Date(`${endDate.format('YYYY-MM-DD')}T${endTime.format('HH:mm')}:00`)
+      };
+
+      const response = await checkRoomAvailabilityApi(eventData);
+      setIsRoomAvailable(response.isAvailable);
+
+      if (!response.isAvailable) {
+        await Swal.fire({
+          title: t('error'),
+          text: t('validation.roomNotAvailable'),
+          icon: 'error',
+          confirmButtonText: t('ok'),
+          confirmButtonColor: '#083B75'
+        });
+        setErrors(prev => ({
+          ...prev,
+          location: t('validation.roomNotAvailable')
+        }));
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          location: ''
+        }));
+      }
+
+    } catch (error) {
+      console.error('Error checking room availability: ', error);
+      await Swal.fire({
+        title: t('error'),
+        text: t('errorCheckingRoom'),
+        icon: 'error',
+        confirmButtonText: t('ok'),
+        confirmButtonColor: '#083B75'
+      });
+    } finally {
+      setIsCheckingRoom(false);
+    }
+  }, [location, startDate, endDate, startTime, endTime, t]);
+
+
+  useEffect(() => {
+    if (location && startDate && endDate && startTime && endTime) {
+      const timeoutId = setTimeout(() => {
+        checkRoomAvailability();
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [location, startDate, endDate, startTime, endTime, checkRoomAvailability]);
+
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -546,6 +611,15 @@ function AddNewEvent() {
                   error={!!errors.location}
                   helperText={errors.location}
                   margin="normal"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {isCheckingRoom && <CircularProgress size={20}/>}
+                        {params.InputProps.endAdornment}
+                      </>
+                    )
+                  }}
                 />
               )}
             />
