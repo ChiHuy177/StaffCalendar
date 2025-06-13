@@ -195,7 +195,8 @@
         "endTimeRequired": "Vui lòng chọn giờ kết thúc",
         "endDateAfterStart": "Ngày kết thúc phải sau ngày bắt đầu",
         "endTimeAfterStart": "Giờ kết thúc phải sau giờ bắt đầu",
-        "endTimeAfterStartSameDay": "Giờ kết thúc phải sau giờ bắt đầu trong cùng ngày"
+        "endTimeAfterStartSameDay": "Giờ kết thúc phải sau giờ bắt đầu trong cùng ngày",
+        "roomNotAvailable": "Phòng đã được đặt trong khoảng thời gian này"
     },
     "calendarType": "Loại lịch",
     "calendarTypes": {
@@ -206,5 +207,13 @@
     },
     "filePondDes": "Kéo & thả file hoặc <span class=\"filepond--label-action\">Tìm</span>",
     "attachments": "File đính kèm",
-    "organizer": "Chủ trì"
+    "organizer": "Chủ trì",
+    "error": "Lỗi",
+    "errorCheckingRoom": "Có lỗi xảy ra khi kiểm tra phòng",
+    "errorCreatingEvent": "Phòng đã được đặt trong khoảng thời gian này",
+    "ok": "OK",
+    "success": "Thành công",
+    "eventCreatedSuccessfully": "Tạo sự kiện thành công",
+    "creating": "Đang tạo...",
+    "noAttachments": "Không có file đính kèm"
 }

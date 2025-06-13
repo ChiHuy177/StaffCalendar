@@ -1,24 +1,30 @@
 
 export interface MeetingEvent {
-    id: number;
+    id?: number;
 
-    title: string | null;
+    title?: string | null;
 
     description?: string | null;
 
-    eventType: string | null;
+    eventType?: string | null;
 
     startTime: Date;
 
     endTime: Date;
 
-    createdBy: string | null;
+    createdBy?: string | null;
 
-    createdTime: Date;
+    createdTime?: Date;
 
-    recurrentType: string;
+    recurrentType?: string;
 
-    isDeleted: boolean;
+    isDeleted?: boolean;
 
     meetingRoomId: number;
+}
+
+export interface RoomAvailabilityCheck {
+    meetingRoomId: number;
+    startTime: Date;
+    endTime: Date
 }

@@ -197,7 +197,8 @@
         "endTimeRequired": "Please select end time",
         "endDateAfterStart": "End date must be after start date",
         "endTimeAfterStart": "End time must be after start time",
-        "endTimeAfterStartSameDay": "End time must be after start time on the same day"
+        "endTimeAfterStartSameDay": "End time must be after start time on the same day",
+        "roomNotAvailable": "Room is already booked for this time period"
     },
     "calendarType": "Calendar Type",
     "calendarTypes": {
@@ -208,5 +209,13 @@
     },
     "filePondDes": "Drag & Drop your files or <span class=\"filepond--label-action\">Browse</span>",
     "attachments": "Attachment files",
-    "organizer": "Host"
+    "organizer": "Host",
+    "error": "Error",
+    "errorCheckingRoom": "Error occurred while checking room availability",
+    "errorCreatingEvent": "Room is already booked for this time period",
+    "ok": "OK",
+    "success": "Success",
+    "eventCreatedSuccessfully": "Event created successfully",
+    "creating": "Creating...",
+    "noAttachments": "No attachments"
 }
