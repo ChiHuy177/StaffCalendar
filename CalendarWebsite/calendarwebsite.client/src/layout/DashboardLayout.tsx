@@ -143,6 +143,7 @@ export default function DashboardLayout() {
                                 pl: 2 + level * 2,
                                 position: 'relative',
                                 width: 'calc(100% - 16px)',
+                                cursor: 'pointer',
                                 '&::before': item.isActive ? {
                                     content: '""',
                                     position: 'absolute',
