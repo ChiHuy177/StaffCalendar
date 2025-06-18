@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Menu, MenuItem, Avatar } from '@mui/material';
 import i18n from '../i18n';
+import { useLoading } from '../contexts/LoadingContext';
 
 const languages = [
   { code: 'en', label: 'English', flag: '/united-states.png' },
@@ -12,6 +13,7 @@ const LanguageSwitcherButton: React.FC = () => {
   const [currentLang, setCurrentLang] = React.useState<string>(() => {
     return localStorage.getItem('language') || i18n.language || 'en';
   });
+  const { showLoading, hideLoading } = useLoading();
 
   React.useEffect(() => {
     i18n.changeLanguage(currentLang);
@@ -26,9 +28,15 @@ const LanguageSwitcherButton: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleLanguageChange = (langCode: string) => {
+  const handleLanguageChange = async (langCode: string) => {
+    const message = langCode === 'vi' ? 'Đang chuyển đổi ngôn ngữ...' : 'Changing language...';
+    showLoading(message);
     setCurrentLang(langCode);
     handleMenuClose();
+    
+    // Giả lập thời gian loading
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    hideLoading();
   };
 
   const currentLangObj = languages.find(lang => lang.code === currentLang);
