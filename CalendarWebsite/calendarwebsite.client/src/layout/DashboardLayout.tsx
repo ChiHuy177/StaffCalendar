@@ -143,6 +143,7 @@ export default function DashboardLayout() {
                                 pl: 2 + level * 2,
                                 position: 'relative',
                                 width: 'calc(100% - 16px)',
+                                cursor: 'pointer',
                                 '&::before': item.isActive ? {
                                     content: '""',
                                     position: 'absolute',
@@ -446,63 +447,6 @@ export default function DashboardLayout() {
                                 overflowX: 'hidden'
                             }}
                         >
-                            {/* {navigationItems.map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ x: 6 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                                    style={{ width: '100%' }}
-                                >
-                                    <ListItem
-                                        component={Link}
-                                        to={item.path}
-                                        onClick={() => {
-                                            toggleSidebar();
-                                        }}
-                                        className={`mx-2 mb-1 rounded-lg transition-all duration-300 ${item.isActive
-                                            ? `${isDarkMode ? 'bg-blue-800' : 'bg-blue-700'} bg-opacity-80 shadow-md`
-                                            : `hover:${isDarkMode ? 'bg-slate-800' : 'bg-blue-900'} hover:bg-opacity-50`
-                                            }`}
-                                        sx={{
-                                            py: 1.5,
-                                            position: 'relative',
-                                            width: 'calc(100% - 16px)',
-                                            '&::before': item.isActive ? {
-                                                content: '""',
-                                                position: 'absolute',
-                                                left: -8,
-                                                top: '50%',
-                                                transform: 'translateY(-50%)',
-                                                width: 4,
-                                                height: '60%',
-                                                backgroundColor: isDarkMode ? '#60A5FA' : '#60A5FA',
-                                                borderRadius: '0 4px 4px 0',
-                                                transition: 'all 0.3s ease'
-                                            } : {}
-                                        }}
-                                    >
-                                        <ListItemIcon sx={{
-
-                                            minWidth: 45,
-                                            // color: item.isActive ? '#fff' : 'rgba(255,255,255,0.7)',
-                                            color: '#ffff',
-                                            transition: 'all 0.3s ease'
-                                        }}>
-                                            {item.icon}
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={item.text}
-                                            primaryTypographyProps={{
-                                                sx: {
-                                                    fontWeight: item.isActive ? 600 : 400,
-                                                    fontSize: '0.95rem',
-                                                    transition: 'all 0.3s ease'
-                                                }
-                                            }}
-                                        />
-                                    </ListItem>
-                                </motion.div>
-                            ))} */}
                             {renderNavItems(navigationItems)}
                         </List>
 
