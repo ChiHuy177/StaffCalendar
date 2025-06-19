@@ -184,6 +184,8 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
     },
+    "noEvents": "There is no event in this day",
+    "allDay": "All day",
     "searchEmployee": "Search employee",
     "find": "Find",
     "validation": {

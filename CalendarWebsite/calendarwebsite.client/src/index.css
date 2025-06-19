@@ -10,7 +10,7 @@
 .fc-direction-ltr .fc-daygrid-event.fc-event-end,
 .fc-direction-rtl .fc-daygrid-event.fc-event-start {
   margin-right: 2px;
-  padding: 10px;
+  padding: 2px;
 }
 
 .css-1xgnz6y-MuiStack-root {
@@ -38,6 +38,10 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   color: #1F2937;
 }
 
+.light-calendar .fc-toolbar-title{
+  color: black;
+}
+
 .light-calendar .fc {
   background-color: white;
 }
@@ -55,15 +59,30 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   color: black !important;
 }
 
-.dark-calendar .fc-day-today .fc-daygrid-day-number {
-  color: white !important;
+.light-calendar .fc-col-header-cell {
+  background-color: #e5e7eb !important;
+  color: black !important;
 }
 
 
 /* Dark mode */
+.dark-calendar .fc-theme-standard .fc-list-day-cushion {
+  background-color: #1F2937;
+}
+
+.dark-calendar .fc .fc-list-event:hover td{
+  background-color: transparent;
+}
+
+.dark-calendar .fc-day-today .fc-daygrid-day-number {
+  color: white !important;
+}
+.dark-calendar .fc-timegrid-axis {
+  background-color: #1E293B;
+}
 .dark-calendar {
   background-color: #1E293B;
-  color: black;
+  color: white;
 }
 
 .dark-calendar .fc-toolbar-title{

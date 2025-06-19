@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, Typography, Chip, Paper, Box, List, ListItem, ListItemIcon, ListItemText, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-
+import listPlugin from '@fullcalendar/list';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 import { EventInput, EventClickArg } from '@fullcalendar/core/index.js';
 import { getAllMeetingEvents, getEventAttachments } from '../../../apis/EventApi';
@@ -21,14 +21,14 @@ interface EventAttachment {
     fileSize: number;
 }
 
-const EventPopoverContent = React.memo(({ 
-    selectedEvent, 
-    attachments, 
-    isDarkMode, 
-    lang, 
+const EventPopoverContent = React.memo(({
+    selectedEvent,
+    attachments,
+    isDarkMode,
+    lang,
     t,
     isLoading
-}: { 
+}: {
     selectedEvent: EventInput;
     attachments: EventAttachment[];
     isDarkMode: boolean;
@@ -68,9 +68,9 @@ const EventPopoverContent = React.memo(({
                     }
                 }}
             />
-            
+
             <Box sx={{ mt: 2 }}>
-                <Typography variant="subtitle2" sx={{ 
+                <Typography variant="subtitle2" sx={{
                     color: isDarkMode ? 'text.secondary' : 'text.primary',
                     mb: 1,
                     fontWeight: 500
@@ -120,7 +120,7 @@ const EventPopoverContent = React.memo(({
                         ))}
                     </List>
                 ) : (
-                    <Typography variant="body2" sx={{ 
+                    <Typography variant="body2" sx={{
                         color: isDarkMode ? 'text.secondary' : 'text.secondary',
                         fontStyle: 'italic',
                         textAlign: 'center',
@@ -134,16 +134,16 @@ const EventPopoverContent = React.memo(({
     );
 });
 
-const EventPopover = React.memo(({ 
-    anchorEl, 
-    selectedEvent, 
-    attachments, 
-    isDarkMode, 
-    lang, 
+const EventPopover = React.memo(({
+    anchorEl,
+    selectedEvent,
+    attachments,
+    isDarkMode,
+    lang,
     t,
     isLoading,
-    onClose 
-}: { 
+    onClose
+}: {
     anchorEl: HTMLElement | null;
     selectedEvent: EventInput | null;
     attachments: EventAttachment[];
@@ -244,7 +244,7 @@ export default function MeetingCalendarComponent() {
             setIsLoadingEvents(true);
             const data = await getAllMeetingEvents();
             const eventList: EventInput[] = [];
-            
+
             if (data && Array.isArray(data)) {
                 data.forEach(meeting => {
                     eventList.push({
@@ -253,10 +253,10 @@ export default function MeetingCalendarComponent() {
                         title: meeting.title,
                         start: meeting.startTime,
                         end: meeting.endTime,
-                        backgroundColor: meeting.eventType === 'personal' ? '#4CAF50' : 
-                                        meeting.eventType === 'company' ? '#2196F3' :
-                                        meeting.eventType === 'meeting' ? '#9C27B0' :
-                                        meeting.eventType === 'vehicle' ? '#FF9800' : '#4CAF50',
+                        backgroundColor: meeting.eventType === 'personal' ? '#4CAF50' :
+                            meeting.eventType === 'company' ? '#2196F3' :
+                                meeting.eventType === 'meeting' ? '#9C27B0' :
+                                    meeting.eventType === 'vehicle' ? '#FF9800' : '#4CAF50',
                         extendedProps: {
                             description: meeting.description,
                             organizer: meeting.organizer,
@@ -266,7 +266,7 @@ export default function MeetingCalendarComponent() {
                     });
                 });
             }
-            
+
             setEvents(eventList);
         } catch (error) {
             console.error("Error fetching meeting events:", error);
@@ -313,9 +313,9 @@ export default function MeetingCalendarComponent() {
                     position: 'relative'
                 }}>
                     {isLoadingEvents && (
-                        <Box sx={{ 
-                            display: 'flex', 
-                            justifyContent: 'center', 
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
                             alignItems: 'center',
                             minHeight: '400px'
                         }}>
@@ -327,18 +327,31 @@ export default function MeetingCalendarComponent() {
                         <div className={isDarkMode ? 'dark-calendar' : 'light-calendar'}>
                             <FullCalendar
                                 ref={calendarRef}
-                                plugins={[dayGridPlugin, timeGridPlugin]}
+                                plugins={[dayGridPlugin, timeGridPlugin, listPlugin]}
                                 initialView="dayGridMonth"
                                 headerToolbar={{
                                     left: 'prev,next today',
                                     center: 'title',
-                                    right: 'dayGridMonth,timeGridDay',
+                                    right: 'dayGridMonth,listDay, listWeek',
                                 }}
                                 buttonText={{
                                     today: t('today'),
                                     month: t('month'),
                                     day: t('day'),
                                 }}
+                                allDayContent={t('allDay')}
+                                noEventsContent={() => (
+                                    <div className="flex flex-col background-color: transparent items-center justify-center p-4">
+                                        <Typography
+                                            sx={{
+                                                color: isDarkMode ? 'text.secondary' : 'text.primary',
+                                                fontStyle: 'italic'
+                                            }}
+                                        >
+                                            {t('noEvents')}
+                                        </Typography>
+                                    </div>
+                                )}
                                 locale={lang}
                                 events={events}
                                 editable={true}
@@ -348,13 +361,22 @@ export default function MeetingCalendarComponent() {
                                 height="auto"
                                 dayMaxEventRows={true}
                                 eventContent={(arg) => {
+                                    const viewType = arg.view.type;
+                                    const isMonth = viewType === 'dayGridMonth';
                                     const startTime = arg.event.start ? new Date(arg.event.start).toLocaleTimeString(lang === 'vi' ? 'vi-VN' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A';
                                     const endTime = arg.event.end ? new Date(arg.event.end).toLocaleTimeString(lang === 'vi' ? 'vi-VN' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : '';
                                     const timeRange = endTime !== '' && endTime !== startTime ? `${startTime}-${endTime}` : startTime;
-
+                                    const eventType = arg.event.extendedProps.eventType === 'personal' ? t('calendarTypes.personal') :
+                                        arg.event.extendedProps.eventType === 'vehicle' ? t('calendarTypes.vehicle') :
+                                            arg.event.extendedProps.eventType === 'meeting' ? t('calendarTypes.metting') :
+                                                arg.event.extendedProps.eventType === 'company' ? t('calendarTypes.company') : "Không xác định"
                                     return (
-                                        <div className="flex w-[100%] h-[100%] flex-col  box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base" style={{ backgroundColor: arg.event.backgroundColor }}>
-                                            <p className="font-bold text-white">{timeRange}</p>
+                                        <div className="flex w-[100%] h-[100%] flex-col rounded-xl box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base"
+                                            style={{
+                                                backgroundColor: arg.event.backgroundColor,
+                                                padding: isMonth ? '0.5rem' : '0.1rem 0.25rem'
+                                            }}>
+                                            <p className="font-bold text-white">{timeRange} - {eventType}</p>
                                             <p className="font-bold text-white">{arg.event.title}</p>
                                         </div>
                                     );
@@ -367,7 +389,7 @@ export default function MeetingCalendarComponent() {
                         </div>
                     )}
                 </Card>
-                <EventPopover 
+                <EventPopover
                     anchorEl={anchorEl}
                     selectedEvent={selectedEvent}
                     attachments={attachments}

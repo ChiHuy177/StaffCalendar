@@ -184,6 +184,8 @@
         "saturday": "Thứ 7",
         "sunday": "Chủ nhật"
     },
+    "allDay": "Cả ngày",
+    "noEvents": "Không có sự kiện nào!",
     "validation": {
         "titleRequired": "Vui lòng nhập tiêu đề sự kiện",
         "contentRequired": "Vui lòng nhập nội dung sự kiện",
