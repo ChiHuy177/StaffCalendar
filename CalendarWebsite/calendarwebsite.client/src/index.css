@@ -32,6 +32,16 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   padding-top: 5px;
   
 }
+.fc .fc-daygrid-event-harness{
+  overflow: hidden;
+}
+.fc-daygrid-day-top {
+  justify-content: center !important;
+}
+.fc-daygrid-block-event, .fc-daygrid-event-harness .fc-event {
+  background: transparent !important;
+  border: none;
+}
 /* Light mode (mặc định) */
 .light-calendar {
   background-color: white;
@@ -48,11 +58,12 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
 
 .light-calendar .fc-theme-standard td,
 .light-calendar .fc-theme-standard th {
-  border-color: #e5e7eb;
+  border-color: #E5E5E5;
 }
 
 .light-calendar .fc-day-today {
   background-color: rgba(173, 216, 230, 0.3) !important; /* Light blue with some transparency */
+  color: black !important;
 }
 
 .light-calendar .fc-day-today .fc-daygrid-day-number {
@@ -62,6 +73,10 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
 .light-calendar .fc-col-header-cell {
   background-color: #e5e7eb !important;
   color: black !important;
+}
+
+.light-calendar .fc-daygrid-day-frame {
+  background-color: #FFFFFF;
 }
 
 

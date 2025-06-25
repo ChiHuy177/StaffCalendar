@@ -15,5 +15,7 @@ namespace CalendarWebsite.Server.Interfaces.ServiceInterfaces
         public Task DeleteEvent(long id);
 
         public Task<CalendarEvent> CreateEventWithAttendees(CreateEventDTO createEventDTO);
+
+        public Task<List<CalendarEvent>> GetEventsByRange(DateTime start, DateTime end);
     }
 }

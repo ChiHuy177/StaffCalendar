@@ -28,9 +28,9 @@ namespace CalendarWebsite.Server.Controllers
         }
 
         [HttpGet("allMeetings")]
-        public async Task<ActionResult<IEnumerable<CalendarEvent>>> GetAllMeetings()
+        public async Task<ActionResult<IEnumerable<CalendarEvent>>> GetAllMeetings(DateTime start, DateTime end)
         {
-            var result = await _calendarEventService.GetAllMeetingEvents();
+            var result = await _calendarEventService.GetEventsByRange(start, end);
             return Ok(result);
         }
 

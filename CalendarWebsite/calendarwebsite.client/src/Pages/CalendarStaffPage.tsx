@@ -24,9 +24,7 @@ import { CheckinData, WorkSchedule, WorkScheduleDetail } from '../types/checkin/
 export default function CalendarComponent() {
     const { nameOfUsers, loadingUsername } = useUser();
     const [loading, setLoading] = useState(false);
-    // const [loadingUsername, setLoadingUsername] = useState(false);
     const [events, setEvents] = useState<EventInput[]>([]);
-    // const [nameOfUsers, setNameOfUsers] = useState<UserInfo[]>([]);
     const [selectedName, setSelectedName] = useState<UserInfo>();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedEvent, setSelectedEvent] = useState<EventInput | null>(null);
@@ -535,7 +533,8 @@ export default function CalendarComponent() {
                             }}
                             dayMaxEventRows={true}
                             eventContent={(arg) => (
-                                <div className="flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base">
+
+                                <div className={`flex flex-col box-border items-start whitespace-normal break-words text-xs sm:text-sm md:text-base ${arg.event.extendedProps.className}`}>
                                     {arg.event.title == t('Absent') || arg.event.title == t('holidays') || arg.event.title === 'Nghỉ phép năm' ?
                                         (<>
                                             <p className="font-bold">{arg.event.title}</p>
@@ -553,6 +552,8 @@ export default function CalendarComponent() {
                                     }
                                     <p className="text-black-600">{arg.event.extendedProps?.description}</p>
                                 </div>
+
+
                             )}
                             viewClassNames='w-full'
 

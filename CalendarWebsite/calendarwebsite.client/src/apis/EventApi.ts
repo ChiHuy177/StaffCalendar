@@ -3,10 +3,15 @@ import {  RoomAvailabilityCheck } from "../types/meetingEvent/meetingEvent_type"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export async function getAllMeetingEvents() {
+export async function getAllMeetingEvents(startDate: Date, endDate: Date) {
     const apiUrl = `${API_BASE_URL}api/events/allMeetings`;
     try {
-        const response = await axios.get(apiUrl);
+        const response = await axios.get(apiUrl, {
+            params: {
+                start: startDate,
+                end: endDate
+            }
+        });
         return response.data;
     } catch (error) {
         console.error("Error when fetching meeting events: " + error);
