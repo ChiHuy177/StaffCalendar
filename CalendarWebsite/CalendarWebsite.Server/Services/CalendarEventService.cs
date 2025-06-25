@@ -49,20 +49,22 @@ namespace CalendarWebsite.Server.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Validate meeting room exists
-                var meetingRoom = await _meetingRoomRepository.GetByIdAsync(createEventDTO.Event.MeetingRoomId.Value);
-                //only check when user choose room (the event without chosing room is ok)
-                if (meetingRoom != null)
+                // Validate meeting room exists - only if MeetingRoomId is provided
+                if (createEventDTO.Event.MeetingRoomId.HasValue)
                 {
-                    var isRoomAvailable = await _meetingRoomService.IsRoomAvailable(
-                        createEventDTO.Event.MeetingRoomId.Value,
-                        createEventDTO.Event.StartTime,
-                        createEventDTO.Event.EndTime
-                    );
-
-                    if (!isRoomAvailable)
+                    var meetingRoom = await _meetingRoomRepository.GetByIdAsync(createEventDTO.Event.MeetingRoomId.Value);
+                    if (meetingRoom != null)
                     {
-                        throw new Exception("This room is not available");
+                        var isRoomAvailable = await _meetingRoomService.IsRoomAvailable(
+                            createEventDTO.Event.MeetingRoomId.Value,
+                            createEventDTO.Event.StartTime,
+                            createEventDTO.Event.EndTime
+                        );
+
+                        if (!isRoomAvailable)
+                        {
+                            throw new Exception("This room is not available");
+                        }
                     }
                 }
 

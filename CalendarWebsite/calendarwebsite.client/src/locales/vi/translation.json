@@ -223,5 +223,6 @@
     "success": "Thành công",
     "eventCreatedSuccessfully": "Tạo sự kiện thành công",
     "creating": "Đang tạo...",
-    "noAttachments": "Không có file đính kèm"
+    "noAttachments": "Không có file đính kèm",
+    "room": "Phòng họp"
 }

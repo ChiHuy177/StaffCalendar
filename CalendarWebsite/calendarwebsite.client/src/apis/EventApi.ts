@@ -70,6 +70,7 @@ export async function getEventAttachments(eventId: number) {
 
 export async function checkRoomAvailabilityApi(event: RoomAvailabilityCheck) {
     const apiUrl = `${API_BASE_URL}api/MeetingRoom/CheckAvailability`;
+    console.log(event);
     try {
         const response = await axios.post(apiUrl, event);
         return response.data;

@@ -24,22 +24,20 @@ namespace CalendarWebsite.Server.Controllers
         }
 
         [HttpPost("CheckAvailability")]
-        public async Task<ActionResult<bool>> CheckRoomAvailability([FromBody] CalendarEvent calendarEvent)
+        public async Task<ActionResult<bool>> CheckRoomAvailability(long meetingRoomId, DateTime start, DateTime end)
         {
             try
             {
-                if (calendarEvent.MeetingRoomId != null)
-                {
-                    var isAvailable = await _meetingRoomService.IsRoomAvailable(
-                        calendarEvent.MeetingRoomId.Value,
-                        calendarEvent.StartTime,
-                        calendarEvent.EndTime
-                    );
-                    return Ok(new {isAvailable});
-                }
-                return Ok(new {isAvailable = true});
-            } catch (Exception ex) {
-                return BadRequest(new {message = ex.Message});
+                var isAvailable = await _meetingRoomService.IsRoomAvailable(
+                    meetingRoomId,
+                    start,
+                    end
+                );
+                return Ok(new { isAvailable });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
     }
