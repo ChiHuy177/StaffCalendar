@@ -225,5 +225,6 @@
     "success": "Success",
     "eventCreatedSuccessfully": "Event created successfully",
     "creating": "Creating...",
-    "noAttachments": "No attachments"
+    "noAttachments": "No attachments",
+    "room": "Meeting room"
 }

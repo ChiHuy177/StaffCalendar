@@ -73,7 +73,10 @@ const EventPopoverContent = React.memo(({
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                 <span style={{ fontWeight: 'bold' }}>{t('organizer')}:</span> {selectedEvent.extendedProps?.organizer === undefined ? "None" : selectedEvent.extendedProps?.organizer}
             </Typography>
-            {selectedEvent.extendedProps?.room}
+            <Typography variant='body2' sx={{ color: 'text.secondary', mb: 0.5}}>
+                <span style={{ fontWeight: 'bold '}}>{t('room')}:</span> {selectedEvent.extendedProps?.meetingRoom}
+            </Typography>
+            
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
                 <span style={{ fontWeight: 'bold' }}>{t('time')}:</span> {' '}
                 {selectedEvent.start instanceof Date ? selectedEvent.start.toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US') : 'N/A'}

@@ -178,7 +178,7 @@ function AddNewEvent() {
       isValid = false;
     }
 
-    if(location && !isRoomAvailable) {
+    if(location && location.trim() !== '' && !isRoomAvailable) {
       newErrors.location = t('validation.roomNotAvailable');
       isValid = false;
     }
@@ -233,7 +233,7 @@ function AddNewEvent() {
             createdBy: user?.email,
             recurrentType: repeatType === 'default' ? 'Default' : repeatType === 'weekly' ? 'Weekly' : 'Monthly',
             isDeleted: false,
-            ...(location && { meetingRoomId: Number(location) })
+            ...(location && location.trim() !== '' && { meetingRoomId: Number(location) })
           },
           attendeeIds: selectedAttendees.map(user => user.personalProfileId),
           tempFiles: tempFiles
@@ -270,7 +270,7 @@ function AddNewEvent() {
   };
 
   const checkRoomAvailability = useCallback(async () => {
-    if (!location || !startDate || !endDate || !startTime || !endDate) return;
+    if (!location || location.trim() === '' || !startDate || !endDate || !startTime || !endTime) return;
 
     try {
       setIsCheckingRoom(true);
@@ -318,7 +318,7 @@ function AddNewEvent() {
 
 
   useEffect(() => {
-    if (location && startDate && endDate && startTime && endTime) {
+    if (location && location.trim() !== '' && startDate && endDate && startTime && endTime) {
       const timeoutId = setTimeout(() => {
         checkRoomAvailability();
       }, 500);
