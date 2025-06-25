@@ -10,7 +10,7 @@
 .fc-direction-ltr .fc-daygrid-event.fc-event-end,
 .fc-direction-rtl .fc-daygrid-event.fc-event-start {
   margin-right: 2px;
-  padding: 10px;
+  padding: 2px;
 }
 
 .css-1xgnz6y-MuiStack-root {
@@ -32,10 +32,24 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
   padding-top: 5px;
   
 }
+.fc .fc-daygrid-event-harness{
+  overflow: hidden;
+}
+.fc-daygrid-day-top {
+  justify-content: center !important;
+}
+.fc-daygrid-block-event, .fc-daygrid-event-harness .fc-event {
+  background: transparent !important;
+  border: none;
+}
 /* Light mode (mặc định) */
 .light-calendar {
   background-color: white;
   color: #1F2937;
+}
+
+.light-calendar .fc-toolbar-title{
+  color: black;
 }
 
 .light-calendar .fc {
@@ -44,26 +58,46 @@ header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAp
 
 .light-calendar .fc-theme-standard td,
 .light-calendar .fc-theme-standard th {
-  border-color: #e5e7eb;
+  border-color: #E5E5E5;
 }
 
 .light-calendar .fc-day-today {
   background-color: rgba(173, 216, 230, 0.3) !important; /* Light blue with some transparency */
+  color: black !important;
 }
 
 .light-calendar .fc-day-today .fc-daygrid-day-number {
   color: black !important;
 }
 
-.dark-calendar .fc-day-today .fc-daygrid-day-number {
-  color: white !important;
+.light-calendar .fc-col-header-cell {
+  background-color: #e5e7eb !important;
+  color: black !important;
+}
+
+.light-calendar .fc-daygrid-day-frame {
+  background-color: #FFFFFF;
 }
 
 
 /* Dark mode */
+.dark-calendar .fc-theme-standard .fc-list-day-cushion {
+  background-color: #1F2937;
+}
+
+.dark-calendar .fc .fc-list-event:hover td{
+  background-color: transparent;
+}
+
+.dark-calendar .fc-day-today .fc-daygrid-day-number {
+  color: white !important;
+}
+.dark-calendar .fc-timegrid-axis {
+  background-color: #1E293B;
+}
 .dark-calendar {
   background-color: #1E293B;
-  color: black;
+  color: white;
 }
 
 .dark-calendar .fc-toolbar-title{

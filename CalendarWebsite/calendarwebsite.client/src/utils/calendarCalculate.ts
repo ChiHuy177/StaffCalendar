@@ -13,7 +13,7 @@ export const getDateFromString = (dateTimeString: string): string => {
         day: '2-digit'
     });
 }
-export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkScheduleDetail[], t: TranslateFunction): EventInput[] => {
+export const generateUserEvent = (item: CheckinData, workScheduleDetails: WorkScheduleDetail[], t: TranslateFunction): EventInput[] => {
     const eventList: EventInput[] = [];
     if (item.attendant === 'P = Phép năm') {
         console.log('item', item);
@@ -27,6 +27,7 @@ export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkSc
                 description: item.attendant,
                 description2: item.ghiChu,
                 staffName: item.fullName,
+                className: 'bg-orange-400 text-white rounded px-2 p-2'
             },
             className: 'bg-orange-400 text-white rounded px-2',
         });
@@ -39,18 +40,18 @@ export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkSc
 
         //  (0: Chủ nhật, 1: Thứ 2, ..., 6: Thứ 7)
         const dayOfWeek = adjustedStart.getDay();
-        
+
         // Chuyển đổi dayOfWeek sang tên ngày trong tuần
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dayName = dayNames[dayOfWeek];
-        
+
         // Tìm thông tin giờ làm việc cho ngày trong tuần
         const workSchedule = workScheduleDetails.find(schedule => schedule.workweekTitle === dayName);
-        
+
         // Giá trị mặc định
         let startTime = 7.5;
         let endTime = 16.5;
-        
+
         // Nếu tìm thấy thông tin giờ làm việc, sử dụng thông tin đó
         if (workSchedule) {
             if (workSchedule.morningStart !== null) {
@@ -69,6 +70,7 @@ export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkSc
                 extendedProps: {
                     description: t('InLate'),
                     staffName: item.fullName,
+                    className: 'bg-red-400 text-black rounded px-2 p-2'
                 },
                 className: 'bg-red-400 text-black rounded px-2',
             });
@@ -80,6 +82,7 @@ export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkSc
                 extendedProps: {
                     description: t('OnTime'),
                     staffName: item.fullName,
+                    className: 'bg-green-400 text-black rounded px-2 p-2'
                 },
                 className: 'bg-green-400 text-black rounded px-2',
             });
@@ -93,6 +96,7 @@ export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkSc
                 extendedProps: {
                     description: t('OutEarly'),
                     staffName: item.fullName,
+                    className: 'bg-yellow-400 text-black rounded px-2 p-2'
                 },
                 className: 'bg-yellow-400 text-black rounded px-2',
             });
@@ -104,6 +108,7 @@ export const generateUserEvent = (item: CheckinData,workScheduleDetails : WorkSc
                 extendedProps: {
                     description: t('OnTime'),
                     staffName: item.fullName,
+                    className: 'bg-green-400 text-black rounded px-2 p-2'
                 },
                 className: 'bg-green-400 text-black rounded px-2',
             });
@@ -141,6 +146,7 @@ export const addAbsenceAndHolidayEvents = (
                 extendedProps: {
                     description: t('holidays'),
                     staffName: selectedName,
+                    className: 'bg-green-600 text-white rounded px-2 p-2 w-full'
                 },
                 className: 'bg-green-600 text-white rounded px-2',
             });
@@ -153,6 +159,7 @@ export const addAbsenceAndHolidayEvents = (
                 extendedProps: {
                     description: t('Absent'),
                     staffName: selectedName,
+                    className: 'bg-red-600 text-white rounded px-2 w-full p-2'
                 },
                 className: 'bg-red-600 text-white rounded px-2',
             });

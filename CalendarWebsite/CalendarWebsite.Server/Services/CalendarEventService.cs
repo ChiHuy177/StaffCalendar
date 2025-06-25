@@ -60,7 +60,8 @@ namespace CalendarWebsite.Server.Services
                         createEventDTO.Event.EndTime
                     );
 
-                    if(!isRoomAvailable){
+                    if (!isRoomAvailable)
+                    {
                         throw new Exception("This room is not available");
                     }
                 }
@@ -136,17 +137,161 @@ namespace CalendarWebsite.Server.Services
             return null;
         }
 
-        public Task<List<CalendarEvent>> GetAllMeetingEvents()
+        public async Task<List<CalendarEvent>> GetAllMeetingEvents()
         {
-            var result = _calendarEventRepository.FindList(
+
+
+            var baseEvents = await _calendarEventRepository.FindList(
                 predicate: x => true
             );
+
+            var allEvents = new List<CalendarEvent>();
+
+            foreach (var baseEvent in baseEvents)
+            {
+                allEvents.Add(baseEvent);
+
+                if (baseEvent.RecurrentType == "Weekly")
+                {
+                    var weeklyEvents = GenerateWeeklyRecurrences(baseEvent, 12);
+                    allEvents.AddRange(weeklyEvents);
+                }
+                else if (baseEvent.RecurrentType == "Monthly")
+                {
+                    var monthlyEvents = GenerateMonthlyRecurrences(baseEvent, 12);
+                    allEvents.AddRange(monthlyEvents);
+                }
+            }
+
+            return allEvents;
+        }
+
+        public async Task<List<CalendarEvent>> GetEventsByRange(DateTime start, DateTime end)
+        {
+            var baseEvents = await _calendarEventRepository.FindList(x => !x.IsDeleted);
+
+            var result = new List<CalendarEvent>();
+
+            foreach (var ev in baseEvents)
+            {
+                if (ev.RecurrentType == "Default")
+                {
+                    if (ev.StartTime <= end && ev.EndTime >= start)
+                    {
+                        result.Add(ev);
+                    }
+                }
+                else if (ev.RecurrentType == "Weekly")
+                {
+                    var current = ev.StartTime;
+                    while (current <= end)
+                    {
+                        var instanceEnd = ev.EndTime.AddDays((current - ev.StartTime).TotalDays);
+                        if (current >= start && current <= end)
+                        {
+                            result.Add(new CalendarEvent
+                            {
+                                // Tạo ID riêng biệt nếu cần
+                                Id = ev.Id,
+                                Title = ev.Title,
+                                Description = ev.Description,
+                                EventType = ev.EventType,
+                                StartTime = current,
+                                EndTime = instanceEnd,
+                                CreatedBy = ev.CreatedBy,
+                                CreatedTime = ev.CreatedTime,
+                                RecurrentType = ev.RecurrentType,
+                                IsDeleted = false,
+                                MeetingRoomId = ev.MeetingRoomId
+                            });
+                        }
+                        current = current.AddDays(7);
+                    }
+                }
+                else if (ev.RecurrentType == "Monthly")
+                {
+                    var current = ev.StartTime;
+                    while (current <= end)
+                    {
+                        var instanceEnd = ev.EndTime.AddMonths((current.Month - ev.StartTime.Month) + 12 * (current.Year - ev.StartTime.Year));
+                        if (current >= start && current <= end)
+                        {
+                            result.Add(new CalendarEvent
+                            {
+                                Id = ev.Id,
+                                Title = ev.Title,
+                                Description = ev.Description,
+                                EventType = ev.EventType,
+                                StartTime = current,
+                                EndTime = instanceEnd,
+                                CreatedBy = ev.CreatedBy,
+                                CreatedTime = ev.CreatedTime,
+                                RecurrentType = ev.RecurrentType,
+                                IsDeleted = false,
+                                MeetingRoomId = ev.MeetingRoomId
+                            });
+                        }
+                        current = current.AddMonths(1);
+                    }
+                }
+
+            }
             return result;
         }
 
         public Task UpdateEvent(CalendarEvent calendarEvent)
         {
             throw new NotImplementedException();
+        }
+
+        private List<CalendarEvent> GenerateWeeklyRecurrences(CalendarEvent baseEvent, int weeks)
+        {
+            var events = new List<CalendarEvent>();
+
+            for (int i = 1; i <= weeks; i++)
+            {
+                var newEvent = new CalendarEvent
+                {
+                    Id = baseEvent.Id * 1000 + i,
+                    Title = baseEvent.Title,
+                    Description = baseEvent.Description,
+                    EventType = baseEvent.EventType,
+                    StartTime = baseEvent.StartTime.AddDays(7 * i),
+                    EndTime = baseEvent.EndTime.AddDays(7 * i),
+                    CreatedBy = baseEvent.CreatedBy,
+                    CreatedTime = baseEvent.CreatedTime,
+                    RecurrentType = baseEvent.RecurrentType,
+                    IsDeleted = false,
+                    MeetingRoomId = baseEvent.MeetingRoomId
+                };
+                events.Add(newEvent);
+            }
+            return events;
+        }
+
+        private List<CalendarEvent> GenerateMonthlyRecurrences(CalendarEvent baseEvent, int month)
+        {
+            var events = new List<CalendarEvent>();
+
+            for (int i = 1; i <= month; i++)
+            {
+                var newEvent = new CalendarEvent
+                {
+                    Id = baseEvent.Id * 1000 + i,
+                    Title = baseEvent.Title,
+                    Description = baseEvent.Description,
+                    EventType = baseEvent.EventType,
+                    StartTime = baseEvent.StartTime.AddMonths(i),
+                    EndTime = baseEvent.EndTime.AddMonths(i),
+                    CreatedBy = baseEvent.CreatedBy,
+                    CreatedTime = baseEvent.CreatedTime,
+                    RecurrentType = "Monthly",
+                    IsDeleted = false,
+                    MeetingRoomId = baseEvent.MeetingRoomId
+                };
+                events.Add(newEvent);
+            }
+            return events;
         }
     }
 }

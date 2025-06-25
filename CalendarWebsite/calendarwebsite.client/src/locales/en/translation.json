@@ -4,12 +4,12 @@
     "staffCalendar": "Staff Calendar",
     "staffCheckinTableByDay": "Staff Checkin Table By Day",
     "staffCheckinTableByDept": "Staff Checkin Table By Department",
-    "meetingCalendar" : "Meeting Calendar",
-    "addNewEvent":"Add new event",
+    "meetingCalendar": "Meeting Calendar",
+    "addNewEvent": "Add new event",
     "personalCalendar": "Add new personal calendar",
     "addNew": {
         "title": "Title",
-        "content":"Content",
+        "content": "Content",
         "location": "Locaion",
         "host": "Host",
         "repeatType": "Repeat type",
@@ -74,6 +74,10 @@
         "workingTime": "Time of working",
         "fullName": "Full name"
     },
+    "recurrentType": "Repeat Type",
+    "recurrentType.default": "Default",
+    "recurrentType.weekly": "Weekly",
+    "recurrentType.monthly": "Monthly",
     "dayRange": {
         "last7days": "Last 7 days",
         "thisWeek": "This week",
@@ -83,6 +87,8 @@
         "start": "Start day",
         "end": "End day"
     },
+    "listByDay": "Day list",
+    "listByWeek": "Week list",
     "today": "Today",
     "month": "Month",
     "dataGrid": {
@@ -184,6 +190,8 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
     },
+    "noEvents": "There is no event in this day",
+    "allDay": "All day",
     "searchEmployee": "Search employee",
     "find": "Find",
     "validation": {

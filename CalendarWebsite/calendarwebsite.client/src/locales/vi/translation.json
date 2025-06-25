@@ -3,12 +3,12 @@
     "staffCheckinTable": "Bảng chấm công nhân viên",
     "staffCheckinTableByDay": "Bảng chấm công nhân viên theo ngày",
     "staffCheckinTableByDept": "Bảng chấm công nhân viên theo phòng ban",
-    "meetingCalendar" : "Lịch họp công ty",
-    "addNewEvent":"Thêm sự kiện mới",
+    "meetingCalendar": "Lịch họp công ty",
+    "addNewEvent": "Thêm sự kiện mới",
     "personalCalendar": "Thêm lịch cá nhân",
     "addNew": {
         "title": "Tiêu đề",
-        "content":"Nội dung",
+        "content": "Nội dung",
         "location": "Địa điểm",
         "host": "Chủ trì",
         "repeatType": "Kiểu lập",
@@ -63,6 +63,10 @@
         "exportFailed": "Xuất file Excel thất bại. Vui lòng thử lại!",
         "inValidInput": "Vui lòng chọn khoảng thời gian hợp lệ!"
     },
+    "recurrentType": "Loại lặp lại",
+    "recurrentType.default": "Mặc định",
+    "recurrentType.weekly": "Hàng tuần",
+    "recurrentType.monthly": "Hàng tháng",
     "table": {
         "day": "Ngày làm việc",
         "inTime": "Thời gian vào",
@@ -81,6 +85,8 @@
         "start": "Ngày bắt đầu",
         "end": "Ngày kết thúc"
     },
+    "listByDay": "DS ngày",
+    "listByWeek": "DS tuần",
     "today": "Hôm nay",
     "month": "Tháng",
     "dataGrid": {
@@ -184,6 +190,8 @@
         "saturday": "Thứ 7",
         "sunday": "Chủ nhật"
     },
+    "allDay": "Cả ngày",
+    "noEvents": "Không có sự kiện nào!",
     "validation": {
         "titleRequired": "Vui lòng nhập tiêu đề sự kiện",
         "contentRequired": "Vui lòng nhập nội dung sự kiện",
